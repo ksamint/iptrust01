@@ -48,7 +48,7 @@ Git contains `data/assets/manifest.json` and per-IP manifests. CI rejects tracke
 - Private media links use `MEDIA_SIGNING_KEY` and expire after 10 minutes by default.
 - Write calls require `Idempotency-Key`; updates and deletes require `If-Match`.
 
-Secret values live in 1Password and GitHub Actions secrets. Required Worker secret names are `API_KEY_PEPPER`, `SESSION_PEPPER`, `MEDIA_SIGNING_KEY`, `AUDIT_PEPPER`, `ADMIN_TOTP_SECRET` and `GITHUB_SERVICE_TOKEN`. System API keys are HMAC records in D1; the Worker has no legacy plaintext admin-key secret.
+Secret values live in 1Password and the operator's shell environment (no GitHub Actions secrets). Required Worker secret names are `API_KEY_PEPPER`, `SESSION_PEPPER`, `MEDIA_SIGNING_KEY`, `AUDIT_PEPPER`, `ADMIN_TOTP_SECRET` and `GITHUB_SERVICE_TOKEN`. System API keys are HMAC records in D1; the Worker has no legacy plaintext admin-key secret.
 
 ## Operations
 

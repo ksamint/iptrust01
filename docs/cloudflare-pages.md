@@ -1,15 +1,15 @@
 # Cloudflare Pages deploy
 
-This repo still deploys to GitHub Pages. Cloudflare Pages can run in parallel for CDN, cache headers, redirects, and future edge functions.
+Cloudflare Pages is the production origin; GitHub Pages (`gh-pages` branch) is a fallback mirror. There are no GitHub Actions workflows: the operator deploys from their own machine with `npm run deploy:cloudflare` (see `docs/deployment.md`).
 
-## GitHub settings
+## Operator environment
 
-Add these repository secrets:
+Export these in the shell that runs the deploy (keep them in 1Password, never in Git or files):
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 
-Optional repository variable:
+Optional:
 
 - `CLOUDFLARE_PAGES_PROJECT` defaults to `tableai-designaha`
 

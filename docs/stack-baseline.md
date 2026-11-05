@@ -10,8 +10,9 @@ Verified: 2026-08-12
 - Workers compatibility date: 2026-05-03
 - JavaScript: native ESM, no frontend framework
 
-The exact Node version lives in `.node-version` and `.nvmrc`. GitHub Actions
-must read that file instead of carrying a separate runtime version.
+The exact Node version lives in `.node-version` and `.nvmrc`. The local
+release scripts read that file and refuse any other Node version instead of
+carrying a separate runtime version.
 
 ## Application stack
 
@@ -40,12 +41,16 @@ token build has been verified against 5.5.1.
 
 ## Deployment contract
 
-- A push to `main` runs validation and the Cloudflare deployment workflow.
-- The Cloudflare workflow builds the site, applies D1 migrations and seeds,
+- There are no GitHub Actions workflows (owner decision 2026-11-05). The
+  operator validates locally, pushes `main`, then runs
+  `npm run deploy:cloudflare` from a clean checkout of exactly `origin/main`.
+- The deploy script builds the site, applies D1 migrations and seeds,
   deploys `iptrust-edge`, then deploys Pages.
-- GitHub Pages remains a public fallback mirror, not the production origin.
-- Direct local production deploys are emergency-only. The exact local source
-  must be committed immediately afterward so production never leads Git.
+- GitHub Pages remains a public fallback mirror, not the production origin,
+  published to the `gh-pages` branch with `npm run deploy:gh-pages`.
+- Deploying anything other than the pushed `origin/main` is emergency-only.
+  The exact local source must be committed immediately afterward so
+  production never leads Git.
 - `npm run check:production` verifies the homepage, IP Evolution page, font
   catalog, edge health endpoint and the fullwidth-question canonical redirect.
 
@@ -54,5 +59,5 @@ token build has been verified against 5.5.1.
 - Patch upgrades may land with the full validation suite and production probe.
 - Node, Wrangler compatibility dates and package major versions require a
   preview deployment and route/API regression tests before production.
-- Never use an unpinned `npx wrangler` in CI. The repository dependency is the
-  deployment version.
+- Never use an unpinned `npx wrangler` for a deploy. The repository dependency
+  is the deployment version; the release scripts call `npx --no wrangler`.
