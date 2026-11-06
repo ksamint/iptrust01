@@ -67,7 +67,7 @@ for (const brand of brands) {
     ipType: classification.ipType,
     primaryIndustry: classification.primaryIndustry,
     industries: classification.industries,
-    names: { zh: payload.display?.zh?.name || brand.name, en: brand.nativeName || (brand.mainLanguage === "en" ? brand.name : "") },
+    names: { zh: payload.display?.zh?.name || brand.name, en: payload.display?.en?.name || brand.name },
     mainLanguage: brand.mainLanguage || "zh",
     guidelineMode: classification.guidelineMode || "independent",
     parentCapable: Boolean(classification.parentCapable),
