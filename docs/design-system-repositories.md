@@ -8,7 +8,7 @@ These are initial snapshots. Subsequent changes in a design-system repository do
 
 | IP | Design-system repository |
 | --- | --- |
-| Table AI | [dsys_tableai](https://github.com/ksamint/dsys_tableai) |
+| Table AI | [dsys_tableai01](https://github.com/ksamint/dsys_tableai01) |
 | VANAHOM | [dsys_vanahom](https://github.com/ksamint/dsys_vanahom) |
 | Sanctem | [dsys_sanctem](https://github.com/ksamint/dsys_sanctem) |
 | KiND | [dsys_kind](https://github.com/ksamint/dsys_kind) |
@@ -48,3 +48,5 @@ These are initial snapshots. Subsequent changes in a design-system repository do
 ## Validation
 
 Run `npm run build:site`, `npm run validate:routes`, and `python3 scripts/check-design-system-seed.py`. The seed check confirms that repository links reach both brand and IP records without replacing newer admin edits.
+
+| 澳门同興国际 | [dsys_mtongheng01](https://github.com/ksamint/dsys_mtongheng01) |

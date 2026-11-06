@@ -35,6 +35,7 @@
     ]
   },
   "owned": {
+    "mtongheng": { "primaryIndustry": "business-professional-services", "industries": ["business-professional-services", "technology-ai"], "ipType": "corporate-brand" },
     "tableai": { "primaryIndustry": "technology-ai", "industries": ["technology-ai", "business-professional-services"], "ipType": "platform-system-ip" },
     "vanahom": { "primaryIndustry": "hospitality-hotels", "industries": ["hospitality-hotels", "wellness-healing", "business-professional-services"], "ipType": "corporate-brand" },
     "sanctem": { "primaryIndustry": "wellness-healing", "industries": ["wellness-healing", "hospitality-hotels"], "ipType": "product-service-brand" },

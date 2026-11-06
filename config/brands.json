@@ -74,7 +74,7 @@
         ]
       }
     },
-    "designSystemUrl": "https://github.com/ksamint/dsys_tableai"
+    "designSystemUrl": "https://github.com/ksamint/dsys_tableai01"
   },
   {
     "slug": "vanahom",
@@ -2806,5 +2806,45 @@
       }
     },
     "designSystemUrl": "https://github.com/ksamint/dsys_qingshuiting"
+  },
+  {
+    "slug": "mtongheng",
+    "folder": "MTONGHENG",
+    "name": "Tong Heng International",
+    "nativeName": "澳门同興国际",
+    "description": "Macau-based advisor and execution partner connecting Chinese industry with global markets.",
+    "officialWebsite": "https://tongheng.apuch.cn/",
+    "mainLanguage": "zh",
+    "intro": {
+      "zh": "澳門同興國際發展有限公司，以澳門為樞紐，連接中國產業能力與全球市場。",
+      "en": "Macau Tong Heng International Development Co., Ltd., connecting Chinese industrial capability with global markets."
+    },
+    "business": {
+      "zh": "AI 服務、企業出海、AIGC 短劇發行及投資與產業諮詢。",
+      "en": "AI services, overseas expansion, AIGC short-drama distribution, and investment and industrial consulting."
+    },
+    "primaryGuide": "MTONGHENG/BRAND.md",
+    "theme": {
+      "mode": "light",
+      "primary": "#0F1E38",
+      "accent": "#C8A45C",
+      "secondary": "#5B6B85",
+      "surface": "#F1F3F7",
+      "paper": "#FFFFFF",
+      "ink": "#1A2233",
+      "muted": "#5B6B85",
+      "line": "#E8EDF5",
+      "keywords": [
+        "navy",
+        "gold",
+        "Macau",
+        "international"
+      ]
+    },
+    "notes": {
+      "zh": "依現有公司網站提取的初版識別；公司資料與標誌權屬尚待確認。",
+      "en": "Initial identity extracted from the company website; corporate claims and symbol ownership await confirmation."
+    },
+    "designSystemUrl": "https://github.com/ksamint/dsys_mtongheng01"
   }
 ]

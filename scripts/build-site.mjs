@@ -1,3 +1,4 @@
+import { completeness } from "../edge/src/repository-status.js";
 import { mkdir, readFile, rm, writeFile, copyFile, readdir, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -23,6 +24,7 @@ const fontCatalogPath = join(root, "data", "fonts.json");
 const googleFontDirectoryPath = join(root, "data", "google-fonts-directory.json");
 const fontLicenseArchiveDir = join(root, "licenses", "fonts");
 
+const repositorySnapshot = JSON.parse(await readFile(join(root, "data/repository-status.json"), "utf8"));
 const brands = JSON.parse(await readFile(join(root, "config/brands.json"), "utf8"));
 const ipSystem = JSON.parse(await readFile(join(root, "config/ip-system.json"), "utf8"));
 const assetManifest = existsSync(assetManifestPath)
@@ -51,7 +53,7 @@ function architectureRolesFor(slug, parentCapable = false) {
 const hubName = "岁知社 IPTrust";
 const hubNameCn = "岁知社";
 const hubNameEn = "IPTrust";
-const repository = { owner: "ksamint", repo: "tableai_designaha", branch: "main" };
+const repository = { owner: "ksamint", repo: "iptrust01", branch: "main" };
 const hubDescription = "岁知社 IPTrust 是一个面向人和 Agent 的 IP 品牌信任中枢。";
 const hubDescriptionEn = "IPTrust is an IP trust hub for people and agents.";
 const publicOrigin = "https://apuch.art";
@@ -73,7 +75,7 @@ async function walk(dir) {
   const entries = await readdir(dir);
   const files = [];
   for (const entry of entries) {
-    if (entry === ".DS_Store") continue;
+    if (entry === ".DS_Store" || entry === "private") continue;
     const full = join(dir, entry);
     const s = await stat(full);
     if (s.isDirectory()) {
@@ -939,6 +941,9 @@ for (const brand of brands) {
       folder: brand.folder,
     },
   };
+  payload.repository = repositorySnapshot.items[brand.slug] || null;
+  payload.lastUpdatedAt = payload.repository?.lastUpdatedAt || null;
+  payload.completeness = completeness(payload, payload.repository);
   brandPayloads.push(payload);
   await writeFile(join(historyApiDir, `${brand.slug}.json`), JSON.stringify({
     slug: brand.slug,
@@ -956,6 +961,8 @@ for (const brand of brands) {
   }
 }
 
+brandPayloads.sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
+await writeFile(join(apiDir, "repository-status.json"), JSON.stringify({ ...repositorySnapshot, mode: "snapshot" }, null, 2));
 const indexPayload = brandPayloads.map(({ guides, tokens, images, adobeAssets, history, ...brand }) => ({
   ...brand,
   guideCount: guides.length,
@@ -1096,6 +1103,9 @@ const agentEntryPayload = {
     images: "Public image assets with format, byte size, dimensions, SHA-256 and URL.",
     guides: "Rendered and source brand guideline content.",
     sources: "Provenance and verification records.",
+    completeness: "Ten equal inventory checks; score is content presence, not legal or design approval.",
+    lastUpdatedAt: "Latest dedicated repository default-branch commit timestamp; null if unknown.",
+    repository: "Canonical repository name, two-digit suffix audit, availability and checkedAt.",
     history: "Version records for change-aware use.",
     fonts: "Open-source commercial-use font references with official provenance, licenses, CSS stacks and R2-hosted web specimens.",
   },
@@ -1123,6 +1133,7 @@ const openApiPayload = {
         responses: { 200: { description: "Agent entry document", content: { "application/json": { schema: { type: "object" } } } } },
       },
     },
+    "/api/v2/repository-status": { get: { summary: "Repository naming audit and latest default-branch commits; falls back to dated snapshot", responses: { "200": { description: "Repository status keyed by IP slug, with checkedAt and live/snapshot mode" } } } },
     "/api/brands.json": {
       get: {
         operationId: "listBrands",
@@ -1211,7 +1222,7 @@ const openApiPayload = {
 };
 await writeFile(join(apiDir, "brands.json"), JSON.stringify(indexPayload, null, 2));
 const staticIps = [
-  ...indexPayload.map((brand) => ({ slug: brand.slug, recordClass: "owned", ipType: brand.ipType, primaryIndustry: brand.primaryIndustry, industries: brand.industries, names: { zh: brand.display?.zh?.name || brand.name, en: brand.nativeName || (brand.mainLanguage === "en" ? brand.name : "") }, mainLanguage: brand.mainLanguage, lifecycleStatus: brand.lifecycleStatus, guidelineMode: brand.guidelineMode, parentCapable: brand.parentCapable, architectureRoles: brand.architectureRoles, sourceUrl: brand.sources?.[0]?.url || brand.officialWebsite || "", sourcePublisher: brand.sources?.[0]?.publisher || "", verificationStatus: brand.sources?.length ? "source-documented" : "provisional", logoUrl: brand.logoUrl || brand.heroImage || "", url: brand.url, designSystemUrl: brand.designSystemUrl })),
+  ...indexPayload.map((brand) => ({ slug: brand.slug, recordClass: "owned", ipType: brand.ipType, primaryIndustry: brand.primaryIndustry, industries: brand.industries, names: { zh: brand.display?.zh?.name || brand.name, en: brand.nativeName || (brand.mainLanguage === "en" ? brand.name : "") }, mainLanguage: brand.mainLanguage, lifecycleStatus: brand.lifecycleStatus, guidelineMode: brand.guidelineMode, parentCapable: brand.parentCapable, architectureRoles: brand.architectureRoles, sourceUrl: brand.sources?.[0]?.url || brand.officialWebsite || "", sourcePublisher: brand.sources?.[0]?.publisher || "", verificationStatus: brand.sources?.length ? "source-documented" : "provisional", logoUrl: brand.logoUrl || brand.heroImage || "", url: brand.url, designSystemUrl: brand.designSystemUrl, repository: brand.repository, lastUpdatedAt: brand.lastUpdatedAt, completeness: brand.completeness })),
   ...ipSystem.references.map((item) => ({ ...item, recordClass: "reference", lifecycleStatus: "active", guidelineMode: "independent", parentCapable: Boolean(item.parentCapable), architectureRoles: architectureRolesFor(item.slug, item.parentCapable), url: `ip?ip=${item.slug}` })),
 ];
 await writeFile(join(apiDir, "taxonomy.json"), JSON.stringify(ipSystem.taxonomy, null, 2));
@@ -4286,6 +4297,15 @@ textarea { min-height: 520px; font-family: ui-monospace, SFMono-Regular, Menlo, 
 .directory-filters { display: grid; grid-template-columns: minmax(180px, 1.6fr) repeat(4, minmax(132px, 1fr)) auto; gap: 8px; position: sticky; top: 74px; z-index: 4; padding: 12px 0; background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(14px); }
 .directory-filters input, .directory-filters select, .directory-filters button { min-height: 42px; margin: 0; border-radius: 2px; }
 .directory-list { border-top: 1px solid var(--line); }
+
+.ip-health { display: block; color: var(--muted); font: 12px/1.6 var(--font-body, sans-serif); margin-top: 6px; white-space: normal; }
+.ip-health-panel { padding: 8px 0 16px; border-bottom: 1px solid var(--line); }
+.repo-audit { display: block; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.ip-health-panel details { margin-top: 8px; font-size: 12px; }
+.ip-health-panel summary { cursor: pointer; }
+.ip-health-panel ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 5px 20px; list-style: none; padding: 0; }
+.ip-health-panel p { color: var(--muted); max-width: 70ch; }
+
 .directory-row { display: grid; grid-template-columns: minmax(220px, 2fr) 1.15fr 1.15fr 1fr 24px; gap: 16px; align-items: center; min-height: 68px; border-bottom: 1px solid var(--line); text-decoration: none; transition: padding .2s ease, background .2s ease; }
 .directory-design-system { display: inline-block; padding: 8px 0; font-size: 12px; }
 .directory-row:hover { padding: 0 12px; background: var(--paper); }
@@ -6658,16 +6678,58 @@ async function renderGlobalResults(query) {
   \`).join("");
 }
 
+let repositoryStatusPromise = null;
+let repositoryStatusFetchedAt = 0;
+let repositoryRefreshMode = "snapshot";
+const readinessLabels = {
+  profile: ["Profile", "简介"], business: ["Business description", "业务说明"],
+  guide: ["Primary guide", "主指南"], tokens: ["Design tokens", "设计令牌"],
+  palette: ["Color palette", "色板"], logo: ["Public logo", "公开标志"],
+  sources: ["Source notes", "来源记录"], classification: ["Classification", "分类"],
+  repository: ["Accessible active repository", "可访问的活跃仓库"], repositoryName: ["Two-digit repo suffix", "仓库两位数字后缀"],
+};
+
+async function loadRankedBrands() {
+  cachedBrands ??= await loadJson("api/brands.json");
+  if (!repositoryStatusPromise || Date.now() - repositoryStatusFetchedAt > 60000) {
+    repositoryStatusFetchedAt = Date.now();
+    repositoryStatusPromise = loadJson("api/v2/repository-status").catch(() => loadJson("api/repository-status.json")).catch(() => null);
+  }
+  const status = await repositoryStatusPromise;
+  repositoryRefreshMode = status?.mode || "snapshot";
+  cachedBrands = cachedBrands.map((brand) => {
+    const repository = status?.items?.[brand.slug] || brand.repository;
+    const checks = { ...brand.completeness?.checks, repository: Boolean(repository?.accessible && !repository.archived && repository.commit), repositoryName: Boolean(repository?.suffixValid) };
+    const score = Object.values(checks).filter(Boolean).length * 10;
+    return { ...brand, designSystemUrl: repository?.url || brand.designSystemUrl, repository, lastUpdatedAt: repository?.lastUpdatedAt || null, completeness: { ...brand.completeness, status: score === 100 ? "inventory-complete" : score >= 70 ? "developing" : "foundation", checks, score, missing: Object.keys(checks).filter((key) => !checks[key]) } };
+  }).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
+  return cachedBrands;
+}
+
+function ipHealth(brand, details = false) {
+  if (!brand.completeness) return details ? \`<p class="ip-health">\${currentLocale === "en" ? "Reference IP · inventory not scored" : "参考 IP · 不计资料完整度分数"}</p>\` : "";
+  const en = currentLocale === "en";
+  const repo = brand.repository;
+  const rank = cachedBrands?.findIndex((item) => item.slug === brand.slug) + 1;
+  const date = brand.lastUpdatedAt ? new Date(brand.lastUpdatedAt).toLocaleString(localeMeta[currentLocale].dateLocale) : (en ? "Unknown" : "未知");
+  const missing = brand.completeness.missing.map((key) => readinessLabels[key]?.[en ? 0 : 1] || key);
+  const summary = \`#\${rank || "—"} · \${en ? "Updated" : "更新"} \${date} · \${en ? "Completeness" : "完整度"} \${brand.completeness.score}%\`;
+  const title = \`\${en ? "Missing" : "缺少"}: \${missing.join(" · ") || (en ? "None" : "无")}\`;
+  const compact = \`<small class="ip-health" title="\${escapeHtml(title)}">\${escapeHtml(summary)}</small>\`;
+  if (!details) return compact;
+  return \`<div class="ip-health-panel">\${compact}<span class="repo-audit">\${escapeHtml(repo?.name || "—")} · \${repo?.suffixValid ? (en ? "Suffix OK" : "后缀合规") : (en ? "Needs 01 / 02 suffix" : "缺少 01 / 02 后缀")}\${repo?.stale || repo?.error ? (en ? " · Cached; refresh unavailable" : " · 缓存；刷新不可用") : ""}</span><details><summary>\${en ? "Readiness checklist" : "就绪度清单"} · \${brand.completeness.score}%</summary><ul>\${Object.entries(brand.completeness.checks).map(([key, ok]) => \`<li>\${ok ? "✓" : "○"} \${escapeHtml(readinessLabels[key]?.[en ? 0 : 1] || key)}</li>\`).join("")}</ul><p>\${en ? "Checked" : "检查时间"}: \${escapeHtml(repo?.checkedAt || "—")}</p><p>\${en ? "10 inventory checks, 10 points each. Content presence only; legal ownership and design quality are not reviewed." : "10 项资料检查，每项 10 分。只评估资料是否齐备；未审查法律权属或设计质量。"}</p></details></div>\`;
+}
+
 async function renderHeroIndex() {
   const index = $("#heroIndex");
   if (!index) return;
-  cachedBrands ??= await loadJson("api/brands.json");
+  await loadRankedBrands();
   index.innerHTML = cachedBrands.map((brand, idx) => {
     const localized = mainBrand(brand);
     return \`
       <div class="hero-index-row" data-brand="\${escapeHtml(brand.slug)}" style="\${themeStyle(brand.theme)};--row-index:\${idx}">
         <a class="hero-index-link" href="\${brand.url}">
-          <span class="hero-index-title">\${escapeHtml(localized.name)}\${localized.secondaryName ? \` <span class="hero-index-secondary">· \${escapeHtml(localized.secondaryName)}</span>\` : ""}</span>
+          <span class="hero-index-title">\${escapeHtml(localized.name)}\${localized.secondaryName ? \` <span class="hero-index-secondary">· \${escapeHtml(localized.secondaryName)}</span>\` : ""}</span>\${ipHealth(brand)}
         </a>
         \${colorDots(brand.theme)}
         <a class="icon-copy hero-index-github" href="\${escapeHtml(brand.designSystemUrl || brand.source.github)}" target="_blank" rel="noreferrer" title="Design system / 设计系统" aria-label="Design system: \${escapeHtml(localized.name)}">\${githubIcon()}</a>
@@ -6699,7 +6761,7 @@ async function renderVersions() {
 async function renderIndex() {
   const grid = $("#brandGrid");
   if (!grid) return;
-  cachedBrands ??= await loadJson("api/brands.json");
+  await loadRankedBrands();
   const brands = cachedBrands;
   const filtered = currentQuery
     ? brands.filter((brand) => {
@@ -6758,6 +6820,7 @@ async function renderIndex() {
             <span>\${escapeHtml(t("brand.audiences"))}: \${escapeHtml(listText(localized.classification.audiences))}</span>
             <span>\${escapeHtml(t("brand.business"))}: \${escapeHtml(localized.business || "")}</span>
           </div>
+          \${ipHealth(brand)}
           <div class="meta">
             <span class="pill">\${brand.guideCount} \${t("meta.guides")}</span>
             <span class="pill">API</span>
@@ -6894,6 +6957,13 @@ async function renderDirectory() {
   const page = $("#directoryPage");
   if (!page) return;
   const data = await loadIpSystem();
+  const rankedBrands = await loadRankedBrands();
+  const brandBySlug = new Map(rankedBrands.map((brand) => [brand.slug, brand]));
+  const listedSlugs = new Set(data.ips.map((ip) => ip.slug));
+  for (const brand of rankedBrands) {
+    if (!listedSlugs.has(brand.slug)) data.ips.push({ ...brand, names: { zh: brand.display?.zh?.name, en: brand.display?.en?.name } });
+  }
+  data.ips = data.ips.map((ip) => ({ ...ip, designSystemUrl: brandBySlug.get(ip.slug)?.designSystemUrl || ip.designSystemUrl, repository: brandBySlug.get(ip.slug)?.repository, completeness: brandBySlug.get(ip.slug)?.completeness, lastUpdatedAt: brandBySlug.get(ip.slug)?.lastUpdatedAt })).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
   const params = new URLSearchParams(location.search);
   const industry = params.get("industry") || "";
   const ipType = params.get("type") || "";
@@ -6905,6 +6975,7 @@ async function renderDirectory() {
   const parentIps = data.ips.filter((ip) => ip.architectureRoles?.includes("parent") || (data.relationships || []).some((relation) => relation.parent === ip.slug));
   page.innerHTML = \`
     <header class="directory-hero"><p class="eyebrow">IPTrust Directory</p><h1>\${currentLocale === "en" ? "IP, clearly structured." : "IP，一目了然。"}</h1><p>\${data.ips.length} IP · \${data.applications.length} \${currentLocale === "en" ? "applications" : "项目应用"}</p></header>
+    <p class="muted">\${currentLocale === "en" ? "Newest repository commit first · refresh every 60 seconds" : "按仓库最新提交排序 · 每 60 秒刷新"} · \${repositoryRefreshMode === "live" ? (currentLocale === "en" ? "Live" : "实时") : (currentLocale === "en" ? "Cached snapshot" : "缓存快照")}</p>
     <form class="directory-filters" id="directoryFilters">
       <input name="q" value="\${escapeHtml(params.get("q") || "")}" placeholder="\${currentLocale === "en" ? "Search IP" : "搜索 IP"}">
       <select name="industry">\${selectOptions(data.taxonomy.industries || [], industry, currentLocale === "en" ? "All industries" : "全部行业")}</select>
@@ -6916,7 +6987,7 @@ async function renderDirectory() {
     <section class="directory-list">\${filtered.map((ip) => {
       const parentIp = data.ips.find((candidate) => candidate.slug === parents.get(ip.slug));
       const href = ip.recordClass === "owned" ? (ip.url || \`brand.html?brand=\${ip.slug}\`) : \`ip?ip=\${ip.slug}\`;
-      return \`<div class="directory-entry"><a class="directory-row" href="\${escapeHtml(href)}"><span class="directory-name"><strong>\${escapeHtml(primaryIpName(ip))}</strong>\${secondaryIpName(ip) ? \`<small>\${escapeHtml(secondaryIpName(ip))}</small>\` : ""}</span><span>\${escapeHtml(taxonomyLabel((data.taxonomy.industries || []).find((item) => item.id === ip.primaryIndustry)))}</span><span>\${escapeHtml(taxonomyLabel((data.taxonomy.ipTypes || []).find((item) => item.id === ip.ipType)))}</span><span>\${parentIp ? \`↳ \${escapeHtml(primaryIpName(parentIp))}\` : ""}</span><b>↗</b></a>\${ip.designSystemUrl ? \`<a class="directory-design-system" href="\${escapeHtml(ip.designSystemUrl)}" target="_blank" rel="noreferrer">\${currentLocale === "en" ? "Design system" : "设计系统"} ↗</a>\` : ""}</div>\`;
+      return \`<div class="directory-entry"><a class="directory-row" href="\${escapeHtml(href)}"><span class="directory-name"><strong>\${escapeHtml(primaryIpName(ip))}</strong>\${secondaryIpName(ip) ? \`<small>\${escapeHtml(secondaryIpName(ip))}</small>\` : ""}</span><span>\${escapeHtml(taxonomyLabel((data.taxonomy.industries || []).find((item) => item.id === ip.primaryIndustry)))}</span><span>\${escapeHtml(taxonomyLabel((data.taxonomy.ipTypes || []).find((item) => item.id === ip.ipType)))}</span><span>\${parentIp ? \`↳ \${escapeHtml(primaryIpName(parentIp))}\` : ""}</span><b>↗</b></a>\${ip.designSystemUrl ? \`<a class="directory-design-system" href="\${escapeHtml(ip.designSystemUrl)}" target="_blank" rel="noreferrer">\${currentLocale === "en" ? "Design system" : "设计系统"} ↗</a>\` : ""}\${ipHealth(ip, true)}</div>\`;
     }).join("") || \`<p class="empty-state">\${escapeHtml(t("home.noResults"))}</p>\`}</section>
     <section class="application-directory"><header><p class="eyebrow">Applications</p><h2>\${currentLocale === "en" ? "Project applications" : "项目应用"}</h2></header>\${data.applications.map((app) => \`<a href="application?application=\${escapeHtml(app.slug)}"><strong>\${escapeHtml(app.mainLanguage === "en" ? (app.names?.en || app.names?.zh) : (app.names?.zh || app.names?.en))}</strong><span>\${escapeHtml(app.applicationType)}</span><b>↗</b></a>\`).join("")}</section>
   \`;
@@ -7173,6 +7244,11 @@ renderHeroIndex().catch(console.error);
 renderIndex().catch(console.error);
 renderBrand().catch(renderBrandFailure);
 renderDirectory().catch(console.error);
+setInterval(() => {
+  if (document.hidden || !$("#directoryPage, #heroIndex, #brandGrid") || document.activeElement?.closest("#directoryFilters") || $(".ip-health-panel details[open]")) return;
+  repositoryStatusFetchedAt = 0;
+  Promise.all([renderHeroIndex(), renderIndex(), renderDirectory()]).catch(console.error);
+}, 60000);
 renderIpRecord().catch(console.error);
 renderApplicationPage().catch(console.error);
 setupWebVitals();`);

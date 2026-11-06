@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const BUILD_VERSION = "5c7c158-9eaae190";
+const BUILD_VERSION = "e794e0a-7473d1ff";
 
 const i18n = {
   cn: {
@@ -2117,16 +2117,58 @@ async function renderGlobalResults(query) {
   `).join("");
 }
 
+let repositoryStatusPromise = null;
+let repositoryStatusFetchedAt = 0;
+let repositoryRefreshMode = "snapshot";
+const readinessLabels = {
+  profile: ["Profile", "简介"], business: ["Business description", "业务说明"],
+  guide: ["Primary guide", "主指南"], tokens: ["Design tokens", "设计令牌"],
+  palette: ["Color palette", "色板"], logo: ["Public logo", "公开标志"],
+  sources: ["Source notes", "来源记录"], classification: ["Classification", "分类"],
+  repository: ["Accessible active repository", "可访问的活跃仓库"], repositoryName: ["Two-digit repo suffix", "仓库两位数字后缀"],
+};
+
+async function loadRankedBrands() {
+  cachedBrands ??= await loadJson("api/brands.json");
+  if (!repositoryStatusPromise || Date.now() - repositoryStatusFetchedAt > 60000) {
+    repositoryStatusFetchedAt = Date.now();
+    repositoryStatusPromise = loadJson("api/v2/repository-status").catch(() => loadJson("api/repository-status.json")).catch(() => null);
+  }
+  const status = await repositoryStatusPromise;
+  repositoryRefreshMode = status?.mode || "snapshot";
+  cachedBrands = cachedBrands.map((brand) => {
+    const repository = status?.items?.[brand.slug] || brand.repository;
+    const checks = { ...brand.completeness?.checks, repository: Boolean(repository?.accessible && !repository.archived && repository.commit), repositoryName: Boolean(repository?.suffixValid) };
+    const score = Object.values(checks).filter(Boolean).length * 10;
+    return { ...brand, designSystemUrl: repository?.url || brand.designSystemUrl, repository, lastUpdatedAt: repository?.lastUpdatedAt || null, completeness: { ...brand.completeness, status: score === 100 ? "inventory-complete" : score >= 70 ? "developing" : "foundation", checks, score, missing: Object.keys(checks).filter((key) => !checks[key]) } };
+  }).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
+  return cachedBrands;
+}
+
+function ipHealth(brand, details = false) {
+  if (!brand.completeness) return details ? `<p class="ip-health">${currentLocale === "en" ? "Reference IP · inventory not scored" : "参考 IP · 不计资料完整度分数"}</p>` : "";
+  const en = currentLocale === "en";
+  const repo = brand.repository;
+  const rank = cachedBrands?.findIndex((item) => item.slug === brand.slug) + 1;
+  const date = brand.lastUpdatedAt ? new Date(brand.lastUpdatedAt).toLocaleString(localeMeta[currentLocale].dateLocale) : (en ? "Unknown" : "未知");
+  const missing = brand.completeness.missing.map((key) => readinessLabels[key]?.[en ? 0 : 1] || key);
+  const summary = `#${rank || "—"} · ${en ? "Updated" : "更新"} ${date} · ${en ? "Completeness" : "完整度"} ${brand.completeness.score}%`;
+  const title = `${en ? "Missing" : "缺少"}: ${missing.join(" · ") || (en ? "None" : "无")}`;
+  const compact = `<small class="ip-health" title="${escapeHtml(title)}">${escapeHtml(summary)}</small>`;
+  if (!details) return compact;
+  return `<div class="ip-health-panel">${compact}<span class="repo-audit">${escapeHtml(repo?.name || "—")} · ${repo?.suffixValid ? (en ? "Suffix OK" : "后缀合规") : (en ? "Needs 01 / 02 suffix" : "缺少 01 / 02 后缀")}${repo?.stale || repo?.error ? (en ? " · Cached; refresh unavailable" : " · 缓存；刷新不可用") : ""}</span><details><summary>${en ? "Readiness checklist" : "就绪度清单"} · ${brand.completeness.score}%</summary><ul>${Object.entries(brand.completeness.checks).map(([key, ok]) => `<li>${ok ? "✓" : "○"} ${escapeHtml(readinessLabels[key]?.[en ? 0 : 1] || key)}</li>`).join("")}</ul><p>${en ? "Checked" : "检查时间"}: ${escapeHtml(repo?.checkedAt || "—")}</p><p>${en ? "10 inventory checks, 10 points each. Content presence only; legal ownership and design quality are not reviewed." : "10 项资料检查，每项 10 分。只评估资料是否齐备；未审查法律权属或设计质量。"}</p></details></div>`;
+}
+
 async function renderHeroIndex() {
   const index = $("#heroIndex");
   if (!index) return;
-  cachedBrands ??= await loadJson("api/brands.json");
+  await loadRankedBrands();
   index.innerHTML = cachedBrands.map((brand, idx) => {
     const localized = mainBrand(brand);
     return `
       <div class="hero-index-row" data-brand="${escapeHtml(brand.slug)}" style="${themeStyle(brand.theme)};--row-index:${idx}">
         <a class="hero-index-link" href="${brand.url}">
-          <span class="hero-index-title">${escapeHtml(localized.name)}${localized.secondaryName ? ` <span class="hero-index-secondary">· ${escapeHtml(localized.secondaryName)}</span>` : ""}</span>
+          <span class="hero-index-title">${escapeHtml(localized.name)}${localized.secondaryName ? ` <span class="hero-index-secondary">· ${escapeHtml(localized.secondaryName)}</span>` : ""}</span>${ipHealth(brand)}
         </a>
         ${colorDots(brand.theme)}
         <a class="icon-copy hero-index-github" href="${escapeHtml(brand.designSystemUrl || brand.source.github)}" target="_blank" rel="noreferrer" title="Design system / 设计系统" aria-label="Design system: ${escapeHtml(localized.name)}">${githubIcon()}</a>
@@ -2158,7 +2200,7 @@ async function renderVersions() {
 async function renderIndex() {
   const grid = $("#brandGrid");
   if (!grid) return;
-  cachedBrands ??= await loadJson("api/brands.json");
+  await loadRankedBrands();
   const brands = cachedBrands;
   const filtered = currentQuery
     ? brands.filter((brand) => {
@@ -2217,6 +2259,7 @@ async function renderIndex() {
             <span>${escapeHtml(t("brand.audiences"))}: ${escapeHtml(listText(localized.classification.audiences))}</span>
             <span>${escapeHtml(t("brand.business"))}: ${escapeHtml(localized.business || "")}</span>
           </div>
+          ${ipHealth(brand)}
           <div class="meta">
             <span class="pill">${brand.guideCount} ${t("meta.guides")}</span>
             <span class="pill">API</span>
@@ -2353,6 +2396,13 @@ async function renderDirectory() {
   const page = $("#directoryPage");
   if (!page) return;
   const data = await loadIpSystem();
+  const rankedBrands = await loadRankedBrands();
+  const brandBySlug = new Map(rankedBrands.map((brand) => [brand.slug, brand]));
+  const listedSlugs = new Set(data.ips.map((ip) => ip.slug));
+  for (const brand of rankedBrands) {
+    if (!listedSlugs.has(brand.slug)) data.ips.push({ ...brand, names: { zh: brand.display?.zh?.name, en: brand.display?.en?.name } });
+  }
+  data.ips = data.ips.map((ip) => ({ ...ip, designSystemUrl: brandBySlug.get(ip.slug)?.designSystemUrl || ip.designSystemUrl, repository: brandBySlug.get(ip.slug)?.repository, completeness: brandBySlug.get(ip.slug)?.completeness, lastUpdatedAt: brandBySlug.get(ip.slug)?.lastUpdatedAt })).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
   const params = new URLSearchParams(location.search);
   const industry = params.get("industry") || "";
   const ipType = params.get("type") || "";
@@ -2364,6 +2414,7 @@ async function renderDirectory() {
   const parentIps = data.ips.filter((ip) => ip.architectureRoles?.includes("parent") || (data.relationships || []).some((relation) => relation.parent === ip.slug));
   page.innerHTML = `
     <header class="directory-hero"><p class="eyebrow">IPTrust Directory</p><h1>${currentLocale === "en" ? "IP, clearly structured." : "IP，一目了然。"}</h1><p>${data.ips.length} IP · ${data.applications.length} ${currentLocale === "en" ? "applications" : "项目应用"}</p></header>
+    <p class="muted">${currentLocale === "en" ? "Newest repository commit first · refresh every 60 seconds" : "按仓库最新提交排序 · 每 60 秒刷新"} · ${repositoryRefreshMode === "live" ? (currentLocale === "en" ? "Live" : "实时") : (currentLocale === "en" ? "Cached snapshot" : "缓存快照")}</p>
     <form class="directory-filters" id="directoryFilters">
       <input name="q" value="${escapeHtml(params.get("q") || "")}" placeholder="${currentLocale === "en" ? "Search IP" : "搜索 IP"}">
       <select name="industry">${selectOptions(data.taxonomy.industries || [], industry, currentLocale === "en" ? "All industries" : "全部行业")}</select>
@@ -2375,7 +2426,7 @@ async function renderDirectory() {
     <section class="directory-list">${filtered.map((ip) => {
       const parentIp = data.ips.find((candidate) => candidate.slug === parents.get(ip.slug));
       const href = ip.recordClass === "owned" ? (ip.url || `brand.html?brand=${ip.slug}`) : `ip?ip=${ip.slug}`;
-      return `<div class="directory-entry"><a class="directory-row" href="${escapeHtml(href)}"><span class="directory-name"><strong>${escapeHtml(primaryIpName(ip))}</strong>${secondaryIpName(ip) ? `<small>${escapeHtml(secondaryIpName(ip))}</small>` : ""}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.industries || []).find((item) => item.id === ip.primaryIndustry)))}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.ipTypes || []).find((item) => item.id === ip.ipType)))}</span><span>${parentIp ? `↳ ${escapeHtml(primaryIpName(parentIp))}` : ""}</span><b>↗</b></a>${ip.designSystemUrl ? `<a class="directory-design-system" href="${escapeHtml(ip.designSystemUrl)}" target="_blank" rel="noreferrer">${currentLocale === "en" ? "Design system" : "设计系统"} ↗</a>` : ""}</div>`;
+      return `<div class="directory-entry"><a class="directory-row" href="${escapeHtml(href)}"><span class="directory-name"><strong>${escapeHtml(primaryIpName(ip))}</strong>${secondaryIpName(ip) ? `<small>${escapeHtml(secondaryIpName(ip))}</small>` : ""}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.industries || []).find((item) => item.id === ip.primaryIndustry)))}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.ipTypes || []).find((item) => item.id === ip.ipType)))}</span><span>${parentIp ? `↳ ${escapeHtml(primaryIpName(parentIp))}` : ""}</span><b>↗</b></a>${ip.designSystemUrl ? `<a class="directory-design-system" href="${escapeHtml(ip.designSystemUrl)}" target="_blank" rel="noreferrer">${currentLocale === "en" ? "Design system" : "设计系统"} ↗</a>` : ""}${ipHealth(ip, true)}</div>`;
     }).join("") || `<p class="empty-state">${escapeHtml(t("home.noResults"))}</p>`}</section>
     <section class="application-directory"><header><p class="eyebrow">Applications</p><h2>${currentLocale === "en" ? "Project applications" : "项目应用"}</h2></header>${data.applications.map((app) => `<a href="application?application=${escapeHtml(app.slug)}"><strong>${escapeHtml(app.mainLanguage === "en" ? (app.names?.en || app.names?.zh) : (app.names?.zh || app.names?.en))}</strong><span>${escapeHtml(app.applicationType)}</span><b>↗</b></a>`).join("")}</section>
   `;
@@ -2632,6 +2683,11 @@ renderHeroIndex().catch(console.error);
 renderIndex().catch(console.error);
 renderBrand().catch(renderBrandFailure);
 renderDirectory().catch(console.error);
+setInterval(() => {
+  if (document.hidden || !$("#directoryPage, #heroIndex, #brandGrid") || document.activeElement?.closest("#directoryFilters") || $(".ip-health-panel details[open]")) return;
+  repositoryStatusFetchedAt = 0;
+  Promise.all([renderHeroIndex(), renderIndex(), renderDirectory()]).catch(console.error);
+}, 60000);
 renderIpRecord().catch(console.error);
 renderApplicationPage().catch(console.error);
 setupWebVitals();

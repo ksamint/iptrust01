@@ -11,114 +11,24 @@
       "description": "IPTrust is an IP trust hub for people and agents."
     }
   },
-  "generatedAt": "2026-10-18T00:58:18.810Z",
+  "generatedAt": "2026-11-06T04:33:12.902Z",
   "version": {
-    "hash": "5c7c158e439448b77c640563fe8f129eee650152",
-    "shortHash": "5c7c158",
-    "date": "2026-09-27T11:46:29+08:00",
-    "message": "Add IPTrust design system and tokens",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/5c7c158e439448b77c640563fe8f129eee650152"
+    "hash": "e794e0a926857895b548de436e46b45c2c5a752a",
+    "shortHash": "e794e0a",
+    "date": "2026-11-05T22:56:06Z",
+    "message": "chore: remove GitHub Actions workflows; deploy and process assets locally",
+    "url": "https://github.com/ksamint/iptrust01/commit/e794e0a926857895b548de436e46b45c2c5a752a"
   },
   "brands": [
     {
-      "slug": "tableai",
-      "assetKey": "tableai",
-      "name": "Table AI",
-      "mainLanguage": "en",
-      "mainLocale": "EN",
-      "apiUrl": "api/brands/tableai.json",
-      "historyUrl": "api/history/tableai.json",
-      "guideUrl": "brand.html?brand=tableai"
-    },
-    {
-      "slug": "vanahom",
-      "assetKey": "vanahom",
-      "name": "凡纳弘途",
+      "slug": "mtongheng",
+      "assetKey": "mtongheng",
+      "name": "澳门同興国际",
       "mainLanguage": "zh",
       "mainLocale": "CN",
-      "apiUrl": "api/brands/vanahom.json",
-      "historyUrl": "api/history/vanahom.json",
-      "guideUrl": "brand.html?brand=vanahom"
-    },
-    {
-      "slug": "sanctem",
-      "assetKey": "sanctem",
-      "name": "Sanctem",
-      "mainLanguage": "en",
-      "mainLocale": "EN",
-      "apiUrl": "api/brands/sanctem.json",
-      "historyUrl": "api/history/sanctem.json",
-      "guideUrl": "brand.html?brand=sanctem"
-    },
-    {
-      "slug": "kind",
-      "assetKey": "kind",
-      "name": "KiND",
-      "mainLanguage": "en",
-      "mainLocale": "EN",
-      "apiUrl": "api/brands/kind.json",
-      "historyUrl": "api/history/kind.json",
-      "guideUrl": "brand.html?brand=kind"
-    },
-    {
-      "slug": "apha",
-      "assetKey": "apha",
-      "name": "亚太艺术疗愈联盟",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/apha.json",
-      "historyUrl": "api/history/apha.json",
-      "guideUrl": "brand.html?brand=apha"
-    },
-    {
-      "slug": "manaendless",
-      "assetKey": "manaendless",
-      "name": "无魔协会",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/manaendless.json",
-      "historyUrl": "api/history/manaendless.json",
-      "guideUrl": "brand.html?brand=manaendless"
-    },
-    {
-      "slug": "opcglobal",
-      "assetKey": "opcglobal",
-      "name": "OPC Global",
-      "mainLanguage": "en",
-      "mainLocale": "EN",
-      "apiUrl": "api/brands/opcglobal.json",
-      "historyUrl": "api/history/opcglobal.json",
-      "guideUrl": "brand.html?brand=opcglobal"
-    },
-    {
-      "slug": "iptrust",
-      "assetKey": "iptrust",
-      "name": "岁知社",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/iptrust.json",
-      "historyUrl": "api/history/iptrust.json",
-      "guideUrl": "brand.html?brand=iptrust"
-    },
-    {
-      "slug": "fengzhi",
-      "assetKey": "fengzhi",
-      "name": "峰值永造局",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/fengzhi.json",
-      "historyUrl": "api/history/fengzhi.json",
-      "guideUrl": "brand.html?brand=fengzhi"
-    },
-    {
-      "slug": "axisee",
-      "assetKey": "axisee",
-      "name": "Axisee",
-      "mainLanguage": "en",
-      "mainLocale": "EN",
-      "apiUrl": "api/brands/axisee.json",
-      "historyUrl": "api/history/axisee.json",
-      "guideUrl": "brand.html?brand=axisee"
+      "apiUrl": "api/brands/mtongheng.json",
+      "historyUrl": "api/history/mtongheng.json",
+      "guideUrl": "brand.html?brand=mtongheng"
     },
     {
       "slug": "tiansight",
@@ -131,234 +41,54 @@
       "guideUrl": "brand.html?brand=tiansight"
     },
     {
-      "slug": "1stepmore",
-      "assetKey": "1stepmore",
-      "name": "1stepmore",
+      "slug": "vanahom",
+      "assetKey": "vanahom",
+      "name": "凡纳弘途",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/vanahom.json",
+      "historyUrl": "api/history/vanahom.json",
+      "guideUrl": "brand.html?brand=vanahom"
+    },
+    {
+      "slug": "tableai",
+      "assetKey": "tableai",
+      "name": "Table AI",
       "mainLanguage": "en",
       "mainLocale": "EN",
-      "apiUrl": "api/brands/1stepmore.json",
-      "historyUrl": "api/history/1stepmore.json",
-      "guideUrl": "brand.html?brand=1stepmore"
+      "apiUrl": "api/brands/tableai.json",
+      "historyUrl": "api/history/tableai.json",
+      "guideUrl": "brand.html?brand=tableai"
     },
     {
-      "slug": "agem",
-      "assetKey": "agem",
-      "name": "游赋社",
+      "slug": "iptrust",
+      "assetKey": "iptrust",
+      "name": "岁知社",
       "mainLanguage": "zh",
       "mainLocale": "CN",
-      "apiUrl": "api/brands/agem.json",
-      "historyUrl": "api/history/agem.json",
-      "guideUrl": "brand.html?brand=agem"
+      "apiUrl": "api/brands/iptrust.json",
+      "historyUrl": "api/history/iptrust.json",
+      "guideUrl": "brand.html?brand=iptrust"
     },
     {
-      "slug": "rgd",
-      "assetKey": "rgd",
-      "name": "燃古豋",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/rgd.json",
-      "historyUrl": "api/history/rgd.json",
-      "guideUrl": "brand.html?brand=rgd"
-    },
-    {
-      "slug": "changoods",
-      "assetKey": "changoods",
-      "name": "常幸",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/changoods.json",
-      "historyUrl": "api/history/changoods.json",
-      "guideUrl": "brand.html?brand=changoods"
-    },
-    {
-      "slug": "boya",
-      "assetKey": "boya",
-      "name": "博雅问渠书院",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/boya.json",
-      "historyUrl": "api/history/boya.json",
-      "guideUrl": "brand.html?brand=boya"
-    },
-    {
-      "slug": "apuch",
-      "assetKey": "apuch",
-      "name": "APUCH",
+      "slug": "opcglobal",
+      "assetKey": "opcglobal",
+      "name": "OPC Global",
       "mainLanguage": "en",
       "mainLocale": "EN",
-      "apiUrl": "api/brands/apuch.json",
-      "historyUrl": "api/history/apuch.json",
-      "guideUrl": "brand.html?brand=apuch"
+      "apiUrl": "api/brands/opcglobal.json",
+      "historyUrl": "api/history/opcglobal.json",
+      "guideUrl": "brand.html?brand=opcglobal"
     },
     {
-      "slug": "pam",
-      "assetKey": "pam",
-      "name": "帕姆建筑",
+      "slug": "qingshuiting",
+      "assetKey": "qingshuiting",
+      "name": "清水亭",
       "mainLanguage": "zh",
       "mainLocale": "CN",
-      "apiUrl": "api/brands/pam.json",
-      "historyUrl": "api/history/pam.json",
-      "guideUrl": "brand.html?brand=pam"
-    },
-    {
-      "slug": "ksamint",
-      "assetKey": "ksamint",
-      "name": "ksamint",
-      "mainLanguage": "en",
-      "mainLocale": "EN",
-      "apiUrl": "api/brands/ksamint.json",
-      "historyUrl": "api/history/ksamint.json",
-      "guideUrl": "brand.html?brand=ksamint"
-    },
-    {
-      "slug": "inucleus",
-      "assetKey": "inucleus",
-      "name": "iNucleus",
-      "mainLanguage": "en",
-      "mainLocale": "EN",
-      "apiUrl": "api/brands/inucleus.json",
-      "historyUrl": "api/history/inucleus.json",
-      "guideUrl": "brand.html?brand=inucleus"
-    },
-    {
-      "slug": "xinzhi-travel",
-      "assetKey": "xinzhi-travel",
-      "name": "信致旅游",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/xinzhi-travel.json",
-      "historyUrl": "api/history/xinzhi-travel.json",
-      "guideUrl": "brand.html?brand=xinzhi-travel"
-    },
-    {
-      "slug": "zhongzhiyou",
-      "assetKey": "zhongzhiyou",
-      "name": "中智游集团",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/zhongzhiyou.json",
-      "historyUrl": "api/history/zhongzhiyou.json",
-      "guideUrl": "brand.html?brand=zhongzhiyou"
-    },
-    {
-      "slug": "nibiru",
-      "assetKey": "nibiru",
-      "name": "Nibiru",
-      "mainLanguage": "en",
-      "mainLocale": "EN",
-      "apiUrl": "api/brands/nibiru.json",
-      "historyUrl": "api/history/nibiru.json",
-      "guideUrl": "brand.html?brand=nibiru"
-    },
-    {
-      "slug": "shenzhen-microsoft-global-center",
-      "assetKey": "shenzhen-microsoft-global-center",
-      "name": "深圳微软出海中心",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/shenzhen-microsoft-global-center.json",
-      "historyUrl": "api/history/shenzhen-microsoft-global-center.json",
-      "guideUrl": "brand.html?brand=shenzhen-microsoft-global-center"
-    },
-    {
-      "slug": "shanrenjing",
-      "assetKey": "shanrenjing",
-      "name": "山人境",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/shanrenjing.json",
-      "historyUrl": "api/history/shanrenjing.json",
-      "guideUrl": "brand.html?brand=shanrenjing"
-    },
-    {
-      "slug": "kaoyu-shenhua",
-      "assetKey": "kaoyu-shenhua",
-      "name": "烤鱼神话",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/kaoyu-shenhua.json",
-      "historyUrl": "api/history/kaoyu-shenhua.json",
-      "guideUrl": "brand.html?brand=kaoyu-shenhua"
-    },
-    {
-      "slug": "yanan-shiyao-hotel",
-      "assetKey": "yanan-shiyao-hotel",
-      "name": "延安石窑宾馆",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/yanan-shiyao-hotel.json",
-      "historyUrl": "api/history/yanan-shiyao-hotel.json",
-      "guideUrl": "brand.html?brand=yanan-shiyao-hotel"
-    },
-    {
-      "slug": "tongli-market",
-      "assetKey": "tongli-market",
-      "name": "同里市集",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/tongli-market.json",
-      "historyUrl": "api/history/tongli-market.json",
-      "guideUrl": "brand.html?brand=tongli-market"
-    },
-    {
-      "slug": "tongxianghui",
-      "assetKey": "tongxianghui",
-      "name": "同香荟",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/tongxianghui.json",
-      "historyUrl": "api/history/tongxianghui.json",
-      "guideUrl": "brand.html?brand=tongxianghui"
-    },
-    {
-      "slug": "mutangwan",
-      "assetKey": "mutangwan",
-      "name": "睦堂湾",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/mutangwan.json",
-      "historyUrl": "api/history/mutangwan.json",
-      "guideUrl": "brand.html?brand=mutangwan"
-    },
-    {
-      "slug": "shuangxi-shaola",
-      "assetKey": "shuangxi-shaola",
-      "name": "双囍烧腊",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/shuangxi-shaola.json",
-      "historyUrl": "api/history/shuangxi-shaola.json",
-      "guideUrl": "brand.html?brand=shuangxi-shaola"
-    },
-    {
-      "slug": "ganglao-baozailu",
-      "assetKey": "ganglao-baozailu",
-      "name": "港佬煲仔炉车仔面碟头饭",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/ganglao-baozailu.json",
-      "historyUrl": "api/history/ganglao-baozailu.json",
-      "guideUrl": "brand.html?brand=ganglao-baozailu"
-    },
-    {
-      "slug": "xiaotaoyuan",
-      "assetKey": "xiaotaoyuan",
-      "name": "小桃园",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/xiaotaoyuan.json",
-      "historyUrl": "api/history/xiaotaoyuan.json",
-      "guideUrl": "brand.html?brand=xiaotaoyuan"
-    },
-    {
-      "slug": "subangyuan",
-      "assetKey": "subangyuan",
-      "name": "苏帮袁",
-      "mainLanguage": "zh",
-      "mainLocale": "CN",
-      "apiUrl": "api/brands/subangyuan.json",
-      "historyUrl": "api/history/subangyuan.json",
-      "guideUrl": "brand.html?brand=subangyuan"
+      "apiUrl": "api/brands/qingshuiting.json",
+      "historyUrl": "api/history/qingshuiting.json",
+      "guideUrl": "brand.html?brand=qingshuiting"
     },
     {
       "slug": "youyuan-jingmeng",
@@ -371,14 +101,294 @@
       "guideUrl": "brand.html?brand=youyuan-jingmeng"
     },
     {
-      "slug": "qingshuiting",
-      "assetKey": "qingshuiting",
-      "name": "清水亭",
+      "slug": "subangyuan",
+      "assetKey": "subangyuan",
+      "name": "苏帮袁",
       "mainLanguage": "zh",
       "mainLocale": "CN",
-      "apiUrl": "api/brands/qingshuiting.json",
-      "historyUrl": "api/history/qingshuiting.json",
-      "guideUrl": "brand.html?brand=qingshuiting"
+      "apiUrl": "api/brands/subangyuan.json",
+      "historyUrl": "api/history/subangyuan.json",
+      "guideUrl": "brand.html?brand=subangyuan"
+    },
+    {
+      "slug": "xiaotaoyuan",
+      "assetKey": "xiaotaoyuan",
+      "name": "小桃园",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/xiaotaoyuan.json",
+      "historyUrl": "api/history/xiaotaoyuan.json",
+      "guideUrl": "brand.html?brand=xiaotaoyuan"
+    },
+    {
+      "slug": "ganglao-baozailu",
+      "assetKey": "ganglao-baozailu",
+      "name": "港佬煲仔炉车仔面碟头饭",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/ganglao-baozailu.json",
+      "historyUrl": "api/history/ganglao-baozailu.json",
+      "guideUrl": "brand.html?brand=ganglao-baozailu"
+    },
+    {
+      "slug": "shuangxi-shaola",
+      "assetKey": "shuangxi-shaola",
+      "name": "双囍烧腊",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/shuangxi-shaola.json",
+      "historyUrl": "api/history/shuangxi-shaola.json",
+      "guideUrl": "brand.html?brand=shuangxi-shaola"
+    },
+    {
+      "slug": "mutangwan",
+      "assetKey": "mutangwan",
+      "name": "睦堂湾",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/mutangwan.json",
+      "historyUrl": "api/history/mutangwan.json",
+      "guideUrl": "brand.html?brand=mutangwan"
+    },
+    {
+      "slug": "tongxianghui",
+      "assetKey": "tongxianghui",
+      "name": "同香荟",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/tongxianghui.json",
+      "historyUrl": "api/history/tongxianghui.json",
+      "guideUrl": "brand.html?brand=tongxianghui"
+    },
+    {
+      "slug": "tongli-market",
+      "assetKey": "tongli-market",
+      "name": "同里市集",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/tongli-market.json",
+      "historyUrl": "api/history/tongli-market.json",
+      "guideUrl": "brand.html?brand=tongli-market"
+    },
+    {
+      "slug": "yanan-shiyao-hotel",
+      "assetKey": "yanan-shiyao-hotel",
+      "name": "延安石窑宾馆",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/yanan-shiyao-hotel.json",
+      "historyUrl": "api/history/yanan-shiyao-hotel.json",
+      "guideUrl": "brand.html?brand=yanan-shiyao-hotel"
+    },
+    {
+      "slug": "kaoyu-shenhua",
+      "assetKey": "kaoyu-shenhua",
+      "name": "烤鱼神话",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/kaoyu-shenhua.json",
+      "historyUrl": "api/history/kaoyu-shenhua.json",
+      "guideUrl": "brand.html?brand=kaoyu-shenhua"
+    },
+    {
+      "slug": "shanrenjing",
+      "assetKey": "shanrenjing",
+      "name": "山人境",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/shanrenjing.json",
+      "historyUrl": "api/history/shanrenjing.json",
+      "guideUrl": "brand.html?brand=shanrenjing"
+    },
+    {
+      "slug": "shenzhen-microsoft-global-center",
+      "assetKey": "shenzhen-microsoft-global-center",
+      "name": "深圳微软出海中心",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/shenzhen-microsoft-global-center.json",
+      "historyUrl": "api/history/shenzhen-microsoft-global-center.json",
+      "guideUrl": "brand.html?brand=shenzhen-microsoft-global-center"
+    },
+    {
+      "slug": "nibiru",
+      "assetKey": "nibiru",
+      "name": "Nibiru",
+      "mainLanguage": "en",
+      "mainLocale": "EN",
+      "apiUrl": "api/brands/nibiru.json",
+      "historyUrl": "api/history/nibiru.json",
+      "guideUrl": "brand.html?brand=nibiru"
+    },
+    {
+      "slug": "zhongzhiyou",
+      "assetKey": "zhongzhiyou",
+      "name": "中智游集团",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/zhongzhiyou.json",
+      "historyUrl": "api/history/zhongzhiyou.json",
+      "guideUrl": "brand.html?brand=zhongzhiyou"
+    },
+    {
+      "slug": "xinzhi-travel",
+      "assetKey": "xinzhi-travel",
+      "name": "信致旅游",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/xinzhi-travel.json",
+      "historyUrl": "api/history/xinzhi-travel.json",
+      "guideUrl": "brand.html?brand=xinzhi-travel"
+    },
+    {
+      "slug": "inucleus",
+      "assetKey": "inucleus",
+      "name": "iNucleus",
+      "mainLanguage": "en",
+      "mainLocale": "EN",
+      "apiUrl": "api/brands/inucleus.json",
+      "historyUrl": "api/history/inucleus.json",
+      "guideUrl": "brand.html?brand=inucleus"
+    },
+    {
+      "slug": "ksamint",
+      "assetKey": "ksamint",
+      "name": "ksamint",
+      "mainLanguage": "en",
+      "mainLocale": "EN",
+      "apiUrl": "api/brands/ksamint.json",
+      "historyUrl": "api/history/ksamint.json",
+      "guideUrl": "brand.html?brand=ksamint"
+    },
+    {
+      "slug": "pam",
+      "assetKey": "pam",
+      "name": "帕姆建筑",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/pam.json",
+      "historyUrl": "api/history/pam.json",
+      "guideUrl": "brand.html?brand=pam"
+    },
+    {
+      "slug": "apuch",
+      "assetKey": "apuch",
+      "name": "APUCH",
+      "mainLanguage": "en",
+      "mainLocale": "EN",
+      "apiUrl": "api/brands/apuch.json",
+      "historyUrl": "api/history/apuch.json",
+      "guideUrl": "brand.html?brand=apuch"
+    },
+    {
+      "slug": "boya",
+      "assetKey": "boya",
+      "name": "博雅问渠书院",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/boya.json",
+      "historyUrl": "api/history/boya.json",
+      "guideUrl": "brand.html?brand=boya"
+    },
+    {
+      "slug": "changoods",
+      "assetKey": "changoods",
+      "name": "常幸",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/changoods.json",
+      "historyUrl": "api/history/changoods.json",
+      "guideUrl": "brand.html?brand=changoods"
+    },
+    {
+      "slug": "rgd",
+      "assetKey": "rgd",
+      "name": "燃古豋",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/rgd.json",
+      "historyUrl": "api/history/rgd.json",
+      "guideUrl": "brand.html?brand=rgd"
+    },
+    {
+      "slug": "agem",
+      "assetKey": "agem",
+      "name": "游赋社",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/agem.json",
+      "historyUrl": "api/history/agem.json",
+      "guideUrl": "brand.html?brand=agem"
+    },
+    {
+      "slug": "1stepmore",
+      "assetKey": "1stepmore",
+      "name": "1stepmore",
+      "mainLanguage": "en",
+      "mainLocale": "EN",
+      "apiUrl": "api/brands/1stepmore.json",
+      "historyUrl": "api/history/1stepmore.json",
+      "guideUrl": "brand.html?brand=1stepmore"
+    },
+    {
+      "slug": "axisee",
+      "assetKey": "axisee",
+      "name": "Axisee",
+      "mainLanguage": "en",
+      "mainLocale": "EN",
+      "apiUrl": "api/brands/axisee.json",
+      "historyUrl": "api/history/axisee.json",
+      "guideUrl": "brand.html?brand=axisee"
+    },
+    {
+      "slug": "fengzhi",
+      "assetKey": "fengzhi",
+      "name": "峰值永造局",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/fengzhi.json",
+      "historyUrl": "api/history/fengzhi.json",
+      "guideUrl": "brand.html?brand=fengzhi"
+    },
+    {
+      "slug": "manaendless",
+      "assetKey": "manaendless",
+      "name": "无魔协会",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/manaendless.json",
+      "historyUrl": "api/history/manaendless.json",
+      "guideUrl": "brand.html?brand=manaendless"
+    },
+    {
+      "slug": "apha",
+      "assetKey": "apha",
+      "name": "亚太艺术疗愈联盟",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "apiUrl": "api/brands/apha.json",
+      "historyUrl": "api/history/apha.json",
+      "guideUrl": "brand.html?brand=apha"
+    },
+    {
+      "slug": "kind",
+      "assetKey": "kind",
+      "name": "KiND",
+      "mainLanguage": "en",
+      "mainLocale": "EN",
+      "apiUrl": "api/brands/kind.json",
+      "historyUrl": "api/history/kind.json",
+      "guideUrl": "brand.html?brand=kind"
+    },
+    {
+      "slug": "sanctem",
+      "assetKey": "sanctem",
+      "name": "Sanctem",
+      "mainLanguage": "en",
+      "mainLocale": "EN",
+      "apiUrl": "api/brands/sanctem.json",
+      "historyUrl": "api/history/sanctem.json",
+      "guideUrl": "brand.html?brand=sanctem"
     }
   ],
   "mcp": {
@@ -491,15 +501,15 @@
     "apiUrl": "api/versions.json",
     "perBrandApiUrl": "api/history/{slug}.json",
     "latest": {
-      "hash": "5c7c158e439448b77c640563fe8f129eee650152",
-      "shortHash": "5c7c158",
-      "date": "2026-09-27T11:46:29+08:00",
-      "message": "Add IPTrust design system and tokens",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/5c7c158e439448b77c640563fe8f129eee650152"
+      "hash": "e794e0a926857895b548de436e46b45c2c5a752a",
+      "shortHash": "e794e0a",
+      "date": "2026-11-05T22:56:06Z",
+      "message": "chore: remove GitHub Actions workflows; deploy and process assets locally",
+      "url": "https://github.com/ksamint/iptrust01/commit/e794e0a926857895b548de436e46b45c2c5a752a"
     }
   },
   "sync": {
-    "sourceOfTruth": "https://github.com/ksamint/tableai_designaha",
+    "sourceOfTruth": "https://github.com/ksamint/iptrust01",
     "githubToWebsite": "GitHub Pages rebuilds site/ on push to main.",
     "websiteToGithub": "admin.html commits edits through the GitHub Contents API."
   },

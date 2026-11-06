@@ -58,6 +58,9 @@
     "images": "Public image assets with format, byte size, dimensions, SHA-256 and URL.",
     "guides": "Rendered and source brand guideline content.",
     "sources": "Provenance and verification records.",
+    "completeness": "Ten equal inventory checks; score is content presence, not legal or design approval.",
+    "lastUpdatedAt": "Latest dedicated repository default-branch commit timestamp; null if unknown.",
+    "repository": "Canonical repository name, two-digit suffix audit, availability and checkedAt.",
     "history": "Version records for change-aware use.",
     "fonts": "Open-source commercial-use font references with official provenance, licenses, CSS stacks and R2-hosted web specimens."
   },
@@ -82,12 +85,12 @@
       }
     }
   },
-  "generatedAt": "2026-10-18T00:58:18.794Z",
+  "generatedAt": "2026-11-06T04:33:12.884Z",
   "version": {
-    "hash": "5c7c158e439448b77c640563fe8f129eee650152",
-    "shortHash": "5c7c158",
-    "date": "2026-09-27T11:46:29+08:00",
-    "message": "Add IPTrust design system and tokens",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/5c7c158e439448b77c640563fe8f129eee650152"
+    "hash": "e794e0a926857895b548de436e46b45c2c5a752a",
+    "shortHash": "e794e0a",
+    "date": "2026-11-05T22:56:06Z",
+    "message": "chore: remove GitHub Actions workflows; deploy and process assets locally",
+    "url": "https://github.com/ksamint/iptrust01/commit/e794e0a926857895b548de436e46b45c2c5a752a"
   }
 }

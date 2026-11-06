@@ -166,20 +166,32 @@
     "standalone"
   ],
   "version": {
-    "hash": "5c7c158e439448b77c640563fe8f129eee650152",
-    "shortHash": "5c7c158",
-    "date": "2026-09-27T11:46:29+08:00",
-    "message": "Add IPTrust design system and tokens",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/5c7c158e439448b77c640563fe8f129eee650152"
+    "hash": "e794e0a926857895b548de436e46b45c2c5a752a",
+    "shortHash": "e794e0a",
+    "date": "2026-11-05T22:56:06Z",
+    "message": "chore: remove GitHub Actions workflows; deploy and process assets locally",
+    "url": "https://github.com/ksamint/iptrust01/commit/e794e0a926857895b548de436e46b45c2c5a752a"
   },
   "historyUrl": "api/history/ksamint.json",
   "history": [
+    {
+      "hash": "53340b5287a42790703a21b20a84beb62e54cdf5",
+      "shortHash": "53340b5",
+      "date": "2026-10-18T08:59:45+08:00",
+      "message": "Point Tiansight design-system links to dsys_tiansight02 (#7)",
+      "url": "https://github.com/ksamint/iptrust01/commit/53340b5287a42790703a21b20a84beb62e54cdf5",
+      "sourcePaths": [
+        "config/brands.json",
+        "ksamint",
+        "ksamint/README.md"
+      ]
+    },
     {
       "hash": "498680a80ec9173520489eca77f1247601798168",
       "shortHash": "498680a",
       "date": "2026-09-19T22:53:07+08:00",
       "message": "Link every owned IP to its dedicated ksamint design-system repository",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/498680a80ec9173520489eca77f1247601798168",
+      "url": "https://github.com/ksamint/iptrust01/commit/498680a80ec9173520489eca77f1247601798168",
       "sourcePaths": [
         "config/brands.json",
         "ksamint",
@@ -191,7 +203,7 @@
       "shortHash": "17e8486",
       "date": "2026-09-19T20:28:40+08:00",
       "message": "Update ksamint repository references and rename Sidera sources to Tiansight",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/17e8486df5cc2896049164fdef9c876e5790897b",
+      "url": "https://github.com/ksamint/iptrust01/commit/17e8486df5cc2896049164fdef9c876e5790897b",
       "sourcePaths": [
         "config/brands.json",
         "ksamint",
@@ -203,7 +215,7 @@
       "shortHash": "6c28043",
       "date": "2026-08-14T08:33:39+08:00",
       "message": "feat: streamline brand pages and publish tiansight slug",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/6c28043d87c25fa124e6997cafb2c5e6492ffc0e",
+      "url": "https://github.com/ksamint/iptrust01/commit/6c28043d87c25fa124e6997cafb2c5e6492ffc0e",
       "sourcePaths": [
         "config/brands.json",
         "ksamint",
@@ -215,7 +227,7 @@
       "shortHash": "bcd28bc",
       "date": "2026-08-04T06:00:43+08:00",
       "message": "Rename 侍天 English brand name to tiansight",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/bcd28bc5dcefd3d090488e9f90ce43ec673b2ec6",
+      "url": "https://github.com/ksamint/iptrust01/commit/bcd28bc5dcefd3d090488e9f90ce43ec673b2ec6",
       "sourcePaths": [
         "config/brands.json",
         "ksamint",
@@ -227,19 +239,7 @@
       "shortHash": "fa30da1",
       "date": "2026-07-23T09:50:41+08:00",
       "message": "feat: move Sidera to pale manuscript theme",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/fa30da14e08bc70e600864c069a2cc55cf38631f",
-      "sourcePaths": [
-        "config/brands.json",
-        "ksamint",
-        "ksamint/README.md"
-      ]
-    },
-    {
-      "hash": "6f63b2069bcdacfd11655b35e842197792c58bb2",
-      "shortHash": "6f63b20",
-      "date": "2026-07-21T14:05:18+08:00",
-      "message": "feat: refine Sidera ink identity",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/6f63b2069bcdacfd11655b35e842197792c58bb2",
+      "url": "https://github.com/ksamint/iptrust01/commit/fa30da14e08bc70e600864c069a2cc55cf38631f",
       "sourcePaths": [
         "config/brands.json",
         "ksamint",
@@ -260,15 +260,6 @@
       "excerpt": "ksamint / 查明 Overview ksamint 是面向清晰判断、信息核验与轻盈智能协作的 IP。它帮助用户把混杂信息查清、讲明、沉淀为可复用的知识与行动依据。 ksamint is an IP for clear judgment, information verification, and lightweight intelligent collaboration. It turns mixed signals into checked context, concise explanation, and reusable knowledge. Brand Role English name: ksamint Chinese name: 查明 Main language: English Role: clarity oriented inquiry and verification IP Visual Directi",
       "text": "# ksamint / 查明\n\n## Overview\n\nksamint 是面向清晰判断、信息核验与轻盈智能协作的 IP。它帮助用户把混杂信息查清、讲明、沉淀为可复用的知识与行动依据。\n\nksamint is an IP for clear judgment, information verification, and lightweight intelligent collaboration. It turns mixed signals into checked context, concise explanation, and reusable knowledge.\n\n## Brand Role\n\n- English name: ksamint\n- Chinese name: 查明\n- Main language: English\n- Role: clarity-oriented inquiry and verification IP\n\n## Visual Direction\n\nThe visual language should feel fresh, exact, and calm: mint as clarity, deep green as trust, white space as disciplined attention. Avoid noisy dashboards, heavy gradients, and decorative excess.\n\n## Agent Notes\n\nUse ksamint when the task requires checking, clarifying, comparing sources, extracting signal from noise, or turning uncertainty into a concise answer.\n",
       "html": "<h1 id=\"ksamint-guide-1-ksamint-查明\">ksamint / 查明</h1>\n<h2 id=\"ksamint-guide-1-overview\">Overview</h2>\n<p>ksamint 是面向清晰判断、信息核验与轻盈智能协作的 IP。它帮助用户把混杂信息查清、讲明、沉淀为可复用的知识与行动依据。</p>\n<p>ksamint is an IP for clear judgment, information verification, and lightweight intelligent collaboration. It turns mixed signals into checked context, concise explanation, and reusable knowledge.</p>\n<h2 id=\"ksamint-guide-1-brand-role\">Brand Role</h2>\n<ul>\n<li>English name: ksamint</li>\n<li>Chinese name: 查明</li>\n<li>Main language: English</li>\n<li>Role: clarity-oriented inquiry and verification IP</li>\n</ul>\n<h2 id=\"ksamint-guide-1-visual-direction\">Visual Direction</h2>\n<p>The visual language should feel fresh, exact, and calm: mint as clarity, deep green as trust, white space as disciplined attention. Avoid noisy dashboards, heavy gradients, and decorative excess.</p>\n<h2 id=\"ksamint-guide-1-agent-notes\">Agent Notes</h2>\n<p>Use ksamint when the task requires checking, clarifying, comparing sources, extracting signal from noise, or turning uncertainty into a concise answer.</p>\n"
-    },
-    {
-      "path": "ksamint/private/README.md",
-      "title": "README",
-      "format": "md",
-      "primary": false,
-      "excerpt": "ksamint Private Skills Private ksamint skills are stored only as encrypted payloads. Do not commit plaintext prompts here. Use: bash KSAMINT SKILL KEY=\"...\" npm run encrypt:ksamint skills /path/to/private skills.md The script writes: ksamint/private/guofeng writing style.enc.json site/api/private/ksamint skills.enc.json The encrypted site copy is readable only through /api/skills/ksamint after System API authenticati",
-      "text": "# ksamint Private Skills\n\nPrivate ksamint skills are stored only as encrypted payloads.\n\nDo not commit plaintext prompts here.\n\nUse:\n\n```bash\nKSAMINT_SKILL_KEY=\"...\" npm run encrypt:ksamint-skills -- /path/to/private-skills.md\n```\n\nThe script writes:\n\n- `ksamint/private/guofeng-writing-style.enc.json`\n- `site/api/private/ksamint-skills.enc.json`\n\nThe encrypted site copy is readable only through `/api/skills/ksamint` after System API authentication.\n",
-      "html": "<h1 id=\"ksamint-guide-2-ksamint-private-skills\">ksamint Private Skills</h1>\n<p>Private ksamint skills are stored only as encrypted payloads.</p>\n<p>Do not commit plaintext prompts here.</p>\n<p>Use:</p>\n<pre><code class=\"language-bash\">KSAMINT_SKILL_KEY=&quot;...&quot; npm run encrypt:ksamint-skills -- /path/to/private-skills.md\n</code></pre>\n<p>The script writes:</p>\n<ul>\n<li><code>ksamint/private/guofeng-writing-style.enc.json</code></li>\n<li><code>site/api/private/ksamint-skills.enc.json</code></li>\n</ul>\n<p>The encrypted site copy is readable only through <code>/api/skills/ksamint</code> after System API authentication.</p>\n"
     }
   ],
   "tokens": [],
@@ -384,11 +375,50 @@
     "images": []
   },
   "editablePaths": [
-    "ksamint/README.md",
-    "ksamint/private/README.md"
+    "ksamint/README.md"
   ],
   "source": {
-    "github": "https://github.com/ksamint/tableai_designaha/tree/main/ksamint",
+    "github": "https://github.com/ksamint/iptrust01/tree/main/ksamint",
     "folder": "ksamint"
+  },
+  "repository": {
+    "configuredUrl": "https://github.com/ksamint/dsys_ksamint",
+    "url": "https://github.com/ksamint/dsys_ksamint",
+    "name": "dsys_ksamint",
+    "accessible": true,
+    "suffixValid": false,
+    "archived": false,
+    "lastUpdatedAt": "2026-09-19T14:50:20Z",
+    "commitUrl": "https://github.com/ksamint/dsys_ksamint/commit/21e1f7e0848133f218459b933dd45ed9ce94f942",
+    "commit": "21e1f7e0848133f218459b933dd45ed9ce94f942",
+    "branch": "main",
+    "pushedAt": "2026-09-19T14:50:26Z",
+    "metadataUpdatedAt": "2026-09-19T14:50:29Z",
+    "checkedAt": "2026-11-06T04:33:12.101Z",
+    "error": null
+  },
+  "lastUpdatedAt": "2026-09-19T14:50:20Z",
+  "completeness": {
+    "score": 60,
+    "total": 100,
+    "status": "foundation",
+    "checks": {
+      "profile": true,
+      "business": true,
+      "guide": true,
+      "tokens": false,
+      "palette": true,
+      "logo": false,
+      "sources": false,
+      "classification": true,
+      "repository": true,
+      "repositoryName": false
+    },
+    "missing": [
+      "tokens",
+      "logo",
+      "sources",
+      "repositoryName"
+    ]
   }
 }

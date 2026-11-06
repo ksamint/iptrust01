@@ -29,6 +29,16 @@
         }
       }
     },
+    "/api/v2/repository-status": {
+      "get": {
+        "summary": "Repository naming audit and latest default-branch commits; falls back to dated snapshot",
+        "responses": {
+          "200": {
+            "description": "Repository status keyed by IP slug, with checkedAt and live/snapshot mode"
+          }
+        }
+      }
+    },
     "/api/brands.json": {
       "get": {
         "operationId": "listBrands",

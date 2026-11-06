@@ -1,66 +1,87 @@
 [
   {
+    "hash": "e794e0a926857895b548de436e46b45c2c5a752a",
+    "shortHash": "e794e0a",
+    "date": "2026-11-05T22:56:06Z",
+    "message": "chore: remove GitHub Actions workflows; deploy and process assets locally",
+    "url": "https://github.com/ksamint/iptrust01/commit/e794e0a926857895b548de436e46b45c2c5a752a"
+  },
+  {
+    "hash": "f5cc486935eb6ebd36d88fa8db7e1a462ff4aad0",
+    "shortHash": "f5cc486",
+    "date": "2026-11-05T16:06:45Z",
+    "message": "chore: remove GitHub CI check workflows; checks run locally",
+    "url": "https://github.com/ksamint/iptrust01/commit/f5cc486935eb6ebd36d88fa8db7e1a462ff4aad0"
+  },
+  {
+    "hash": "53340b5287a42790703a21b20a84beb62e54cdf5",
+    "shortHash": "53340b5",
+    "date": "2026-10-18T08:59:45+08:00",
+    "message": "Point Tiansight design-system links to dsys_tiansight02 (#7)",
+    "url": "https://github.com/ksamint/iptrust01/commit/53340b5287a42790703a21b20a84beb62e54cdf5"
+  },
+  {
     "hash": "5c7c158e439448b77c640563fe8f129eee650152",
     "shortHash": "5c7c158",
     "date": "2026-09-27T11:46:29+08:00",
     "message": "Add IPTrust design system and tokens",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/5c7c158e439448b77c640563fe8f129eee650152"
+    "url": "https://github.com/ksamint/iptrust01/commit/5c7c158e439448b77c640563fe8f129eee650152"
   },
   {
     "hash": "30000ab7761707c3207eff5bdd841f243e191afd",
     "shortHash": "30000ab",
     "date": "2026-09-25T08:22:45+08:00",
     "message": "Improve all IP detail pages with clear GitHub access and organized brand resources (#6)",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/30000ab7761707c3207eff5bdd841f243e191afd"
+    "url": "https://github.com/ksamint/iptrust01/commit/30000ab7761707c3207eff5bdd841f243e191afd"
   },
   {
     "hash": "498680a80ec9173520489eca77f1247601798168",
     "shortHash": "498680a",
     "date": "2026-09-19T22:53:07+08:00",
     "message": "Link every owned IP to its dedicated ksamint design-system repository",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/498680a80ec9173520489eca77f1247601798168"
+    "url": "https://github.com/ksamint/iptrust01/commit/498680a80ec9173520489eca77f1247601798168"
   },
   {
     "hash": "17e8486df5cc2896049164fdef9c876e5790897b",
     "shortHash": "17e8486",
     "date": "2026-09-19T20:28:40+08:00",
     "message": "Update ksamint repository references and rename Sidera sources to Tiansight",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/17e8486df5cc2896049164fdef9c876e5790897b"
+    "url": "https://github.com/ksamint/iptrust01/commit/17e8486df5cc2896049164fdef9c876e5790897b"
   },
   {
     "hash": "1ba46da8676a685e42529d564f3d9c6349488bb9",
     "shortHash": "1ba46da",
     "date": "2026-09-13T23:29:41-07:00",
     "message": "Merge pull request #5 from fengurt/codex/home-brand-github-icons",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/1ba46da8676a685e42529d564f3d9c6349488bb9"
+    "url": "https://github.com/ksamint/iptrust01/commit/1ba46da8676a685e42529d564f3d9c6349488bb9"
   },
   {
     "hash": "2e69252b1a7a5ffea591c1fc53261e1d08af1aa8",
     "shortHash": "2e69252",
     "date": "2026-09-14T14:28:48+08:00",
     "message": "feat: add GitHub links to homepage brands",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/2e69252b1a7a5ffea591c1fc53261e1d08af1aa8"
+    "url": "https://github.com/ksamint/iptrust01/commit/2e69252b1a7a5ffea591c1fc53261e1d08af1aa8"
   },
   {
     "hash": "f6b8982bb90efdd941e80e154f421c0ffd0133f3",
     "shortHash": "f6b8982",
     "date": "2026-09-13T22:40:14-07:00",
     "message": "Merge pull request #4 from fengurt/codex/brand-github-links",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/f6b8982bb90efdd941e80e154f421c0ffd0133f3"
+    "url": "https://github.com/ksamint/iptrust01/commit/f6b8982bb90efdd941e80e154f421c0ffd0133f3"
   },
   {
     "hash": "04cf5f8e0f7e9e196089266276f7d976e5a2dc65",
     "shortHash": "04cf5f8",
     "date": "2026-09-14T13:38:58+08:00",
     "message": "feat: link brand pages to GitHub sources",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/04cf5f8e0f7e9e196089266276f7d976e5a2dc65"
+    "url": "https://github.com/ksamint/iptrust01/commit/04cf5f8e0f7e9e196089266276f7d976e5a2dc65"
   },
   {
     "hash": "74a829b2df1b50b1411b06dcf66a13ee6648c008",
     "shortHash": "74a829b",
     "date": "2026-09-01T17:03:57+08:00",
     "message": "feat: add interactive IP evolution map",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/74a829b2df1b50b1411b06dcf66a13ee6648c008"
+    "url": "https://github.com/ksamint/iptrust01/commit/74a829b2df1b50b1411b06dcf66a13ee6648c008"
   },
   {
     "hash": "6d0b90a132ae2fe9197dd7bf0712e96880984f8e",
@@ -117,26 +138,5 @@
     "date": "2026-08-16T08:52:54+08:00",
     "message": "fix: serve about as HTML",
     "url": "https://github.com/fengurt/tableai_designaha/commit/70e35b66e27f2c9897644a5762207931d6ad6288"
-  },
-  {
-    "hash": "a71ca6419386b0484dd4e9e87702fcdb47ddd8fb",
-    "shortHash": "a71ca64",
-    "date": "2026-08-16T08:49:25+08:00",
-    "message": "feat: simplify IPTrust homepage",
-    "url": "https://github.com/fengurt/tableai_designaha/commit/a71ca6419386b0484dd4e9e87702fcdb47ddd8fb"
-  },
-  {
-    "hash": "5f3b6fd902647567394c8a27e0c08aead63caf94",
-    "shortHash": "5f3b6fd",
-    "date": "2026-08-15T21:45:09+08:00",
-    "message": "feat: bundle fonts with license records",
-    "url": "https://github.com/fengurt/tableai_designaha/commit/5f3b6fd902647567394c8a27e0c08aead63caf94"
-  },
-  {
-    "hash": "82103e8430d317daa665bb7a738460b142479c20",
-    "shortHash": "82103e8",
-    "date": "2026-08-15T20:56:15+08:00",
-    "message": "feat: deliver full font downloads via CDN",
-    "url": "https://github.com/fengurt/tableai_designaha/commit/82103e8430d317daa665bb7a738460b142479c20"
   }
 ]

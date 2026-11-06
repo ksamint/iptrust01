@@ -1,0 +1,24 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { spawn, spawnSync } from "node:child_process";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+test("release lock rejects concurrent deployment and is removed on exit", async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), "iptrust-lock-test-"));
+  const common = fileURLToPath(new URL("../lib/release-common.sh", import.meta.url));
+  spawnSync("git", ["init", "--quiet", dir]);
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const script = '. "$1"; take_release_lock "$2" test-release';
+  const holder = spawn("bash", ["-c", script + '; echo locked; read -r done', "bash", common, dir], { stdio: ["pipe", "pipe", "pipe"] });
+  t.after(() => holder.kill());
+  await new Promise((resolve, reject) => { holder.stdout.once("data", resolve); holder.once("error", reject); });
+  const contender = spawnSync("bash", ["-c", script, "bash", common, dir], { encoding: "utf8" });
+  assert.notEqual(contender.status, 0);
+  assert.match(contender.stderr, /another test-release run/);
+  const exited = new Promise((resolve) => holder.once("exit", resolve));
+  holder.stdin.end("done\n");
+  await exited;
+  assert.equal(spawnSync("bash", ["-c", script, "bash", common, dir]).status, 0);
+});

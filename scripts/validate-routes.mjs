@@ -50,10 +50,12 @@ const brands = JSON.parse(await readFile(join(root, "config/brands.json"), "utf8
 const ips = JSON.parse(await readFile(join(root, "site/api/ips.json"), "utf8"));
 const repositories = new Set();
 for (const brand of brands) {
-  const expected = `https://github.com/ksamint/${brand.slug === "sidera" ? "dsys_tiansight02" : `dsys_${brand.slug}`}`;
+  const repositoryName = { sidera: "dsys_tiansight02", tableai: "dsys_tableai01", mtongheng: "dsys_mtongheng01" }[brand.slug] || `dsys_${brand.slug}`;
+  const expected = `https://github.com/ksamint/${repositoryName}`;
   if (brand.designSystemUrl !== expected || repositories.has(expected)) throw new Error(`design_system_repository:${brand.slug}`);
   repositories.add(expected);
   const payload = JSON.parse(await readFile(join(root, `site/api/brands/${brand.publicSlug || brand.slug}.json`), "utf8"));
+  if (payload.guides.some((guide) => guide.path.split("/").includes("private"))) throw new Error(`private_guide_exposed:${brand.slug}`);
   if (payload.designSystemUrl !== expected) throw new Error(`design_system_api:${brand.slug}`);
   if (ips.items.find((ip) => ip.slug === brand.slug)?.designSystemUrl !== expected) throw new Error(`design_system_ip:${brand.slug}`);
   if (!homePage.includes(`href="${expected}"`)) throw new Error(`design_system_home:${brand.slug}`);
@@ -63,7 +65,7 @@ const tiansight = JSON.parse(await readFile(join(root, "site/api/brands/tiansigh
 const legacyTiansight = JSON.parse(await readFile(join(root, "site/api/brands/sidera.json"), "utf8"));
 if (JSON.stringify(tiansight) !== JSON.stringify(legacyTiansight)) throw new Error("tiansight_legacy_api_mismatch");
 if (tiansight.primaryGuide !== "Tiansight/tiansight_design.md" || !tiansight.guides.some((guide) => guide.primary && guide.path === tiansight.primaryGuide)) throw new Error("tiansight_guide_missing");
-if (tiansight.source.github !== "https://github.com/ksamint/tableai_designaha/tree/main/Tiansight") throw new Error("tiansight_repository_link");
+if (tiansight.source.github !== "https://github.com/ksamint/iptrust01/tree/main/Tiansight") throw new Error("tiansight_repository_link");
 if (!tiansight.images.length || tiansight.images.some((image) => !image.path.startsWith("Tiansight/") || !image.mediaUrl.startsWith("https://media.apuch.art/public/sidera/"))) throw new Error("tiansight_asset_compatibility");
 
 const siteScript = await readFile(join(root, "site", "assets", "site.js"), "utf8");

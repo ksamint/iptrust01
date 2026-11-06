@@ -1,3 +1,4 @@
+import { liveRepositoryStatus } from "./repository-status.js";
 import { authenticate, createApiKey, hasIpScope, hasRecentStepUp, hasScope, issueSession, requireCsrf, rotateSessionCsrf, stepUpSession, verifyTotp } from "./security.js";
 import { handleApplicationRoutes, handleIpRoutes, handleRelationRoutes, handleTaxonomyRoute, handleAdminStatus } from "./ip.js";
 import { signMediaPath } from "./media.js";
@@ -498,6 +499,7 @@ export async function handleApi(request, env) {
   if (request.method === "OPTIONS") return new Response(null, { headers: { "Access-Control-Allow-Origin": request.headers.get("origin") || "*", "Access-Control-Allow-Methods": "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS", "Access-Control-Allow-Headers": "Authorization, Content-Type, If-Match, Idempotency-Key, X-CSRF-Token, X-Admin-Key", "Access-Control-Max-Age": "86400" } });
   const parts = new URL(request.url).pathname.replace(/^\/api\/v2\/?/, "").split("/").filter(Boolean);
   try {
+    if (parts[0] === "repository-status" && parts.length === 1 && ["GET", "HEAD"].includes(request.method)) return json(request, await liveRepositoryStatus(env));
     if (parts[0] === "auth") return authRoutes(request, env, parts);
     if (parts[0] === "taxonomy") return handleTaxonomyRoute(request, env);
     if (parts[0] === "ips") return handleIpRoutes(request, env, parts.slice(1));

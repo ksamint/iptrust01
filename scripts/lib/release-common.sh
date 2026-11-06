@@ -50,14 +50,20 @@ cleanup_source_worktree() {
   fi
   if [[ -n ${RELEASE_TMP:-} ]]; then rm -rf "$RELEASE_TMP"; fi
   if [[ -n ${RELEASE_REPO:-} ]]; then git -C "$RELEASE_REPO" worktree prune 2>/dev/null || true; fi
+  if [[ -n ${RELEASE_LOCK_DIR:-} ]]; then rmdir "$RELEASE_LOCK_DIR" 2>/dev/null || true; fi
 }
 
 # One release of a kind at a time (the workflows used concurrency groups).
-# flock is optional: on systems without it (macOS) the lock is skipped.
+# Use an atomic directory on macOS, where flock is not installed.
 take_release_lock() {
   local repo=$1 name=$2 gitdir
-  command -v flock >/dev/null 2>&1 || { log "flock not found; skipping the $name lock"; return 0; }
   gitdir=$(git -C "$repo" rev-parse --path-format=absolute --git-common-dir)
+  if ! command -v flock >/dev/null 2>&1; then
+    mkdir "$gitdir/$name.lockdir" 2>/dev/null || die "another $name run holds $gitdir/$name.lockdir"
+    RELEASE_LOCK_DIR="$gitdir/$name.lockdir"
+    trap cleanup_source_worktree EXIT
+    return 0
+  fi
   exec 9>"$gitdir/$name.lock"
   flock -n 9 || die "another $name run holds $gitdir/$name.lock"
 }

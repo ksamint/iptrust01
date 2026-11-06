@@ -1,19 +1,43 @@
 [
   {
     "type": "ip",
-    "slug": "tableai",
-    "title": "Table AI",
-    "subtitle": "Table AI",
-    "text": "Table AI 是面向国际智库、联盟协作与 Agent 工作流的 AI 原生设计系统。 Table AI is an AI-native design system for international think tanks, alliance collaboration, and agent workflows. 智库协作、AI 工作流、品牌与设计系统。 Think tank collaboration, AI workflows, brand and design systems. AI 原生智库 Agent 工作流 联盟协作 AI-native think tank Agent workflow Alliance collaboration 国际智库 联盟组织 AI 产品团队 International think tanks Alliance operators AI product teams AI 智库 Agent 设计系统 AI Think tank Agent Design system International think tank design system for the Table AI Alliance. white deep blue dark gold think tank minimal",
-    "url": "brand.html?brand=tableai"
+    "slug": "mtongheng",
+    "title": "澳门同興国际",
+    "subtitle": "澳门同興国际 · Tong Heng International",
+    "text": "澳門同興國際發展有限公司，以澳門為樞紐，連接中國產業能力與全球市場。 Macau Tong Heng International Development Co., Ltd., connecting Chinese industrial capability with global markets. AI 服務、企業出海、AIGC 短劇發行及投資與產業諮詢。 AI services, overseas expansion, AIGC short-drama distribution, and investment and industrial consulting. 依現有公司網站提取的初版識別；公司資料與標誌權屬尚待確認。 Initial identity extracted from the company website; corporate claims and symbol ownership await confirmation. Macau-based advisor and execution partner connecting Chinese industry with global markets. https://tongheng.apuch.cn/ navy gold Macau international",
+    "url": "brand.html?brand=mtongheng"
   },
   {
     "type": "guide",
-    "slug": "tableai",
-    "title": "TableAI DESIGN",
-    "subtitle": "Table AI · TABLEAI/TableAI_DESIGN.md",
-    "text": "设计规范文件 (design.md) 1. 核心设计哲学 本项目采用极简且富有启发性的视觉语言。设计应体现以下四个维度： 利他 (Altruistic) ：界面直观，优先考虑用户价值与操作效率。 真实 (Authentic) ：拒绝过度装饰，展现材质与结构的自然美感。 艺术 (Artistic) ：强调比例、对齐与留白的艺术性平衡。 优雅 (Elegant) ：通过色彩与细节传递专业且高端的质感。 2. 色彩系统 (Color Palette) 严禁使用预设的基础色，必须严格执行以下色值： 底色 (Base) : White ( FFFFFF) 用途：背景、大面积留白、轻盈感来源。 主色 (Primary) : 寰宇深蓝 (Universe Deep Blue) 0A1626 用途：主要文字、结构线条、重要功能区块、品牌标识。 点缀色 (Accent) : 日晷暗金 (Sundial Dark Gold) A88B52 用途：行",
-    "url": "brand.html?brand=tableai"
+    "slug": "mtongheng",
+    "title": "BRAND",
+    "subtitle": "澳门同興国际 · MTONGHENG/BRAND.md",
+    "text": "Tong Heng International · 同興國際 Version 0.1 · Initial identity extracted from the existing company website. Company and positioning 澳門同興國際發展有限公司 Macau Tong Heng International Development Co., Ltd. Companhia de Desenvolvimento Internacional Tong Heng (Macau), Limitada 以澳門為樞紐，連接中國產業能力與全球市場。 A Macau based gateway connecting Chinese industrial capability with global markets. The existing introduction describes AI services",
+    "url": "brand.html?brand=mtongheng"
+  },
+  {
+    "type": "guide",
+    "slug": "mtongheng",
+    "title": "Sources",
+    "subtitle": "澳门同興国际 · MTONGHENG/docs/sources.md",
+    "text": "Sources Checked 2026 11 06. APuCH directory: https://apuch.art/ and https://apuch.art/api/brands.json — no matching Tong Heng record. No published APuCH guide or official asset kit was available for this brand. Earlier local chat dated 2026 11 06 located mtongheng hom01 . Company introduction, colors and existing symbol: /Users/af/cpro01/prioritized01/mtongheng hom01/ref/tongheng site tc.html . SHA 256: 5b3af6508d7af",
+    "url": "brand.html?brand=mtongheng"
+  },
+  {
+    "type": "ip",
+    "slug": "sidera",
+    "title": "侍天 - 智慧餐饮",
+    "subtitle": "侍天 - 智慧餐饮 · tiansight",
+    "text": "侍天是面向智慧餐饮、饮食知识与餐饮品牌内容系统的中文优先 IP。 tiansight is a Chinese-first IP for smart dining, food knowledge, and food brand content systems. 智慧餐饮、饮食知识、料理内容、美食体验与餐饮品牌内容系统。 Smart dining, food knowledge, culinary content, dining experience, and food brand content systems. 参考链接：https://frienji.kenjilopezalt.com/；https://www.seriouseats.com/ Reference links: https://frienji.kenjilopezalt.com/; https://www.seriouseats.com/ 智慧餐饮 饮食知识 料理内容 Smart dining Food knowledge Culinary content 料理创作者 餐饮品牌 美食学习者 Culinary creators Food brands Food learners 智慧餐饮 料理 饮食 内容 体验 Smart dining Culinary Food Content Experience 侍天是面向智慧餐饮、饮食知识与餐饮品牌内容系统的中文优先 IP。 ink ivory pale manuscript earth gold vermillion wisdom navigator",
+    "url": "brand.html?brand=tiansight"
+  },
+  {
+    "type": "guide",
+    "slug": "sidera",
+    "title": "Tiansight Design",
+    "subtitle": "侍天 - 智慧餐饮 · Tiansight/tiansight_design.md",
+    "text": "tiansight 侍天 — Design System Build ready brand & visual spec for agents producing on brand 侍天 work. 一句话： 素墨为纸、玄墨为字、土金为骨；沉稳敢言、有据可依。 Ink is the paper, charcoal is the voice, gold is the structure — composed, forthright, evidence based. tiansight 侍天 — 智慧领航者 · Wisdom Navigator for premium F&B chains. We equip every valuable mid to high end F&B chain with a \"see clearly, move betably, compound easily\" smart navigation sys",
+    "url": "brand.html?brand=tiansight"
   },
   {
     "type": "ip",
@@ -33,83 +57,19 @@
   },
   {
     "type": "ip",
-    "slug": "sanctem",
-    "title": "Sanctem",
-    "subtitle": "东方康养疗愈品牌 · Sanctem",
-    "text": "Sanctem 是东方康养疗愈品牌，面向身心复原、旅居疗愈与克制的健康服务体验。 Sanctem is an oriental wellness and healing brand for restorative care, healing stays, and restrained wellbeing services. 康养疗愈、东方身心护理、旅居疗愈体验与品牌化健康服务。 Wellness healing, oriental body-mind care, restorative stays, and branded wellbeing services. 东方康养 疗愈服务 身心复原 Oriental wellbeing Healing service Restorative care 疗愈体验用户 康养空间 服务设计团队 Healing guests Wellbeing spaces Service design teams 康养 疗愈 东方 复原 Wellbeing Healing Oriental Restorative Oriental wellness and healing brand. oriental wellness healing sage warm gold restorative care",
-    "url": "brand.html?brand=sanctem"
+    "slug": "tableai",
+    "title": "Table AI",
+    "subtitle": "Table AI",
+    "text": "Table AI 是面向国际智库、联盟协作与 Agent 工作流的 AI 原生设计系统。 Table AI is an AI-native design system for international think tanks, alliance collaboration, and agent workflows. 智库协作、AI 工作流、品牌与设计系统。 Think tank collaboration, AI workflows, brand and design systems. AI 原生智库 Agent 工作流 联盟协作 AI-native think tank Agent workflow Alliance collaboration 国际智库 联盟组织 AI 产品团队 International think tanks Alliance operators AI product teams AI 智库 Agent 设计系统 AI Think tank Agent Design system International think tank design system for the Table AI Alliance. white deep blue dark gold think tank minimal",
+    "url": "brand.html?brand=tableai"
   },
   {
     "type": "guide",
-    "slug": "sanctem",
-    "title": "README",
-    "subtitle": "Sanctem · Sanctem/README.md",
-    "text": "Sanctem Sanctem is an oriental wellness and healing brand. 中文定位：东方康养疗愈品牌。 Brand Main IP name: Sanctem Chinese description: 东方康养疗愈品牌 Main language: English System role: wellness, healing, hospitality, and restorative living under an oriental care sensibility. Business 康养疗愈 东方身心护理 旅居疗愈体验 品牌化健康服务 Voice Calm, precise, and restorative. Speak with quiet confidence. Avoid medical overclaims, heavy mysticism, and decorative ",
-    "url": "brand.html?brand=sanctem"
-  },
-  {
-    "type": "ip",
-    "slug": "kind",
-    "title": "KiND",
-    "subtitle": "善渡科技 · KiND",
-    "text": "KiND 是以人为先的 AI 劳动力品牌，让 AI 成为服务每一个人的普惠能力。 KiND is a human-first AI workforce brand: AI for all, not for few. AI 劳动力、智能体产品与企业自动化。 AI workforce, agent products, and enterprise automation. AI 劳动力 企业自动化 智能体产品 AI workforce Enterprise automation Agent products 企业团队 运营人员 AI 服务商 Enterprise teams Operations teams AI service providers AI 劳动力 自动化 善意科技 AI Workforce Automation Human-first Human-first AI workforce brand: for all, not for few. teal mint coral kind workforce inclusive AI",
-    "url": "brand.html?brand=kind"
-  },
-  {
-    "type": "guide",
-    "slug": "kind",
-    "title": "KiND Design",
-    "subtitle": "KiND · KiND/KiND Design.md",
-    "text": "KiND — Design System 善渡科技 · Kind Technology for all, not for few. A single reference for anyone designing or building KiND surfaces. Pairs with kind.css (tokens + components) and the Brand Book (story, voice, lexicon). 1. Brand in one breath KiND turns AI into a Kind Workforce anyone can hire — AI for all, not for few. The name is a pun and the axis of everything: kind (warm, human first) and a kind of (a new role — ",
-    "url": "brand.html?brand=kind"
-  },
-  {
-    "type": "guide",
-    "slug": "kind",
-    "title": "Kind Skill Md",
-    "subtitle": "KiND · KiND/kind-skill-md.md",
-    "text": "KiND — Brand & Design System for all, not for few. KiND turns AI into a Kind Workforce anyone can hire. The name is the axis of everything: kind (warm, human first) and a kind of (a new role). This file is the operating guide. Read it first, then load the bundled files as the task needs them. Do not invent tokens, colors, or components — everything you need is in the files below. Folder layout kind brand/ ├─ SKILL.md",
-    "url": "brand.html?brand=kind"
-  },
-  {
-    "type": "guide",
-    "slug": "kind",
-    "title": "Preview",
-    "subtitle": "KiND · KiND/preview.html",
-    "text": "KiND · Design System Preview / page local styles only — everything brand level comes from kind.css / .section{padding:var( s 8) 0;border bottom:1px solid var( border)} .section h2{font size:var( t h2);margin:var( s 3) 0 var( s 5)} .swatches{display:grid;grid template columns:repeat(auto fill,minmax(150px,1fr));gap:var( s 3)} .sw{border:1px solid var( border);border radius:var( r md);overflow:hidden;background:var( su",
-    "url": "brand.html?brand=kind"
-  },
-  {
-    "type": "ip",
-    "slug": "apha",
-    "title": "亚太艺术疗愈联盟",
-    "subtitle": "亚太艺术疗愈联盟 · APHA",
-    "text": "亚太艺术疗愈联盟连接艺术、身心疗愈与跨区域协作。 APHA connects healing arts, wellbeing practice, and Asia-Pacific collaboration. 艺术疗愈、教育、研究与联盟协作。 Healing arts, education, research, and alliance collaboration. 艺术疗愈 身心教育 亚太联盟 Healing arts Wellbeing education Asia-Pacific alliance 疗愈师 艺术教育者 研究机构 Healing practitioners Art educators Research institutions 艺术 疗愈 教育 联盟 Art Healing Education Alliance Asia-Pacific Healing Arts Alliance. mineral blue sage clay healing arts Asia-Pacific",
-    "url": "brand.html?brand=apha"
-  },
-  {
-    "type": "guide",
-    "slug": "apha",
-    "title": "README",
-    "subtitle": "亚太艺术疗愈联盟 · APHA/README.md",
-    "text": "APHA Chinese name: 亚太艺术疗愈联盟 English descriptor: Asia Pacific Healing Arts Alliance Brand Role APHA is an Asia Pacific arts and healing alliance IP for creative wellbeing, therapeutic arts, and cross cultural care practices. Visual Direction Temperament: restorative, humane, professional, warm, spacious. Color cues: mineral blue, sage green, clay, warm ivory. Imagery cues: gentle movement, art practice, natural textur",
-    "url": "brand.html?brand=apha"
-  },
-  {
-    "type": "ip",
-    "slug": "manaendless",
-    "title": "无魔协会",
-    "subtitle": "无魔协会 · MANA Endless",
-    "text": "无魔协会是面向持续学习、清明协作与联盟实验的 IP。 MANA Endless is an IP for continuous learning, clear collaboration, and alliance experiments. 联盟、学习社区与协作实验。 Alliance, learning community, and collaboration experiments. 学习社区 清明协作 联盟实验 Learning community Clear collaboration Alliance experiments 终身学习者 协作者 社群组织者 Lifelong learners Collaborators Community organizers 学习 社区 协作 实验 Learning Community Collaboration Experiment Alliance brand placeholder for future design guidelines. charcoal silver violet grey clarity continuous learning",
-    "url": "brand.html?brand=manaendless"
-  },
-  {
-    "type": "ip",
-    "slug": "opcglobal",
-    "title": "OPC Global",
-    "subtitle": "欧匹赛全球联盟 · OPC Global",
-    "text": "欧匹赛全球联盟是面向全球协作、标准与资源连接的 IP。 OPC Global is a global alliance IP for collaboration, standards, and resource connection. 全球联盟、标准建设与跨区域协作。 Global alliance, standards, and cross-region collaboration. 全球联盟 标准建设 跨区域协作 Global alliance Standards Cross-region collaboration 国际伙伴 联盟机构 标准制定团队 International partners Alliance institutions Standards teams 全球 联盟 标准 协作 Global Alliance Standards Collaboration OPC Global is a global alliance IP for collaboration, standards, and resource connection. https://opcglobal.ai deep blue graphite gold global alliance standards",
-    "url": "brand.html?brand=opcglobal"
+    "slug": "tableai",
+    "title": "TableAI DESIGN",
+    "subtitle": "Table AI · TABLEAI/TableAI_DESIGN.md",
+    "text": "设计规范文件 (design.md) 1. 核心设计哲学 本项目采用极简且富有启发性的视觉语言。设计应体现以下四个维度： 利他 (Altruistic) ：界面直观，优先考虑用户价值与操作效率。 真实 (Authentic) ：拒绝过度装饰，展现材质与结构的自然美感。 艺术 (Artistic) ：强调比例、对齐与留白的艺术性平衡。 优雅 (Elegant) ：通过色彩与细节传递专业且高端的质感。 2. 色彩系统 (Color Palette) 严禁使用预设的基础色，必须严格执行以下色值： 底色 (Base) : White ( FFFFFF) 用途：背景、大面积留白、轻盈感来源。 主色 (Primary) : 寰宇深蓝 (Universe Deep Blue) 0A1626 用途：主要文字、结构线条、重要功能区块、品牌标识。 点缀色 (Accent) : 日晷暗金 (Sundial Dark Gold) A88B52 用途：行",
+    "url": "brand.html?brand=tableai"
   },
   {
     "type": "ip",
@@ -126,6 +86,430 @@
     "subtitle": "岁知社 · IPTRUST/IPTrust_DESIGN.md",
     "text": "岁知社 IPTrust 设计规范 高楼宾客似曾识，日光底下无新事。 本规范将已发布的品牌主题用于数字产品、品牌资料与 Agent 协作界面。品牌目录/API 是身份与色值来源；本文件提供应用规则，不替代尚未发布的官方设计指南。 1. 品牌定位 岁知社 IPTrust 面向 IP 资产可信管理、信任索引、品牌源文件治理与 Agent 可读协作。体验应表达可信、可考证、易检索与长期维护；清楚展示资产身份、来源、权限与状态。 2. 色彩 品牌 API 的精确主题色： 角色 色值 用途 藏青 10263D 品牌结构、标题、导航、重要边界 暗金 B99B5B 少量强调、当前项与重点数据 铂灰 C7CCD1 分割线、次级边界与中性状态 暖纸 F5F2EA 页面底色与大面积画布 白 FFFFFF 卡片、输入面与反白区域 墨色 17202A 正文与高可读文字 灰色 5C6570 辅助文字、说明与元数据 暖纸与白作为主要表面，形成温和、清晰的资产",
     "url": "brand.html?brand=iptrust"
+  },
+  {
+    "type": "ip",
+    "slug": "opcglobal",
+    "title": "OPC Global",
+    "subtitle": "欧匹赛全球联盟 · OPC Global",
+    "text": "欧匹赛全球联盟是面向全球协作、标准与资源连接的 IP。 OPC Global is a global alliance IP for collaboration, standards, and resource connection. 全球联盟、标准建设与跨区域协作。 Global alliance, standards, and cross-region collaboration. 全球联盟 标准建设 跨区域协作 Global alliance Standards Cross-region collaboration 国际伙伴 联盟机构 标准制定团队 International partners Alliance institutions Standards teams 全球 联盟 标准 协作 Global Alliance Standards Collaboration OPC Global is a global alliance IP for collaboration, standards, and resource connection. https://opcglobal.ai deep blue graphite gold global alliance standards",
+    "url": "brand.html?brand=opcglobal"
+  },
+  {
+    "type": "ip",
+    "slug": "qingshuiting",
+    "title": "清水亭",
+    "subtitle": "清水亭",
+    "text": "清水亭是围绕丹江口河鲜与湖北风味发展的商场型楚菜品牌，属于丹江渔村相关餐饮品牌矩阵。 楚菜、丹江口河鲜、湖北风味与商场餐饮门店运营。 楚菜 河鲜 湖北风味 商场餐饮 家庭聚餐 商场客群 湖北菜消费者 楚菜 丹江口 河鲜 湖北 围绕丹江口河鲜与湖北风味发展的商场型楚菜品牌。 Hubei cuisine river fish Danjiangkou mall dining",
+    "url": "brand.html?brand=qingshuiting"
+  },
+  {
+    "type": "guide",
+    "slug": "qingshuiting",
+    "title": "README",
+    "subtitle": "清水亭 · Qingshuiting/README.md",
+    "text": "清水亭 中文优先的楚菜与丹江口河鲜餐饮 IP。 定位：楚菜、丹江口河鲜、湖北风味与商场餐饮 架构：母 IP 视觉状态：Provisional，待官方资产补充",
+    "url": "brand.html?brand=qingshuiting"
+  },
+  {
+    "type": "ip",
+    "slug": "youyuan-jingmeng",
+    "title": "游园京梦",
+    "subtitle": "游园京梦",
+    "text": "游园京梦自 2017 年起将淮扬菜与江南园林、昆曲意象融入城市商务与聚餐场景。 淮扬菜、城市商务餐饮、家庭聚餐与门店运营。 内部产品研究作为 API 受限私密 Notes 保存，不公开经营数据。 淮扬菜 城市餐饮 江南文化 商务客群 家庭聚餐 城市消费者 淮扬菜 江南园林 昆曲 北京 将淮扬菜与江南园林、昆曲意象融入城市餐饮场景的品牌。 Huaiyang cuisine Chinese garden Kunqu urban dining",
+    "url": "brand.html?brand=youyuan-jingmeng"
+  },
+  {
+    "type": "guide",
+    "slug": "youyuan-jingmeng",
+    "title": "README",
+    "subtitle": "游园京梦 · YouyuanJingmeng/README.md",
+    "text": "游园京梦 中文优先的淮扬菜与江南文化餐饮 IP。 定位：淮扬菜、江南园林意象与城市餐饮 架构：母 IP 私密资料：内部产品研究仅通过授权 API / MCP 访问 视觉状态：Provisional，待官方资产补充",
+    "url": "brand.html?brand=youyuan-jingmeng"
+  },
+  {
+    "type": "ip",
+    "slug": "subangyuan",
+    "title": "苏帮袁",
+    "subtitle": "苏帮袁",
+    "text": "苏帮袁以苏帮菜、淮扬菜和江南饮食文化为核心，名称中的“袁”取意美食家袁枚。 苏帮菜、淮扬菜、江南餐饮、门店运营与品牌发展。 内部产品研究作为 API 受限私密 Notes 保存，不公开经营数据。 苏帮菜 淮扬菜 江南餐饮 品牌连锁 家庭聚餐 商务用餐 江南菜消费者 苏帮菜 淮扬菜 袁枚 江南 以苏帮菜、淮扬菜和江南饮食文化为核心的中式餐饮品牌。 Jiangnan Huaiyang cuisine Suzhou cuisine Chinese dining",
+    "url": "brand.html?brand=subangyuan"
+  },
+  {
+    "type": "guide",
+    "slug": "subangyuan",
+    "title": "README",
+    "subtitle": "苏帮袁 · Subangyuan/README.md",
+    "text": "苏帮袁 中文优先的苏帮菜与淮扬菜餐饮 IP。 定位：苏帮菜、淮扬菜与江南饮食文化 架构：母 IP 私密资料：内部产品研究仅通过授权 API / MCP 访问 视觉状态：Provisional，待官方资产补充",
+    "url": "brand.html?brand=subangyuan"
+  },
+  {
+    "type": "ip",
+    "slug": "xiaotaoyuan",
+    "title": "小桃园",
+    "subtitle": "小桃园",
+    "text": "小桃园面向社区早餐与日常简餐，提供油条、粢饭团、鸭血粉丝汤和小笼包等中式早点。 中式早餐、社区简餐与门店运营。 中式早餐 社区简餐 餐饮门店 社区居民 家庭客群 上班族 早餐 油条 粢饭团 小笼包 面向社区早餐与日常简餐的中式餐饮品牌。 breakfast neighborhood Chinese snacks morning",
+    "url": "brand.html?brand=xiaotaoyuan"
+  },
+  {
+    "type": "guide",
+    "slug": "xiaotaoyuan",
+    "title": "README",
+    "subtitle": "小桃园 · Xiaotaoyuan/README.md",
+    "text": "小桃园 中文优先的社区早餐与日常简餐 IP，为同里市集子 IP。 定位：中式早餐、社区简餐与日常门店 规范模式：继承并扩展同里市集 视觉状态：Provisional，待官方资产补充",
+    "url": "brand.html?brand=xiaotaoyuan"
+  },
+  {
+    "type": "ip",
+    "slug": "ganglao-baozailu",
+    "title": "港佬煲仔炉车仔面碟头饭",
+    "subtitle": "港佬煲仔炉车仔面碟头饭",
+    "text": "港佬煲仔炉车仔面碟头饭聚焦煲仔饭、车仔面与碟头饭等港式街坊餐饮，公开资料仍待进一步核验。 煲仔饭、车仔面、碟头饭与港式简餐。 品牌定位依据现有名称建立，来源状态为 provisional。 港式简餐 煲仔饭 车仔面 社区食客 上班族 年轻客群 煲仔饭 车仔面 碟头饭 港式 聚焦煲仔饭、车仔面与碟头饭的港式街坊餐饮品牌。 claypot rice cart noodles Hong Kong street dining",
+    "url": "brand.html?brand=ganglao-baozailu"
+  },
+  {
+    "type": "guide",
+    "slug": "ganglao-baozailu",
+    "title": "README",
+    "subtitle": "港佬煲仔炉车仔面碟头饭 · GanglaoBaozailu/README.md",
+    "text": "港佬煲仔炉车仔面碟头饭 中文优先的港式街坊餐饮 IP，为同里市集子 IP。 定位：煲仔饭、车仔面、碟头饭与港式简餐 规范模式：继承并扩展同里市集 资料状态：Provisional，待官方资料核验",
+    "url": "brand.html?brand=ganglao-baozailu"
+  },
+  {
+    "type": "ip",
+    "slug": "shuangxi-shaola",
+    "title": "双囍烧腊",
+    "subtitle": "双囍烧腊",
+    "text": "双囍烧腊以粤式烧腊和便捷中式餐饮为核心，在同里市集设有门店。 粤式烧腊、中式简餐与餐饮门店运营。 粤式烧腊 中式简餐 餐饮门店 社区食客 上班族 家庭客群 烧腊 粤式 简餐 同里市集 以粤式烧腊和便捷中式餐饮为核心的餐饮品牌。 roast meat Cantonese quick dining double happiness",
+    "url": "brand.html?brand=shuangxi-shaola"
+  },
+  {
+    "type": "guide",
+    "slug": "shuangxi-shaola",
+    "title": "README",
+    "subtitle": "双囍烧腊 · ShuangxiShaola/README.md",
+    "text": "双囍烧腊 中文优先的粤式烧腊餐饮 IP，为同里市集子 IP。 定位：粤式烧腊与便捷中式餐饮 规范模式：继承并扩展同里市集 视觉状态：Provisional，待官方资产补充",
+    "url": "brand.html?brand=shuangxi-shaola"
+  },
+  {
+    "type": "ip",
+    "slug": "mutangwan",
+    "title": "睦堂湾",
+    "subtitle": "睦堂湾",
+    "text": "睦堂湾以海鲜打边炉、粤菜和港式风味为核心，服务家庭聚餐与社交用餐场景。 海鲜打边炉、粤菜、港式餐饮与门店运营。 海鲜餐饮 粤菜 港式风味 家庭聚餐 朋友聚会 商务客群 海鲜 打边炉 粤菜 港式 以海鲜打边炉、粤菜和港式风味为核心的餐饮品牌。 seafood hot pot Cantonese gathering",
+    "url": "brand.html?brand=mutangwan"
+  },
+  {
+    "type": "guide",
+    "slug": "mutangwan",
+    "title": "README",
+    "subtitle": "睦堂湾 · Mutangwan/README.md",
+    "text": "睦堂湾 中文优先的海鲜打边炉与粤菜餐饮 IP，为同里市集子 IP。 定位：海鲜打边炉、粤菜与港式风味 规范模式：继承并扩展同里市集 视觉状态：Provisional，待官方资产补充",
+    "url": "brand.html?brand=mutangwan"
+  },
+  {
+    "type": "ip",
+    "slug": "tongxianghui",
+    "title": "同香荟",
+    "subtitle": "同香荟",
+    "text": "同香荟以潮粤菜、港式粉面、打冷和传统风味为核心，在同里市集形成兼顾日常用餐与聚会的餐饮体验。 潮粤菜、港式粉面、烧味、打冷与餐饮门店运营。 潮粤菜 港式餐饮 餐饮门店 家庭聚餐 商务宴请 社区食客 潮粤菜 港式粉面 打冷 烧味 以潮粤菜、港式粉面、打冷和传统风味为核心的餐饮品牌。 Cantonese Chaozhou Hong Kong heritage",
+    "url": "brand.html?brand=tongxianghui"
+  },
+  {
+    "type": "guide",
+    "slug": "tongxianghui",
+    "title": "README",
+    "subtitle": "同香荟 · Tongxianghui/README.md",
+    "text": "同香荟 中文优先的潮粤与港式餐饮 IP，为同里市集子 IP。 定位：潮粤菜、港式粉面、打冷与传统风味 规范模式：继承并扩展同里市集 视觉状态：Provisional，待官方资产补充",
+    "url": "brand.html?brand=tongxianghui"
+  },
+  {
+    "type": "ip",
+    "slug": "tongli-market",
+    "title": "同里市集",
+    "subtitle": "同里市集",
+    "text": "同里市集是位于北京顺义后沙峪的社区型餐饮与生活方式市集，以多元餐饮、社交与社区活动形成邻里共享空间。 餐饮市集、社区生活方式、餐饮品牌运营与线下活动。 公开简介依据政府与公开媒体资料整理。 餐饮市集 社区商业 生活方式 社区居民 家庭客群 餐饮消费者 品牌合作方 北京顺义 市集 餐饮 社区 线下空间 北京顺义后沙峪的社区型餐饮与生活方式市集。 community market food neighborhood Beijing",
+    "url": "brand.html?brand=tongli-market"
+  },
+  {
+    "type": "guide",
+    "slug": "tongli-market",
+    "title": "README",
+    "subtitle": "同里市集 · TongliMarket/README.md",
+    "text": "同里市集 中文优先的社区型餐饮与生活方式市集 IP。 定位：北京顺义后沙峪的社区餐饮与邻里共享空间 业务：餐饮市集、社区生活方式、品牌运营与线下活动 架构：母 IP 视觉状态：Provisional，待官方资产补充",
+    "url": "brand.html?brand=tongli-market"
+  },
+  {
+    "type": "ip",
+    "slug": "yanan-shiyao-hotel",
+    "title": "延安石窑宾馆",
+    "subtitle": "延安石窑宾馆",
+    "text": "酒店住宿 在地文旅 场所体验 Hospitality Local travel Place experience 延安 宾馆 在地文化 Yan'an Hotel Local culture 中文优先的独立酒店与场所 IP。 stone cave dwelling Yan'an hospitality local culture",
+    "url": "brand.html?brand=yanan-shiyao-hotel"
+  },
+  {
+    "type": "guide",
+    "slug": "yanan-shiyao-hotel",
+    "title": "README",
+    "subtitle": "延安石窑宾馆 · YanAnShiyao/README.md",
+    "text": "延安石窑宾馆 中文优先的独立酒店与场所 IP。 基本资料 中文名：延安石窑宾馆 英文名：暂未设定 行业：酒店与住宿、文旅与目的地 IP 类型：场所/空间品牌 品牌状态：建档中 官网、简介、业务、地址、视觉资产与品牌规范暂留空，后续通过管理 API 补充。",
+    "url": "brand.html?brand=yanan-shiyao-hotel"
+  },
+  {
+    "type": "ip",
+    "slug": "kaoyu-shenhua",
+    "title": "烤鱼神话",
+    "subtitle": "烤鱼神话 · KAOYUSHENHUA",
+    "text": "三十多年老灶火，盐城大丰源头活鱼现点现烤，全店无预制菜。川湘家常味，街坊的老熟人。高兴了来，不高兴了更要来。 Thirty-plus years of charcoal fire; live fish from Dafeng, Yancheng, grilled to order; no prefab dishes. Sichuan-Hunan home cooking — the neighborhood regular. 烤鱼、川湘菜、餐饮门店运营、品牌连锁与供应链协同。 Grilled fish, Sichuan-Hunan cuisine, restaurant operations, brand franchising, and supply-chain coordination. 叙事与物料文案见 KaoyuShenhua/README.md。主口号：把实话坚持三十多年，就成了神话。已归档 Adobe Illustrator 原始标志，并提供网页预览与 PNG/JPG 导出。 Narrative and store copy live in KaoyuShenhua/README.md. Primary slogan: thirty-plus years of plain truth becomes the myth. Original Illustrator logo archived with browser previews and PNG/JPG exports. 餐饮品牌 烤鱼 川湘菜 连锁经营 Restaurant brand Grilled fish Sichuan-Hunan cuisine Chain operations 餐饮消费者 门店合作方 连锁经营团队 Restaurant guests Store partners Chain operating teams 烤鱼 川湘菜 中式餐饮 门店 品牌连锁 Grilled fish Sichuan-Hunan cuisine Chinese dining Restaurants Brand chain 三十多年老灶火，盐城大丰源头活鱼现点现烤，全店无预制菜的川湘烤鱼品牌。 grilled fish Sichuan-Hunan cuisine fire red restaurant symbol Chinese dining live fish charcoal fire no prefab 三十多年 橙红",
+    "url": "brand.html?brand=kaoyu-shenhua"
+  },
+  {
+    "type": "guide",
+    "slug": "kaoyu-shenhua",
+    "title": "README",
+    "subtitle": "烤鱼神话 · KaoyuShenhua/README.md",
+    "text": "烤鱼神话 品牌定位 烤鱼神话是以烤鱼与川湘菜为核心的餐饮品牌，通过鲜明符号、门店体验与稳定出品建立可识别、可扩展的品牌系统。 事实锚点：三十多年老灶火；盐城大丰源头活鱼，现点现烤；川湘家常味，当日鲜料；全店无预制菜。 品牌名称 中文主名称：烤鱼神话 英文名称：KAOYUSHENHUA 主语言：中文 业务 烤鱼与川湘菜 餐饮门店运营 品牌连锁 供应链协同 视觉资产 原始标志以 Adobe Illustrator 文件归档。网站提供逐页 PNG/JPG 预览与导出版本；原始文件、导出文件、格式、尺寸、文件大小及公开地址均通过品牌 API 的 adobeAssets 与 images 字段调用。 使用原则 优先使用原始矢量标志或透明背景 PNG。 不拉伸、不描边、不改变标志比例。 门店与餐饮场景以深墨、火红与暖金为核心色彩。 中文主名称始终优先显示，英文名称作为辅助识别。 Voice 实在、暖、不绕。街坊口气，不营销腔。火与桌是主语；",
+    "url": "brand.html?brand=kaoyu-shenhua"
+  },
+  {
+    "type": "ip",
+    "slug": "shanrenjing",
+    "title": "山人境",
+    "subtitle": "山人境 · shanpass",
+    "text": "山人境是一套面向景区、户外活动、研学营地、大型赛事与低信号区域作业的行程级人员安全基础设施。 shanpass is a journey-level safety infrastructure IP for scenic destinations, outdoor programs, study camps, large events, and low-connectivity field operations. 人员定位、风险预警、应急救援、行程安全云、智能终端、补盲通信、保险风控、监管看板与专家带队系统。 Personnel positioning, risk alerts, emergency rescue, journey safety cloud, smart terminals, coverage extension, insurance risk control, regulatory dashboards, and expert-led operations. 山人境定位为行程级人员安全基础设施。手环承担行程入口，平台连接定位、预警、调度、救援、留痕与理赔，救援协同和责任闭环构成核心价值。对外统一使用守护、保障、安全协同、应急响应、行程保障、风险预警、救援闭环与保险保障，避免使用“监控”“管控游客”“实时盯人”。 shanpass is journey-level personnel safety infrastructure. The wearable opens each journey, while the platform connects positioning, alerts, dispatch, rescue, records, and claims into an accountable response loop. Public language emphasizes protection, safety coordination, emergency response, risk alerts, and rescue assurance while avoiding surveillance framing. 户外安全基础设施 应急救援 智慧文旅 卫星与北斗应用 Outdoor safety infrastructure Emergency rescue Smart cultural tourism Satellite and BeiDou applications 景区与文旅运营方 学校与研学营地 赛事与团建组织方 政府监管与应急部门 保险机构 户外领队与巡护人员 Scenic and tourism operators Schools and study camps Event and corporate program organizers Government and emergency agencies Insurers Outdoor leaders and field patrol teams 行程安全 北斗定位 风险预警 应急救援 保险风控 低信号通信 安全云 Journey safety BeiDou positioning Risk alerts Emergency rescue Insurance risk control Low-connectivity communications Safety cloud 中文优先的行程级人员安全基础设施 IP，连接定位、风险预警、救援协同、保险风控与监管留痕。 mountain green star amber signal blue journey safety rescue coordination",
+    "url": "brand.html?brand=shanrenjing"
+  },
+  {
+    "type": "guide",
+    "slug": "shanrenjing",
+    "title": "README",
+    "subtitle": "山人境 · Shanrenjing/README.md",
+    "text": "山人境 山人境是中文优先的行程级人员安全基础设施 IP。 它面向景区、户外活动、研学营地、大型赛事、企业团建、边境巡护与低信号区域作业场景，将人员定位、风险预警、快速救援、保险风控、政府监管与专家带队连接成一个可验证、可复盘的安全闭环。 核心定位 山人境以行程级人员安全基础设施为核心定位，覆盖智能终端、通信链路、运营平台与救援协同。 手环承担行程入口，平台连接完整安全流程。定位提供基础能力，救援协同与责任闭环构成商业护城河。 核心价值： 可定位 可预警 可调度 可救援 可留痕 可理赔 可监管 可复盘 品牌主张 每一次出发，都应该被星空守护。 政企表达：以北斗为核心的位置安全基础设施，提升文旅、研学、户外活动与大型活动的人员安全治理能力。 用户表达：扫码戴上，出发有人看得见；遇险一键呼救，救援知道你在哪。 保险表达：把行程轨迹、设备状态、报警记录、救援响应和事故复盘转化为可核验的风险与理赔证据链。 专家带队表达：专家带队覆盖路线、",
+    "url": "brand.html?brand=shanrenjing"
+  },
+  {
+    "type": "ip",
+    "slug": "shenzhen-microsoft-global-center",
+    "title": "深圳微软出海中心",
+    "subtitle": "深圳微软出海中心 · Shenzhen Microsoft Global Center",
+    "text": "深圳微软出海中心是面向企业出海、技术生态与国际化增长服务的中文优先 IP。 Shenzhen Microsoft Global Center is a Chinese-first IP for company globalization, technology ecosystems, and international growth services. 企业出海、云与 AI 技术生态、国际化增长、伙伴连接与项目服务。 Company globalization, cloud and AI technology ecosystems, international growth, partner connection, and project services. 企业出海 技术生态 国际化增长 Company globalization Technology ecosystem International growth 出海企业 技术伙伴 生态服务团队 Globalizing companies Technology partners Ecosystem service teams 出海 微软生态 云与 AI 国际化 深圳 Going global Microsoft ecosystem Cloud and AI Internationalization Shenzhen 中文优先的企业出海、技术生态与国际化增长服务 IP。 globalization blue cloud cyan ecosystem green enterprise going global",
+    "url": "brand.html?brand=shenzhen-microsoft-global-center"
+  },
+  {
+    "type": "guide",
+    "slug": "shenzhen-microsoft-global-center",
+    "title": "README",
+    "subtitle": "深圳微软出海中心 · ShenzhenMicrosoftGlobalCenter/README.md",
+    "text": "深圳微软出海中心 · Shenzhen Microsoft Global Center 深圳微软出海中心是中文优先的企业出海、技术生态与国际化增长服务 IP。 Brand Role 主语言 ：中文 英文对照 ：Shenzhen Microsoft Global Center 赛道 ：企业出海 / 技术生态 / 国际化增长 人群 ：出海企业、技术伙伴、生态服务团队 业务 ：企业出海、云与 AI 技术生态、国际化增长、伙伴连接与项目服务 Voice 清晰、可信、面向企业决策。表达要优先使用中文，强调技术生态、国际化路径、伙伴连接和可落地的出海服务。 Visual Direction 以全球化蓝、云青、生态绿为基础，整体应有企业级可信度、技术生态感和深圳速度。避免过度营销化和廉价科技炫光。 Agent Notes 在生成深圳微软出海中心相关内容时，默认使用中文主名称。英文仅作为对照、URL、文件名或国际化字段使用。内容重点放在企业出海",
+    "url": "brand.html?brand=shenzhen-microsoft-global-center"
+  },
+  {
+    "type": "ip",
+    "slug": "nibiru",
+    "title": "Nibiru",
+    "subtitle": "睿悦科技 · Nibiru",
+    "text": "睿悦科技 Nibiru 是面向空间计算、智能体验与产品创新的科技 IP。 Nibiru is an English-first technology IP for spatial computing, intelligent experiences, and product innovation. 空间计算、智能硬件、沉浸式体验、产品创新与技术服务。 Spatial computing, intelligent hardware, immersive experiences, product innovation, and technology services. 空间计算 智能体验 科技产品 Spatial computing Intelligent experiences Technology products 科技伙伴 产品团队 空间计算开发者 Technology partners Product teams Spatial computing developers 科技 空间计算 智能硬件 沉浸式体验 Technology Spatial computing Intelligent hardware Immersive experience Nibiru is an English-first technology IP for spatial computing, intelligent experiences, and product innovation. deep space blue aurora mint violet signal spatial computing intelligent experience",
+    "url": "brand.html?brand=nibiru"
+  },
+  {
+    "type": "guide",
+    "slug": "nibiru",
+    "title": "README",
+    "subtitle": "Nibiru · Nibiru/README.md",
+    "text": "Nibiru · 睿悦科技 Nibiru is an English first technology IP for spatial computing, intelligent experiences, and product innovation. Brand Role Main language : English Chinese name : 睿悦科技 Tracks : Spatial computing / Intelligent experiences / Technology products Audiences : Technology partners, product teams, spatial computing developers Business : Spatial computing, intelligent hardware, immersive experiences, product inn",
+    "url": "brand.html?brand=nibiru"
+  },
+  {
+    "type": "ip",
+    "slug": "zhongzhiyou",
+    "title": "中智游集团",
+    "subtitle": "中智游集团 · Zhongzhiyou Group",
+    "text": "中智游集团是面向智慧文旅、目的地运营与文化旅游服务协作的集团 IP。 Zhongzhiyou Group is a Chinese-first group IP for smart cultural tourism, destination operations, and travel service collaboration. 智慧文旅、目的地运营、旅游服务协作、文化路线与项目孵化。 Smart cultural tourism, destination operations, travel service collaboration, cultural routes, and project incubation. 智慧文旅 目的地运营 文化旅游 Smart cultural tourism Destination operations Cultural travel 文旅集团 目的地伙伴 旅游服务团队 Cultural tourism groups Destination partners Travel service teams 文旅 智慧旅游 目的地 集团 运营 Cultural tourism Smart travel Destination Group Operations 中文优先的智慧文旅与目的地运营集团 IP。 smart tourism cultural travel destination green route gold group operation",
+    "url": "brand.html?brand=zhongzhiyou"
+  },
+  {
+    "type": "guide",
+    "slug": "zhongzhiyou",
+    "title": "README",
+    "subtitle": "中智游集团 · ZhongzhiyouGroup/README.md",
+    "text": "中智游集团 · Zhongzhiyou Group 中智游集团是中文优先的智慧文旅与目的地运营集团 IP。 Brand Role 主语言 ：中文 英文对照 ：Zhongzhiyou Group 赛道 ：智慧文旅 / 目的地运营 / 文化旅游 人群 ：文旅集团、目的地伙伴、旅游服务团队 业务 ：智慧文旅、目的地运营、旅游服务协作、文化路线与项目孵化 Voice 可信、清晰、有组织感。表达要优先使用中文，并把复杂的文旅业务拆成可执行的路线、服务、资源与协作关系。 Visual Direction 以目的地绿、路线金、湖蓝为基础，整体应有集团级可信度、文旅温度和智慧运营感。避免廉价旅行促销视觉和过度科技感。 Agent Notes 在生成中智游集团相关内容时，默认使用中文主名称。英文仅作为对照、URL、文件名或国际化字段使用。内容重点放在智慧文旅、目的地运营、文化路线、服务协作与项目孵化。",
+    "url": "brand.html?brand=zhongzhiyou"
+  },
+  {
+    "type": "ip",
+    "slug": "xinzhi-travel",
+    "title": "信致旅游",
+    "subtitle": "信致旅游 · Xinzhi Travel",
+    "text": "信致旅游是面向目的地体验、文化路线与可信服务的旅游 IP。 Xinzhi Travel is a travel IP for destination experiences, cultural routes, and trusted hospitality services. 目的地旅游、文化路线、定制旅行、在地体验与旅游服务协作。 Destination travel, cultural routes, bespoke journeys, local experiences, and travel-service collaboration. 目的地旅游 文化路线 在地体验 Destination travel Cultural routes Local experiences 旅行者 目的地伙伴 文旅运营方 Travelers Destination partners Cultural tourism operators 旅游 文旅 路线 体验 在地 Travel Cultural tourism Routes Experience Locality Destination travel and cultural journey IP for thoughtful routes, local hospitality, and trusted travel experiences. destination green route gold mist blue travel local experience",
+    "url": "brand.html?brand=xinzhi-travel"
+  },
+  {
+    "type": "guide",
+    "slug": "xinzhi-travel",
+    "title": "README",
+    "subtitle": "信致旅游 · XinzhiTravel/README.md",
+    "text": "信致旅游 · Xinzhi Travel 信致旅游是面向目的地体验、文化路线与可信服务的旅游 IP。 Brand Role 主语言 ：中文 英文对照 ：Xinzhi Travel 赛道 ：目的地旅游 / 文化路线 / 在地体验 人群 ：旅行者、目的地伙伴、文旅运营方 业务 ：目的地旅游、文化路线、定制旅行、在地体验与旅游服务协作 Voice 真诚、清晰、有抵达感。语言要像一条可靠路线：不过度煽情，也不把旅行降格为消费清单。 Visual Direction 目的地绿、路线金、雾蓝为基础。整体应有可信服务感和轻微的文化温度，避免廉价旅行社式高饱和促销视觉。 Agent Notes 在生成信致旅游相关内容时，优先表达“可信、在地、路线、体验、文化理解”。面向用户时减少抽象口号，多给具体路线、场景、服务承诺与目的地细节。",
+    "url": "brand.html?brand=xinzhi-travel"
+  },
+  {
+    "type": "ip",
+    "slug": "inucleus",
+    "title": "iNucleus",
+    "subtitle": "iNucleus",
+    "text": "iNucleus is an AI-native operating nucleus for knowledge systems, agent coordination, and IP evolution. Knowledge systems, agent coordination, AI-native operations, and IP evolution infrastructure. AI-native operations Knowledge systems Agent coordination Founders Agent builders Knowledge system teams AI Nucleus Knowledge Agents Operations AI-native operating nucleus for knowledge systems, agent coordination, and IP evolution. AI nucleus knowledge systems agent coordination dark core electric blue",
+    "url": "brand.html?brand=inucleus"
+  },
+  {
+    "type": "guide",
+    "slug": "inucleus",
+    "title": "README",
+    "subtitle": "iNucleus · iNucleus/README.md",
+    "text": "iNucleus iNucleus is an AI native operating nucleus for knowledge systems, agent coordination, and IP evolution. Brand Role Primary language : English Track : AI native operations / knowledge systems / agent coordination Audience : founders, agent builders, knowledge system teams Operating idea : a compact core where knowledge, decisions, agents, and evolving IP assets stay aligned. Voice Precise, calm, systemic, and",
+    "url": "brand.html?brand=inucleus"
+  },
+  {
+    "type": "ip",
+    "slug": "ksamint",
+    "title": "ksamint",
+    "subtitle": "查明 · ksamint",
+    "text": "查明 ksamint 是面向清晰判断、信息核验与轻盈智能协作的 IP。 ksamint is an IP for clear judgment, information verification, and lightweight intelligent collaboration. 信息核验、研究辅助、智能检索与清晰表达。 Information verification, research assistance, intelligent search, and clear expression. 知识判断 创作文风 私密技能 Knowledge judgment Creative voice Private skills 创作者 顾问 Agent 操盘者 Creators Advisors Agent operators 查明 判断 写作 Skill Clarity Judgment Writing Skill Clarity-oriented IP system for inquiry, verification, and fresh intelligence. mint clarity verification fresh intelligence clear judgment",
+    "url": "brand.html?brand=ksamint"
+  },
+  {
+    "type": "guide",
+    "slug": "ksamint",
+    "title": "README",
+    "subtitle": "ksamint · ksamint/README.md",
+    "text": "ksamint / 查明 Overview ksamint 是面向清晰判断、信息核验与轻盈智能协作的 IP。它帮助用户把混杂信息查清、讲明、沉淀为可复用的知识与行动依据。 ksamint is an IP for clear judgment, information verification, and lightweight intelligent collaboration. It turns mixed signals into checked context, concise explanation, and reusable knowledge. Brand Role English name: ksamint Chinese name: 查明 Main language: English Role: clarity oriented inquiry and verification IP Visual Directi",
+    "url": "brand.html?brand=ksamint"
+  },
+  {
+    "type": "ip",
+    "slug": "pam",
+    "title": "帕姆建筑",
+    "subtitle": "帕姆建筑 · PaM Design Office",
+    "text": "帕姆建筑是成立于北京的年轻建筑师事务所，以原创力、人文艺术感受与在地材料叙事探索空间的新可能。 PaM Design Office is a young Beijing architecture practice exploring new spatial possibilities through originality, local culture, restraint, and material feeling. 建筑设计、乡村文旅、民宿与私宅、艺术文化空间。 Architecture, rural cultural tourism, boutique stays, private residences, and art-cultural spaces. 品牌释义：Plus & Multiply。联系：miqiangqiang@pamdesignoffice.com Brand meaning: Plus & Multiply. Contact: miqiangqiang@pamdesignoffice.com 建筑设计 民宿文旅 空间改造 Architecture Boutique hospitality Spatial renovation 业主 文旅项目 空间品牌 Owners Cultural tourism projects Spatial brands 建筑 空间 民宿 在地性 Architecture Space Hospitality Locality Young Beijing architecture office shaped by originality, local culture, restraint, and material feeling. paper white ink black warm grey ochre architecture locality restraint",
+    "url": "brand.html?brand=pam"
+  },
+  {
+    "type": "guide",
+    "slug": "pam",
+    "title": "Pm Design",
+    "subtitle": "帕姆建筑 · PAM/pm_design.md",
+    "text": "帕姆建筑 · 设计规范 design.md 依据《帕姆建筑 建筑作品选摘（总）》与《帕姆建筑民宿项目》两份资料分析整理。 用途：作为本项目所有设计产出（作品集、提案册、幻灯片、网页等）的统一设计语言。 1. 品牌分析 1.1 品牌事实 名称 ：帕姆建筑 / PaM Design Office 品牌释义 ：Plus & Multiply（加法与乘法） 成立 ：2016 年，北京 主创 ：米麒光（中央美术学院建筑学院，2008 2015；帕姆执行总监，2017 ） 联系 ：miqiangqiang@pamdesignoffice.com 1.2 定位与气质 年轻的建筑师事务所，坚持 原创力 ，融合 人文与艺术 的感受，挖掘文化与品牌价值诉求，探索空间新的可能性。 项目谱系横跨：乡村文旅（大理、延安梁家河、武夷山）、民宿与私宅（野三坡、海螺沟、青城山、金坛）、艺术文化空间（美术馆、书苑、茶空间）。 关键词： 在地性、克制、人文、材料感",
+    "url": "brand.html?brand=pam"
+  },
+  {
+    "type": "ip",
+    "slug": "apuch",
+    "title": "APUCH",
+    "subtitle": "APUCH",
+    "text": "APUCH means A Place U Called Home. 家园叙事 生活空间 社区连接 Home narrative Living spaces Community connection 国际居住者 社区伙伴 空间运营方 Global residents Community partners Space operators 家 空间 社区 连接 Home Place Community Connection A Place U Called Home. home belonging shelter threshold A Place U Called Home",
+    "url": "brand.html?brand=apuch"
+  },
+  {
+    "type": "guide",
+    "slug": "apuch",
+    "title": "README",
+    "subtitle": "APUCH · APUCH/README.md",
+    "text": "APUCH Meaning: A Place U Called Home Chinese name: Brand Role APUCH means A Place U Called Home. Visual Direction Temperament: warm, safe, intimate, open, home like. Color cues: deep ink blue, knowledge gold, soft paper, institutional green. Imagery cues: threshold, home light, table, doorway, belonging, shelter, warm civic space. Agent Notes Use APUCH as the public IP name. Expand APUCH as A Place U Called Home . Ch",
+    "url": "brand.html?brand=apuch"
+  },
+  {
+    "type": "ip",
+    "slug": "boya",
+    "title": "博雅问渠书院",
+    "subtitle": "博雅问渠书院 · PKU BOYA Academy",
+    "text": "博雅问渠书院是面向博雅教育、经典深度与当代知识流动的书院 IP。 PKU BOYA Academy is an academy IP for liberal education, classical depth, and contemporary knowledge flow. 博雅教育、知识研究、书院课程与公共学习。 Liberal education, knowledge research, academy programs, and public learning. 博雅教育 书院体系 知识共同体 Liberal arts education Academy system Knowledge community 学生 教育者 终身学习者 Students Educators Lifelong learners 博雅 教育 书院 知识 Liberal arts Education Academy Knowledge Liberal education and inquiry academy IP system. academy boya knowledge inquiry classical learning",
+    "url": "brand.html?brand=boya"
+  },
+  {
+    "type": "guide",
+    "slug": "boya",
+    "title": "README",
+    "subtitle": "博雅问渠书院 · BOYA/README.md",
+    "text": "PKU BOYA Academy Chinese name: 博雅问渠书院 Brand Role PKU BOYA Academy is a learning and inquiry IP centered on liberal education, classical depth, and contemporary knowledge flow. Visual Direction Temperament: scholarly, clear, calm, rigorous, open. Color cues: academy blue, warm gold, paper white, soft stone grey. Imagery cues: reading rooms, flowing water, question marks, book margins, courtyards, knowledge maps. Agent",
+    "url": "brand.html?brand=boya"
+  },
+  {
+    "type": "ip",
+    "slug": "changoods",
+    "title": "常幸",
+    "subtitle": "常幸 · Changoods",
+    "text": "常幸是面向日常好运、温暖物品与身心友好生活的 IP。 Changoods is an IP for everyday good fortune, warm goods, and wellbeing-oriented living. 生活方式、好物、身心友好产品。 Lifestyle, goods, and wellbeing-oriented products. 生活方式 日常幸福 品牌商品 Lifestyle Everyday wellbeing Branded goods 生活方式用户 消费品牌 社群零售 Lifestyle consumers Consumer brands Community retail 生活 常幸 商品 幸福 Lifestyle Goodness Goods Wellbeing Placeholder brand system for 常幸 · Changoods. good fortune everyday warmth goods wellbeing",
+    "url": "brand.html?brand=changoods"
+  },
+  {
+    "type": "guide",
+    "slug": "changoods",
+    "title": "README",
+    "subtitle": "常幸 · Changoods/README.md",
+    "text": "常幸 · Changoods 主 IP： 常幸 英文名： Changoods Status Placeholder brand folder. Add design guidelines, tokens, assets, and voice rules here as the IP system matures. Local Structure assets/brand images/ — brand visuals and generated hero images tokens/ — machine readable design tokens",
+    "url": "brand.html?brand=changoods"
+  },
+  {
+    "type": "ip",
+    "slug": "rgd",
+    "title": "燃古豋",
+    "subtitle": "燃古豋 · RGD",
+    "text": "燃古豋是面向古意、火光、仪式与手作精神的 IP。 RGD is an IP for ancient spirit, firelight, ritual, and craft. 文化内容、仪式体验、手作与美学产品。 Cultural content, ritual experiences, craft, and aesthetic products. 传统文化转译 品牌叙事 东方美学 Heritage translation Brand narrative Eastern aesthetics 文化品牌 内容团队 美学项目 Cultural brands Content teams Aesthetic projects 传统 文化 叙事 美学 Heritage Culture Narrative Aesthetics Placeholder brand system for 燃古豋 · RGD. ember ancient ritual craft fire",
+    "url": "brand.html?brand=rgd"
+  },
+  {
+    "type": "guide",
+    "slug": "rgd",
+    "title": "README",
+    "subtitle": "燃古豋 · RGD/README.md",
+    "text": "燃古豋 · RGD 主 IP： 燃古豋 英文名： RGD Status Placeholder brand folder. Add design guidelines, tokens, assets, and voice rules here as the IP system matures. Local Structure assets/brand images/ — brand visuals and generated hero images tokens/ — machine readable design tokens",
+    "url": "brand.html?brand=rgd"
+  },
+  {
+    "type": "ip",
+    "slug": "agem",
+    "title": "游赋社",
+    "subtitle": "游赋社 · AGEM",
+    "text": "游赋社是面向游历、文化体验与共创社区的 IP。 AGEM is an IP for travel, cultural experience, and co-creative community. 文化游历、体验设计、社区共创。 Cultural travel, experience design, and community co-creation. 游学体验 文化赋能 社群旅行 Learning journeys Cultural empowerment Community travel 体验策划者 文化机构 社群用户 Experience designers Cultural institutions Community members 游学 文化 体验 社群 Journey Culture Experience Community Placeholder brand system for 游赋社 · AGEM. travel play culture community creation",
+    "url": "brand.html?brand=agem"
+  },
+  {
+    "type": "guide",
+    "slug": "agem",
+    "title": "README",
+    "subtitle": "游赋社 · AGEM/README.md",
+    "text": "游赋社 · AGEM 主 IP： 游赋社 英文名： AGEM Status Placeholder brand folder. Add design guidelines, tokens, assets, and voice rules here as the IP system matures. Local Structure assets/brand images/ — brand visuals and generated hero images tokens/ — machine readable design tokens",
+    "url": "brand.html?brand=agem"
+  },
+  {
+    "type": "ip",
+    "slug": "1stepmore",
+    "title": "1stepmore",
+    "subtitle": "壹目贯维 · 1stepmore",
+    "text": "1stepmore 是面向清晰决策、连续系统与精密执行的 IP。 1stepmore is an IP for clear decisions, continuous systems, and precise execution. 系统方法、决策工具与执行框架。 Systems methods, decision tools, and execution frameworks. 系统思维 战略结构 持续进化 Systems thinking Strategic structure Continuous evolution 创始人 项目负责人 知识工作者 Founders Project owners Knowledge workers 系统 战略 进化 结构 Systems Strategy Evolution Structure Placeholder brand system for 1stepmore · 壹目贯维. one step clarity continuity systems precision",
+    "url": "brand.html?brand=1stepmore"
+  },
+  {
+    "type": "guide",
+    "slug": "1stepmore",
+    "title": "README",
+    "subtitle": "1stepmore · 1stepmore/README.md",
+    "text": "1stepmore · 壹目贯维 主 IP： 1stepmore 中文名： 壹目贯维 Status Placeholder brand folder. Add design guidelines, tokens, assets, and voice rules here as the IP system matures. Local Structure assets/brand images/ — brand visuals and generated hero images tokens/ — machine readable design tokens",
+    "url": "brand.html?brand=1stepmore"
+  },
+  {
+    "type": "ip",
+    "slug": "axisee",
+    "title": "Axisee",
+    "subtitle": "酒店盈利大师 · Axisee",
+    "text": "Axisee 是面向酒店营销、私域运营与收入增长的 AI 总经理。 Axisee is an AI General Manager for hotel marketing, private-domain operations, and revenue growth. 酒店营销、私域运营、收益管理。 Hotel marketing, private-domain operations, and revenue management. 酒店盈利 收益管理 经营增长 Hotel profitability Revenue management Operating growth 酒店业主 总经理 收益团队 Hotel owners General managers Revenue teams 酒店 盈利 收益 增长 Hotel Profitability Revenue Growth AI General Manager for hotel marketing, private-domain operations, and revenue. universe blue Vanahom red promising gold hotel AI three agents",
+    "url": "brand.html?brand=axisee"
+  },
+  {
+    "type": "guide",
+    "slug": "axisee",
+    "title": "Axisee Design",
+    "subtitle": "Axisee · Axisee/axisee_design.md",
+    "text": "Axisee Design System The canonical design guideline for all Axisee products. 单一可信来源 · Single Source of Truth for every Axisee UI (web, admin console, mobile member, 企微 sidebar tools). Axisee（酒店盈利大师 / Hotel Revenue Master ）is a centralized AI General Manager for hotel AI marketing, 私域营销 (private domain marketing) and profit optimization. The product is organized around three intelligent Agents , and the entire visual ",
+    "url": "brand.html?brand=axisee"
   },
   {
     "type": "ip",
@@ -321,443 +705,75 @@
   },
   {
     "type": "ip",
-    "slug": "axisee",
-    "title": "Axisee",
-    "subtitle": "酒店盈利大师 · Axisee",
-    "text": "Axisee 是面向酒店营销、私域运营与收入增长的 AI 总经理。 Axisee is an AI General Manager for hotel marketing, private-domain operations, and revenue growth. 酒店营销、私域运营、收益管理。 Hotel marketing, private-domain operations, and revenue management. 酒店盈利 收益管理 经营增长 Hotel profitability Revenue management Operating growth 酒店业主 总经理 收益团队 Hotel owners General managers Revenue teams 酒店 盈利 收益 增长 Hotel Profitability Revenue Growth AI General Manager for hotel marketing, private-domain operations, and revenue. universe blue Vanahom red promising gold hotel AI three agents",
-    "url": "brand.html?brand=axisee"
-  },
-  {
-    "type": "guide",
-    "slug": "axisee",
-    "title": "Axisee Design",
-    "subtitle": "Axisee · Axisee/axisee_design.md",
-    "text": "Axisee Design System The canonical design guideline for all Axisee products. 单一可信来源 · Single Source of Truth for every Axisee UI (web, admin console, mobile member, 企微 sidebar tools). Axisee（酒店盈利大师 / Hotel Revenue Master ）is a centralized AI General Manager for hotel AI marketing, 私域营销 (private domain marketing) and profit optimization. The product is organized around three intelligent Agents , and the entire visual ",
-    "url": "brand.html?brand=axisee"
+    "slug": "manaendless",
+    "title": "无魔协会",
+    "subtitle": "无魔协会 · MANA Endless",
+    "text": "无魔协会是面向持续学习、清明协作与联盟实验的 IP。 MANA Endless is an IP for continuous learning, clear collaboration, and alliance experiments. 联盟、学习社区与协作实验。 Alliance, learning community, and collaboration experiments. 学习社区 清明协作 联盟实验 Learning community Clear collaboration Alliance experiments 终身学习者 协作者 社群组织者 Lifelong learners Collaborators Community organizers 学习 社区 协作 实验 Learning Community Collaboration Experiment Alliance brand placeholder for future design guidelines. charcoal silver violet grey clarity continuous learning",
+    "url": "brand.html?brand=manaendless"
   },
   {
     "type": "ip",
-    "slug": "sidera",
-    "title": "侍天 - 智慧餐饮",
-    "subtitle": "侍天 - 智慧餐饮 · tiansight",
-    "text": "侍天是面向智慧餐饮、饮食知识与餐饮品牌内容系统的中文优先 IP。 tiansight is a Chinese-first IP for smart dining, food knowledge, and food brand content systems. 智慧餐饮、饮食知识、料理内容、美食体验与餐饮品牌内容系统。 Smart dining, food knowledge, culinary content, dining experience, and food brand content systems. 参考链接：https://frienji.kenjilopezalt.com/；https://www.seriouseats.com/ Reference links: https://frienji.kenjilopezalt.com/; https://www.seriouseats.com/ 智慧餐饮 饮食知识 料理内容 Smart dining Food knowledge Culinary content 料理创作者 餐饮品牌 美食学习者 Culinary creators Food brands Food learners 智慧餐饮 料理 饮食 内容 体验 Smart dining Culinary Food Content Experience 侍天是面向智慧餐饮、饮食知识与餐饮品牌内容系统的中文优先 IP。 ink ivory pale manuscript earth gold vermillion wisdom navigator",
-    "url": "brand.html?brand=tiansight"
+    "slug": "apha",
+    "title": "亚太艺术疗愈联盟",
+    "subtitle": "亚太艺术疗愈联盟 · APHA",
+    "text": "亚太艺术疗愈联盟连接艺术、身心疗愈与跨区域协作。 APHA connects healing arts, wellbeing practice, and Asia-Pacific collaboration. 艺术疗愈、教育、研究与联盟协作。 Healing arts, education, research, and alliance collaboration. 艺术疗愈 身心教育 亚太联盟 Healing arts Wellbeing education Asia-Pacific alliance 疗愈师 艺术教育者 研究机构 Healing practitioners Art educators Research institutions 艺术 疗愈 教育 联盟 Art Healing Education Alliance Asia-Pacific Healing Arts Alliance. mineral blue sage clay healing arts Asia-Pacific",
+    "url": "brand.html?brand=apha"
   },
   {
     "type": "guide",
-    "slug": "sidera",
-    "title": "Tiansight Design",
-    "subtitle": "侍天 - 智慧餐饮 · Tiansight/tiansight_design.md",
-    "text": "tiansight 侍天 — Design System Build ready brand & visual spec for agents producing on brand 侍天 work. 一句话： 素墨为纸、玄墨为字、土金为骨；沉稳敢言、有据可依。 Ink is the paper, charcoal is the voice, gold is the structure — composed, forthright, evidence based. tiansight 侍天 — 智慧领航者 · Wisdom Navigator for premium F&B chains. We equip every valuable mid to high end F&B chain with a \"see clearly, move betably, compound easily\" smart navigation sys",
-    "url": "brand.html?brand=tiansight"
-  },
-  {
-    "type": "ip",
-    "slug": "1stepmore",
-    "title": "1stepmore",
-    "subtitle": "壹目贯维 · 1stepmore",
-    "text": "1stepmore 是面向清晰决策、连续系统与精密执行的 IP。 1stepmore is an IP for clear decisions, continuous systems, and precise execution. 系统方法、决策工具与执行框架。 Systems methods, decision tools, and execution frameworks. 系统思维 战略结构 持续进化 Systems thinking Strategic structure Continuous evolution 创始人 项目负责人 知识工作者 Founders Project owners Knowledge workers 系统 战略 进化 结构 Systems Strategy Evolution Structure Placeholder brand system for 1stepmore · 壹目贯维. one step clarity continuity systems precision",
-    "url": "brand.html?brand=1stepmore"
-  },
-  {
-    "type": "guide",
-    "slug": "1stepmore",
+    "slug": "apha",
     "title": "README",
-    "subtitle": "1stepmore · 1stepmore/README.md",
-    "text": "1stepmore · 壹目贯维 主 IP： 1stepmore 中文名： 壹目贯维 Status Placeholder brand folder. Add design guidelines, tokens, assets, and voice rules here as the IP system matures. Local Structure assets/brand images/ — brand visuals and generated hero images tokens/ — machine readable design tokens",
-    "url": "brand.html?brand=1stepmore"
+    "subtitle": "亚太艺术疗愈联盟 · APHA/README.md",
+    "text": "APHA Chinese name: 亚太艺术疗愈联盟 English descriptor: Asia Pacific Healing Arts Alliance Brand Role APHA is an Asia Pacific arts and healing alliance IP for creative wellbeing, therapeutic arts, and cross cultural care practices. Visual Direction Temperament: restorative, humane, professional, warm, spacious. Color cues: mineral blue, sage green, clay, warm ivory. Imagery cues: gentle movement, art practice, natural textur",
+    "url": "brand.html?brand=apha"
   },
   {
     "type": "ip",
-    "slug": "agem",
-    "title": "游赋社",
-    "subtitle": "游赋社 · AGEM",
-    "text": "游赋社是面向游历、文化体验与共创社区的 IP。 AGEM is an IP for travel, cultural experience, and co-creative community. 文化游历、体验设计、社区共创。 Cultural travel, experience design, and community co-creation. 游学体验 文化赋能 社群旅行 Learning journeys Cultural empowerment Community travel 体验策划者 文化机构 社群用户 Experience designers Cultural institutions Community members 游学 文化 体验 社群 Journey Culture Experience Community Placeholder brand system for 游赋社 · AGEM. travel play culture community creation",
-    "url": "brand.html?brand=agem"
+    "slug": "kind",
+    "title": "KiND",
+    "subtitle": "善渡科技 · KiND",
+    "text": "KiND 是以人为先的 AI 劳动力品牌，让 AI 成为服务每一个人的普惠能力。 KiND is a human-first AI workforce brand: AI for all, not for few. AI 劳动力、智能体产品与企业自动化。 AI workforce, agent products, and enterprise automation. AI 劳动力 企业自动化 智能体产品 AI workforce Enterprise automation Agent products 企业团队 运营人员 AI 服务商 Enterprise teams Operations teams AI service providers AI 劳动力 自动化 善意科技 AI Workforce Automation Human-first Human-first AI workforce brand: for all, not for few. teal mint coral kind workforce inclusive AI",
+    "url": "brand.html?brand=kind"
   },
   {
     "type": "guide",
-    "slug": "agem",
-    "title": "README",
-    "subtitle": "游赋社 · AGEM/README.md",
-    "text": "游赋社 · AGEM 主 IP： 游赋社 英文名： AGEM Status Placeholder brand folder. Add design guidelines, tokens, assets, and voice rules here as the IP system matures. Local Structure assets/brand images/ — brand visuals and generated hero images tokens/ — machine readable design tokens",
-    "url": "brand.html?brand=agem"
+    "slug": "kind",
+    "title": "KiND Design",
+    "subtitle": "KiND · KiND/KiND Design.md",
+    "text": "KiND — Design System 善渡科技 · Kind Technology for all, not for few. A single reference for anyone designing or building KiND surfaces. Pairs with kind.css (tokens + components) and the Brand Book (story, voice, lexicon). 1. Brand in one breath KiND turns AI into a Kind Workforce anyone can hire — AI for all, not for few. The name is a pun and the axis of everything: kind (warm, human first) and a kind of (a new role — ",
+    "url": "brand.html?brand=kind"
+  },
+  {
+    "type": "guide",
+    "slug": "kind",
+    "title": "Kind Skill Md",
+    "subtitle": "KiND · KiND/kind-skill-md.md",
+    "text": "KiND — Brand & Design System for all, not for few. KiND turns AI into a Kind Workforce anyone can hire. The name is the axis of everything: kind (warm, human first) and a kind of (a new role). This file is the operating guide. Read it first, then load the bundled files as the task needs them. Do not invent tokens, colors, or components — everything you need is in the files below. Folder layout kind brand/ ├─ SKILL.md",
+    "url": "brand.html?brand=kind"
+  },
+  {
+    "type": "guide",
+    "slug": "kind",
+    "title": "Preview",
+    "subtitle": "KiND · KiND/preview.html",
+    "text": "KiND · Design System Preview / page local styles only — everything brand level comes from kind.css / .section{padding:var( s 8) 0;border bottom:1px solid var( border)} .section h2{font size:var( t h2);margin:var( s 3) 0 var( s 5)} .swatches{display:grid;grid template columns:repeat(auto fill,minmax(150px,1fr));gap:var( s 3)} .sw{border:1px solid var( border);border radius:var( r md);overflow:hidden;background:var( su",
+    "url": "brand.html?brand=kind"
   },
   {
     "type": "ip",
-    "slug": "rgd",
-    "title": "燃古豋",
-    "subtitle": "燃古豋 · RGD",
-    "text": "燃古豋是面向古意、火光、仪式与手作精神的 IP。 RGD is an IP for ancient spirit, firelight, ritual, and craft. 文化内容、仪式体验、手作与美学产品。 Cultural content, ritual experiences, craft, and aesthetic products. 传统文化转译 品牌叙事 东方美学 Heritage translation Brand narrative Eastern aesthetics 文化品牌 内容团队 美学项目 Cultural brands Content teams Aesthetic projects 传统 文化 叙事 美学 Heritage Culture Narrative Aesthetics Placeholder brand system for 燃古豋 · RGD. ember ancient ritual craft fire",
-    "url": "brand.html?brand=rgd"
+    "slug": "sanctem",
+    "title": "Sanctem",
+    "subtitle": "东方康养疗愈品牌 · Sanctem",
+    "text": "Sanctem 是东方康养疗愈品牌，面向身心复原、旅居疗愈与克制的健康服务体验。 Sanctem is an oriental wellness and healing brand for restorative care, healing stays, and restrained wellbeing services. 康养疗愈、东方身心护理、旅居疗愈体验与品牌化健康服务。 Wellness healing, oriental body-mind care, restorative stays, and branded wellbeing services. 东方康养 疗愈服务 身心复原 Oriental wellbeing Healing service Restorative care 疗愈体验用户 康养空间 服务设计团队 Healing guests Wellbeing spaces Service design teams 康养 疗愈 东方 复原 Wellbeing Healing Oriental Restorative Oriental wellness and healing brand. oriental wellness healing sage warm gold restorative care",
+    "url": "brand.html?brand=sanctem"
   },
   {
     "type": "guide",
-    "slug": "rgd",
+    "slug": "sanctem",
     "title": "README",
-    "subtitle": "燃古豋 · RGD/README.md",
-    "text": "燃古豋 · RGD 主 IP： 燃古豋 英文名： RGD Status Placeholder brand folder. Add design guidelines, tokens, assets, and voice rules here as the IP system matures. Local Structure assets/brand images/ — brand visuals and generated hero images tokens/ — machine readable design tokens",
-    "url": "brand.html?brand=rgd"
-  },
-  {
-    "type": "ip",
-    "slug": "changoods",
-    "title": "常幸",
-    "subtitle": "常幸 · Changoods",
-    "text": "常幸是面向日常好运、温暖物品与身心友好生活的 IP。 Changoods is an IP for everyday good fortune, warm goods, and wellbeing-oriented living. 生活方式、好物、身心友好产品。 Lifestyle, goods, and wellbeing-oriented products. 生活方式 日常幸福 品牌商品 Lifestyle Everyday wellbeing Branded goods 生活方式用户 消费品牌 社群零售 Lifestyle consumers Consumer brands Community retail 生活 常幸 商品 幸福 Lifestyle Goodness Goods Wellbeing Placeholder brand system for 常幸 · Changoods. good fortune everyday warmth goods wellbeing",
-    "url": "brand.html?brand=changoods"
-  },
-  {
-    "type": "guide",
-    "slug": "changoods",
-    "title": "README",
-    "subtitle": "常幸 · Changoods/README.md",
-    "text": "常幸 · Changoods 主 IP： 常幸 英文名： Changoods Status Placeholder brand folder. Add design guidelines, tokens, assets, and voice rules here as the IP system matures. Local Structure assets/brand images/ — brand visuals and generated hero images tokens/ — machine readable design tokens",
-    "url": "brand.html?brand=changoods"
-  },
-  {
-    "type": "ip",
-    "slug": "boya",
-    "title": "博雅问渠书院",
-    "subtitle": "博雅问渠书院 · PKU BOYA Academy",
-    "text": "博雅问渠书院是面向博雅教育、经典深度与当代知识流动的书院 IP。 PKU BOYA Academy is an academy IP for liberal education, classical depth, and contemporary knowledge flow. 博雅教育、知识研究、书院课程与公共学习。 Liberal education, knowledge research, academy programs, and public learning. 博雅教育 书院体系 知识共同体 Liberal arts education Academy system Knowledge community 学生 教育者 终身学习者 Students Educators Lifelong learners 博雅 教育 书院 知识 Liberal arts Education Academy Knowledge Liberal education and inquiry academy IP system. academy boya knowledge inquiry classical learning",
-    "url": "brand.html?brand=boya"
-  },
-  {
-    "type": "guide",
-    "slug": "boya",
-    "title": "README",
-    "subtitle": "博雅问渠书院 · BOYA/README.md",
-    "text": "PKU BOYA Academy Chinese name: 博雅问渠书院 Brand Role PKU BOYA Academy is a learning and inquiry IP centered on liberal education, classical depth, and contemporary knowledge flow. Visual Direction Temperament: scholarly, clear, calm, rigorous, open. Color cues: academy blue, warm gold, paper white, soft stone grey. Imagery cues: reading rooms, flowing water, question marks, book margins, courtyards, knowledge maps. Agent",
-    "url": "brand.html?brand=boya"
-  },
-  {
-    "type": "ip",
-    "slug": "apuch",
-    "title": "APUCH",
-    "subtitle": "APUCH",
-    "text": "APUCH means A Place U Called Home. 家园叙事 生活空间 社区连接 Home narrative Living spaces Community connection 国际居住者 社区伙伴 空间运营方 Global residents Community partners Space operators 家 空间 社区 连接 Home Place Community Connection A Place U Called Home. home belonging shelter threshold A Place U Called Home",
-    "url": "brand.html?brand=apuch"
-  },
-  {
-    "type": "guide",
-    "slug": "apuch",
-    "title": "README",
-    "subtitle": "APUCH · APUCH/README.md",
-    "text": "APUCH Meaning: A Place U Called Home Chinese name: Brand Role APUCH means A Place U Called Home. Visual Direction Temperament: warm, safe, intimate, open, home like. Color cues: deep ink blue, knowledge gold, soft paper, institutional green. Imagery cues: threshold, home light, table, doorway, belonging, shelter, warm civic space. Agent Notes Use APUCH as the public IP name. Expand APUCH as A Place U Called Home . Ch",
-    "url": "brand.html?brand=apuch"
-  },
-  {
-    "type": "ip",
-    "slug": "pam",
-    "title": "帕姆建筑",
-    "subtitle": "帕姆建筑 · PaM Design Office",
-    "text": "帕姆建筑是成立于北京的年轻建筑师事务所，以原创力、人文艺术感受与在地材料叙事探索空间的新可能。 PaM Design Office is a young Beijing architecture practice exploring new spatial possibilities through originality, local culture, restraint, and material feeling. 建筑设计、乡村文旅、民宿与私宅、艺术文化空间。 Architecture, rural cultural tourism, boutique stays, private residences, and art-cultural spaces. 品牌释义：Plus & Multiply。联系：miqiangqiang@pamdesignoffice.com Brand meaning: Plus & Multiply. Contact: miqiangqiang@pamdesignoffice.com 建筑设计 民宿文旅 空间改造 Architecture Boutique hospitality Spatial renovation 业主 文旅项目 空间品牌 Owners Cultural tourism projects Spatial brands 建筑 空间 民宿 在地性 Architecture Space Hospitality Locality Young Beijing architecture office shaped by originality, local culture, restraint, and material feeling. paper white ink black warm grey ochre architecture locality restraint",
-    "url": "brand.html?brand=pam"
-  },
-  {
-    "type": "guide",
-    "slug": "pam",
-    "title": "Pm Design",
-    "subtitle": "帕姆建筑 · PAM/pm_design.md",
-    "text": "帕姆建筑 · 设计规范 design.md 依据《帕姆建筑 建筑作品选摘（总）》与《帕姆建筑民宿项目》两份资料分析整理。 用途：作为本项目所有设计产出（作品集、提案册、幻灯片、网页等）的统一设计语言。 1. 品牌分析 1.1 品牌事实 名称 ：帕姆建筑 / PaM Design Office 品牌释义 ：Plus & Multiply（加法与乘法） 成立 ：2016 年，北京 主创 ：米麒光（中央美术学院建筑学院，2008 2015；帕姆执行总监，2017 ） 联系 ：miqiangqiang@pamdesignoffice.com 1.2 定位与气质 年轻的建筑师事务所，坚持 原创力 ，融合 人文与艺术 的感受，挖掘文化与品牌价值诉求，探索空间新的可能性。 项目谱系横跨：乡村文旅（大理、延安梁家河、武夷山）、民宿与私宅（野三坡、海螺沟、青城山、金坛）、艺术文化空间（美术馆、书苑、茶空间）。 关键词： 在地性、克制、人文、材料感",
-    "url": "brand.html?brand=pam"
-  },
-  {
-    "type": "ip",
-    "slug": "ksamint",
-    "title": "ksamint",
-    "subtitle": "查明 · ksamint",
-    "text": "查明 ksamint 是面向清晰判断、信息核验与轻盈智能协作的 IP。 ksamint is an IP for clear judgment, information verification, and lightweight intelligent collaboration. 信息核验、研究辅助、智能检索与清晰表达。 Information verification, research assistance, intelligent search, and clear expression. 知识判断 创作文风 私密技能 Knowledge judgment Creative voice Private skills 创作者 顾问 Agent 操盘者 Creators Advisors Agent operators 查明 判断 写作 Skill Clarity Judgment Writing Skill Clarity-oriented IP system for inquiry, verification, and fresh intelligence. mint clarity verification fresh intelligence clear judgment",
-    "url": "brand.html?brand=ksamint"
-  },
-  {
-    "type": "guide",
-    "slug": "ksamint",
-    "title": "README",
-    "subtitle": "ksamint · ksamint/README.md",
-    "text": "ksamint / 查明 Overview ksamint 是面向清晰判断、信息核验与轻盈智能协作的 IP。它帮助用户把混杂信息查清、讲明、沉淀为可复用的知识与行动依据。 ksamint is an IP for clear judgment, information verification, and lightweight intelligent collaboration. It turns mixed signals into checked context, concise explanation, and reusable knowledge. Brand Role English name: ksamint Chinese name: 查明 Main language: English Role: clarity oriented inquiry and verification IP Visual Directi",
-    "url": "brand.html?brand=ksamint"
-  },
-  {
-    "type": "guide",
-    "slug": "ksamint",
-    "title": "README",
-    "subtitle": "ksamint · ksamint/private/README.md",
-    "text": "ksamint Private Skills Private ksamint skills are stored only as encrypted payloads. Do not commit plaintext prompts here. Use: bash KSAMINT SKILL KEY=\"...\" npm run encrypt:ksamint skills /path/to/private skills.md The script writes: ksamint/private/guofeng writing style.enc.json site/api/private/ksamint skills.enc.json The encrypted site copy is readable only through /api/skills/ksamint after System API authenticati",
-    "url": "brand.html?brand=ksamint"
-  },
-  {
-    "type": "ip",
-    "slug": "inucleus",
-    "title": "iNucleus",
-    "subtitle": "iNucleus",
-    "text": "iNucleus is an AI-native operating nucleus for knowledge systems, agent coordination, and IP evolution. Knowledge systems, agent coordination, AI-native operations, and IP evolution infrastructure. AI-native operations Knowledge systems Agent coordination Founders Agent builders Knowledge system teams AI Nucleus Knowledge Agents Operations AI-native operating nucleus for knowledge systems, agent coordination, and IP evolution. AI nucleus knowledge systems agent coordination dark core electric blue",
-    "url": "brand.html?brand=inucleus"
-  },
-  {
-    "type": "guide",
-    "slug": "inucleus",
-    "title": "README",
-    "subtitle": "iNucleus · iNucleus/README.md",
-    "text": "iNucleus iNucleus is an AI native operating nucleus for knowledge systems, agent coordination, and IP evolution. Brand Role Primary language : English Track : AI native operations / knowledge systems / agent coordination Audience : founders, agent builders, knowledge system teams Operating idea : a compact core where knowledge, decisions, agents, and evolving IP assets stay aligned. Voice Precise, calm, systemic, and",
-    "url": "brand.html?brand=inucleus"
-  },
-  {
-    "type": "ip",
-    "slug": "xinzhi-travel",
-    "title": "信致旅游",
-    "subtitle": "信致旅游 · Xinzhi Travel",
-    "text": "信致旅游是面向目的地体验、文化路线与可信服务的旅游 IP。 Xinzhi Travel is a travel IP for destination experiences, cultural routes, and trusted hospitality services. 目的地旅游、文化路线、定制旅行、在地体验与旅游服务协作。 Destination travel, cultural routes, bespoke journeys, local experiences, and travel-service collaboration. 目的地旅游 文化路线 在地体验 Destination travel Cultural routes Local experiences 旅行者 目的地伙伴 文旅运营方 Travelers Destination partners Cultural tourism operators 旅游 文旅 路线 体验 在地 Travel Cultural tourism Routes Experience Locality Destination travel and cultural journey IP for thoughtful routes, local hospitality, and trusted travel experiences. destination green route gold mist blue travel local experience",
-    "url": "brand.html?brand=xinzhi-travel"
-  },
-  {
-    "type": "guide",
-    "slug": "xinzhi-travel",
-    "title": "README",
-    "subtitle": "信致旅游 · XinzhiTravel/README.md",
-    "text": "信致旅游 · Xinzhi Travel 信致旅游是面向目的地体验、文化路线与可信服务的旅游 IP。 Brand Role 主语言 ：中文 英文对照 ：Xinzhi Travel 赛道 ：目的地旅游 / 文化路线 / 在地体验 人群 ：旅行者、目的地伙伴、文旅运营方 业务 ：目的地旅游、文化路线、定制旅行、在地体验与旅游服务协作 Voice 真诚、清晰、有抵达感。语言要像一条可靠路线：不过度煽情，也不把旅行降格为消费清单。 Visual Direction 目的地绿、路线金、雾蓝为基础。整体应有可信服务感和轻微的文化温度，避免廉价旅行社式高饱和促销视觉。 Agent Notes 在生成信致旅游相关内容时，优先表达“可信、在地、路线、体验、文化理解”。面向用户时减少抽象口号，多给具体路线、场景、服务承诺与目的地细节。",
-    "url": "brand.html?brand=xinzhi-travel"
-  },
-  {
-    "type": "ip",
-    "slug": "zhongzhiyou",
-    "title": "中智游集团",
-    "subtitle": "中智游集团 · Zhongzhiyou Group",
-    "text": "中智游集团是面向智慧文旅、目的地运营与文化旅游服务协作的集团 IP。 Zhongzhiyou Group is a Chinese-first group IP for smart cultural tourism, destination operations, and travel service collaboration. 智慧文旅、目的地运营、旅游服务协作、文化路线与项目孵化。 Smart cultural tourism, destination operations, travel service collaboration, cultural routes, and project incubation. 智慧文旅 目的地运营 文化旅游 Smart cultural tourism Destination operations Cultural travel 文旅集团 目的地伙伴 旅游服务团队 Cultural tourism groups Destination partners Travel service teams 文旅 智慧旅游 目的地 集团 运营 Cultural tourism Smart travel Destination Group Operations 中文优先的智慧文旅与目的地运营集团 IP。 smart tourism cultural travel destination green route gold group operation",
-    "url": "brand.html?brand=zhongzhiyou"
-  },
-  {
-    "type": "guide",
-    "slug": "zhongzhiyou",
-    "title": "README",
-    "subtitle": "中智游集团 · ZhongzhiyouGroup/README.md",
-    "text": "中智游集团 · Zhongzhiyou Group 中智游集团是中文优先的智慧文旅与目的地运营集团 IP。 Brand Role 主语言 ：中文 英文对照 ：Zhongzhiyou Group 赛道 ：智慧文旅 / 目的地运营 / 文化旅游 人群 ：文旅集团、目的地伙伴、旅游服务团队 业务 ：智慧文旅、目的地运营、旅游服务协作、文化路线与项目孵化 Voice 可信、清晰、有组织感。表达要优先使用中文，并把复杂的文旅业务拆成可执行的路线、服务、资源与协作关系。 Visual Direction 以目的地绿、路线金、湖蓝为基础，整体应有集团级可信度、文旅温度和智慧运营感。避免廉价旅行促销视觉和过度科技感。 Agent Notes 在生成中智游集团相关内容时，默认使用中文主名称。英文仅作为对照、URL、文件名或国际化字段使用。内容重点放在智慧文旅、目的地运营、文化路线、服务协作与项目孵化。",
-    "url": "brand.html?brand=zhongzhiyou"
-  },
-  {
-    "type": "ip",
-    "slug": "nibiru",
-    "title": "Nibiru",
-    "subtitle": "睿悦科技 · Nibiru",
-    "text": "睿悦科技 Nibiru 是面向空间计算、智能体验与产品创新的科技 IP。 Nibiru is an English-first technology IP for spatial computing, intelligent experiences, and product innovation. 空间计算、智能硬件、沉浸式体验、产品创新与技术服务。 Spatial computing, intelligent hardware, immersive experiences, product innovation, and technology services. 空间计算 智能体验 科技产品 Spatial computing Intelligent experiences Technology products 科技伙伴 产品团队 空间计算开发者 Technology partners Product teams Spatial computing developers 科技 空间计算 智能硬件 沉浸式体验 Technology Spatial computing Intelligent hardware Immersive experience Nibiru is an English-first technology IP for spatial computing, intelligent experiences, and product innovation. deep space blue aurora mint violet signal spatial computing intelligent experience",
-    "url": "brand.html?brand=nibiru"
-  },
-  {
-    "type": "guide",
-    "slug": "nibiru",
-    "title": "README",
-    "subtitle": "Nibiru · Nibiru/README.md",
-    "text": "Nibiru · 睿悦科技 Nibiru is an English first technology IP for spatial computing, intelligent experiences, and product innovation. Brand Role Main language : English Chinese name : 睿悦科技 Tracks : Spatial computing / Intelligent experiences / Technology products Audiences : Technology partners, product teams, spatial computing developers Business : Spatial computing, intelligent hardware, immersive experiences, product inn",
-    "url": "brand.html?brand=nibiru"
-  },
-  {
-    "type": "ip",
-    "slug": "shenzhen-microsoft-global-center",
-    "title": "深圳微软出海中心",
-    "subtitle": "深圳微软出海中心 · Shenzhen Microsoft Global Center",
-    "text": "深圳微软出海中心是面向企业出海、技术生态与国际化增长服务的中文优先 IP。 Shenzhen Microsoft Global Center is a Chinese-first IP for company globalization, technology ecosystems, and international growth services. 企业出海、云与 AI 技术生态、国际化增长、伙伴连接与项目服务。 Company globalization, cloud and AI technology ecosystems, international growth, partner connection, and project services. 企业出海 技术生态 国际化增长 Company globalization Technology ecosystem International growth 出海企业 技术伙伴 生态服务团队 Globalizing companies Technology partners Ecosystem service teams 出海 微软生态 云与 AI 国际化 深圳 Going global Microsoft ecosystem Cloud and AI Internationalization Shenzhen 中文优先的企业出海、技术生态与国际化增长服务 IP。 globalization blue cloud cyan ecosystem green enterprise going global",
-    "url": "brand.html?brand=shenzhen-microsoft-global-center"
-  },
-  {
-    "type": "guide",
-    "slug": "shenzhen-microsoft-global-center",
-    "title": "README",
-    "subtitle": "深圳微软出海中心 · ShenzhenMicrosoftGlobalCenter/README.md",
-    "text": "深圳微软出海中心 · Shenzhen Microsoft Global Center 深圳微软出海中心是中文优先的企业出海、技术生态与国际化增长服务 IP。 Brand Role 主语言 ：中文 英文对照 ：Shenzhen Microsoft Global Center 赛道 ：企业出海 / 技术生态 / 国际化增长 人群 ：出海企业、技术伙伴、生态服务团队 业务 ：企业出海、云与 AI 技术生态、国际化增长、伙伴连接与项目服务 Voice 清晰、可信、面向企业决策。表达要优先使用中文，强调技术生态、国际化路径、伙伴连接和可落地的出海服务。 Visual Direction 以全球化蓝、云青、生态绿为基础，整体应有企业级可信度、技术生态感和深圳速度。避免过度营销化和廉价科技炫光。 Agent Notes 在生成深圳微软出海中心相关内容时，默认使用中文主名称。英文仅作为对照、URL、文件名或国际化字段使用。内容重点放在企业出海",
-    "url": "brand.html?brand=shenzhen-microsoft-global-center"
-  },
-  {
-    "type": "ip",
-    "slug": "shanrenjing",
-    "title": "山人境",
-    "subtitle": "山人境 · shanpass",
-    "text": "山人境是一套面向景区、户外活动、研学营地、大型赛事与低信号区域作业的行程级人员安全基础设施。 shanpass is a journey-level safety infrastructure IP for scenic destinations, outdoor programs, study camps, large events, and low-connectivity field operations. 人员定位、风险预警、应急救援、行程安全云、智能终端、补盲通信、保险风控、监管看板与专家带队系统。 Personnel positioning, risk alerts, emergency rescue, journey safety cloud, smart terminals, coverage extension, insurance risk control, regulatory dashboards, and expert-led operations. 山人境定位为行程级人员安全基础设施。手环承担行程入口，平台连接定位、预警、调度、救援、留痕与理赔，救援协同和责任闭环构成核心价值。对外统一使用守护、保障、安全协同、应急响应、行程保障、风险预警、救援闭环与保险保障，避免使用“监控”“管控游客”“实时盯人”。 shanpass is journey-level personnel safety infrastructure. The wearable opens each journey, while the platform connects positioning, alerts, dispatch, rescue, records, and claims into an accountable response loop. Public language emphasizes protection, safety coordination, emergency response, risk alerts, and rescue assurance while avoiding surveillance framing. 户外安全基础设施 应急救援 智慧文旅 卫星与北斗应用 Outdoor safety infrastructure Emergency rescue Smart cultural tourism Satellite and BeiDou applications 景区与文旅运营方 学校与研学营地 赛事与团建组织方 政府监管与应急部门 保险机构 户外领队与巡护人员 Scenic and tourism operators Schools and study camps Event and corporate program organizers Government and emergency agencies Insurers Outdoor leaders and field patrol teams 行程安全 北斗定位 风险预警 应急救援 保险风控 低信号通信 安全云 Journey safety BeiDou positioning Risk alerts Emergency rescue Insurance risk control Low-connectivity communications Safety cloud 中文优先的行程级人员安全基础设施 IP，连接定位、风险预警、救援协同、保险风控与监管留痕。 mountain green star amber signal blue journey safety rescue coordination",
-    "url": "brand.html?brand=shanrenjing"
-  },
-  {
-    "type": "guide",
-    "slug": "shanrenjing",
-    "title": "README",
-    "subtitle": "山人境 · Shanrenjing/README.md",
-    "text": "山人境 山人境是中文优先的行程级人员安全基础设施 IP。 它面向景区、户外活动、研学营地、大型赛事、企业团建、边境巡护与低信号区域作业场景，将人员定位、风险预警、快速救援、保险风控、政府监管与专家带队连接成一个可验证、可复盘的安全闭环。 核心定位 山人境以行程级人员安全基础设施为核心定位，覆盖智能终端、通信链路、运营平台与救援协同。 手环承担行程入口，平台连接完整安全流程。定位提供基础能力，救援协同与责任闭环构成商业护城河。 核心价值： 可定位 可预警 可调度 可救援 可留痕 可理赔 可监管 可复盘 品牌主张 每一次出发，都应该被星空守护。 政企表达：以北斗为核心的位置安全基础设施，提升文旅、研学、户外活动与大型活动的人员安全治理能力。 用户表达：扫码戴上，出发有人看得见；遇险一键呼救，救援知道你在哪。 保险表达：把行程轨迹、设备状态、报警记录、救援响应和事故复盘转化为可核验的风险与理赔证据链。 专家带队表达：专家带队覆盖路线、",
-    "url": "brand.html?brand=shanrenjing"
-  },
-  {
-    "type": "ip",
-    "slug": "kaoyu-shenhua",
-    "title": "烤鱼神话",
-    "subtitle": "烤鱼神话 · KAOYUSHENHUA",
-    "text": "三十多年老灶火，盐城大丰源头活鱼现点现烤，全店无预制菜。川湘家常味，街坊的老熟人。高兴了来，不高兴了更要来。 Thirty-plus years of charcoal fire; live fish from Dafeng, Yancheng, grilled to order; no prefab dishes. Sichuan-Hunan home cooking — the neighborhood regular. 烤鱼、川湘菜、餐饮门店运营、品牌连锁与供应链协同。 Grilled fish, Sichuan-Hunan cuisine, restaurant operations, brand franchising, and supply-chain coordination. 叙事与物料文案见 KaoyuShenhua/README.md。主口号：把实话坚持三十多年，就成了神话。已归档 Adobe Illustrator 原始标志，并提供网页预览与 PNG/JPG 导出。 Narrative and store copy live in KaoyuShenhua/README.md. Primary slogan: thirty-plus years of plain truth becomes the myth. Original Illustrator logo archived with browser previews and PNG/JPG exports. 餐饮品牌 烤鱼 川湘菜 连锁经营 Restaurant brand Grilled fish Sichuan-Hunan cuisine Chain operations 餐饮消费者 门店合作方 连锁经营团队 Restaurant guests Store partners Chain operating teams 烤鱼 川湘菜 中式餐饮 门店 品牌连锁 Grilled fish Sichuan-Hunan cuisine Chinese dining Restaurants Brand chain 三十多年老灶火，盐城大丰源头活鱼现点现烤，全店无预制菜的川湘烤鱼品牌。 grilled fish Sichuan-Hunan cuisine fire red restaurant symbol Chinese dining live fish charcoal fire no prefab 三十多年 橙红",
-    "url": "brand.html?brand=kaoyu-shenhua"
-  },
-  {
-    "type": "guide",
-    "slug": "kaoyu-shenhua",
-    "title": "README",
-    "subtitle": "烤鱼神话 · KaoyuShenhua/README.md",
-    "text": "烤鱼神话 品牌定位 烤鱼神话是以烤鱼与川湘菜为核心的餐饮品牌，通过鲜明符号、门店体验与稳定出品建立可识别、可扩展的品牌系统。 事实锚点：三十多年老灶火；盐城大丰源头活鱼，现点现烤；川湘家常味，当日鲜料；全店无预制菜。 品牌名称 中文主名称：烤鱼神话 英文名称：KAOYUSHENHUA 主语言：中文 业务 烤鱼与川湘菜 餐饮门店运营 品牌连锁 供应链协同 视觉资产 原始标志以 Adobe Illustrator 文件归档。网站提供逐页 PNG/JPG 预览与导出版本；原始文件、导出文件、格式、尺寸、文件大小及公开地址均通过品牌 API 的 adobeAssets 与 images 字段调用。 使用原则 优先使用原始矢量标志或透明背景 PNG。 不拉伸、不描边、不改变标志比例。 门店与餐饮场景以深墨、火红与暖金为核心色彩。 中文主名称始终优先显示，英文名称作为辅助识别。 Voice 实在、暖、不绕。街坊口气，不营销腔。火与桌是主语；",
-    "url": "brand.html?brand=kaoyu-shenhua"
-  },
-  {
-    "type": "ip",
-    "slug": "yanan-shiyao-hotel",
-    "title": "延安石窑宾馆",
-    "subtitle": "延安石窑宾馆",
-    "text": "酒店住宿 在地文旅 场所体验 Hospitality Local travel Place experience 延安 宾馆 在地文化 Yan'an Hotel Local culture 中文优先的独立酒店与场所 IP。 stone cave dwelling Yan'an hospitality local culture",
-    "url": "brand.html?brand=yanan-shiyao-hotel"
-  },
-  {
-    "type": "guide",
-    "slug": "yanan-shiyao-hotel",
-    "title": "README",
-    "subtitle": "延安石窑宾馆 · YanAnShiyao/README.md",
-    "text": "延安石窑宾馆 中文优先的独立酒店与场所 IP。 基本资料 中文名：延安石窑宾馆 英文名：暂未设定 行业：酒店与住宿、文旅与目的地 IP 类型：场所/空间品牌 品牌状态：建档中 官网、简介、业务、地址、视觉资产与品牌规范暂留空，后续通过管理 API 补充。",
-    "url": "brand.html?brand=yanan-shiyao-hotel"
-  },
-  {
-    "type": "ip",
-    "slug": "tongli-market",
-    "title": "同里市集",
-    "subtitle": "同里市集",
-    "text": "同里市集是位于北京顺义后沙峪的社区型餐饮与生活方式市集，以多元餐饮、社交与社区活动形成邻里共享空间。 餐饮市集、社区生活方式、餐饮品牌运营与线下活动。 公开简介依据政府与公开媒体资料整理。 餐饮市集 社区商业 生活方式 社区居民 家庭客群 餐饮消费者 品牌合作方 北京顺义 市集 餐饮 社区 线下空间 北京顺义后沙峪的社区型餐饮与生活方式市集。 community market food neighborhood Beijing",
-    "url": "brand.html?brand=tongli-market"
-  },
-  {
-    "type": "guide",
-    "slug": "tongli-market",
-    "title": "README",
-    "subtitle": "同里市集 · TongliMarket/README.md",
-    "text": "同里市集 中文优先的社区型餐饮与生活方式市集 IP。 定位：北京顺义后沙峪的社区餐饮与邻里共享空间 业务：餐饮市集、社区生活方式、品牌运营与线下活动 架构：母 IP 视觉状态：Provisional，待官方资产补充",
-    "url": "brand.html?brand=tongli-market"
-  },
-  {
-    "type": "ip",
-    "slug": "tongxianghui",
-    "title": "同香荟",
-    "subtitle": "同香荟",
-    "text": "同香荟以潮粤菜、港式粉面、打冷和传统风味为核心，在同里市集形成兼顾日常用餐与聚会的餐饮体验。 潮粤菜、港式粉面、烧味、打冷与餐饮门店运营。 潮粤菜 港式餐饮 餐饮门店 家庭聚餐 商务宴请 社区食客 潮粤菜 港式粉面 打冷 烧味 以潮粤菜、港式粉面、打冷和传统风味为核心的餐饮品牌。 Cantonese Chaozhou Hong Kong heritage",
-    "url": "brand.html?brand=tongxianghui"
-  },
-  {
-    "type": "guide",
-    "slug": "tongxianghui",
-    "title": "README",
-    "subtitle": "同香荟 · Tongxianghui/README.md",
-    "text": "同香荟 中文优先的潮粤与港式餐饮 IP，为同里市集子 IP。 定位：潮粤菜、港式粉面、打冷与传统风味 规范模式：继承并扩展同里市集 视觉状态：Provisional，待官方资产补充",
-    "url": "brand.html?brand=tongxianghui"
-  },
-  {
-    "type": "ip",
-    "slug": "mutangwan",
-    "title": "睦堂湾",
-    "subtitle": "睦堂湾",
-    "text": "睦堂湾以海鲜打边炉、粤菜和港式风味为核心，服务家庭聚餐与社交用餐场景。 海鲜打边炉、粤菜、港式餐饮与门店运营。 海鲜餐饮 粤菜 港式风味 家庭聚餐 朋友聚会 商务客群 海鲜 打边炉 粤菜 港式 以海鲜打边炉、粤菜和港式风味为核心的餐饮品牌。 seafood hot pot Cantonese gathering",
-    "url": "brand.html?brand=mutangwan"
-  },
-  {
-    "type": "guide",
-    "slug": "mutangwan",
-    "title": "README",
-    "subtitle": "睦堂湾 · Mutangwan/README.md",
-    "text": "睦堂湾 中文优先的海鲜打边炉与粤菜餐饮 IP，为同里市集子 IP。 定位：海鲜打边炉、粤菜与港式风味 规范模式：继承并扩展同里市集 视觉状态：Provisional，待官方资产补充",
-    "url": "brand.html?brand=mutangwan"
-  },
-  {
-    "type": "ip",
-    "slug": "shuangxi-shaola",
-    "title": "双囍烧腊",
-    "subtitle": "双囍烧腊",
-    "text": "双囍烧腊以粤式烧腊和便捷中式餐饮为核心，在同里市集设有门店。 粤式烧腊、中式简餐与餐饮门店运营。 粤式烧腊 中式简餐 餐饮门店 社区食客 上班族 家庭客群 烧腊 粤式 简餐 同里市集 以粤式烧腊和便捷中式餐饮为核心的餐饮品牌。 roast meat Cantonese quick dining double happiness",
-    "url": "brand.html?brand=shuangxi-shaola"
-  },
-  {
-    "type": "guide",
-    "slug": "shuangxi-shaola",
-    "title": "README",
-    "subtitle": "双囍烧腊 · ShuangxiShaola/README.md",
-    "text": "双囍烧腊 中文优先的粤式烧腊餐饮 IP，为同里市集子 IP。 定位：粤式烧腊与便捷中式餐饮 规范模式：继承并扩展同里市集 视觉状态：Provisional，待官方资产补充",
-    "url": "brand.html?brand=shuangxi-shaola"
-  },
-  {
-    "type": "ip",
-    "slug": "ganglao-baozailu",
-    "title": "港佬煲仔炉车仔面碟头饭",
-    "subtitle": "港佬煲仔炉车仔面碟头饭",
-    "text": "港佬煲仔炉车仔面碟头饭聚焦煲仔饭、车仔面与碟头饭等港式街坊餐饮，公开资料仍待进一步核验。 煲仔饭、车仔面、碟头饭与港式简餐。 品牌定位依据现有名称建立，来源状态为 provisional。 港式简餐 煲仔饭 车仔面 社区食客 上班族 年轻客群 煲仔饭 车仔面 碟头饭 港式 聚焦煲仔饭、车仔面与碟头饭的港式街坊餐饮品牌。 claypot rice cart noodles Hong Kong street dining",
-    "url": "brand.html?brand=ganglao-baozailu"
-  },
-  {
-    "type": "guide",
-    "slug": "ganglao-baozailu",
-    "title": "README",
-    "subtitle": "港佬煲仔炉车仔面碟头饭 · GanglaoBaozailu/README.md",
-    "text": "港佬煲仔炉车仔面碟头饭 中文优先的港式街坊餐饮 IP，为同里市集子 IP。 定位：煲仔饭、车仔面、碟头饭与港式简餐 规范模式：继承并扩展同里市集 资料状态：Provisional，待官方资料核验",
-    "url": "brand.html?brand=ganglao-baozailu"
-  },
-  {
-    "type": "ip",
-    "slug": "xiaotaoyuan",
-    "title": "小桃园",
-    "subtitle": "小桃园",
-    "text": "小桃园面向社区早餐与日常简餐，提供油条、粢饭团、鸭血粉丝汤和小笼包等中式早点。 中式早餐、社区简餐与门店运营。 中式早餐 社区简餐 餐饮门店 社区居民 家庭客群 上班族 早餐 油条 粢饭团 小笼包 面向社区早餐与日常简餐的中式餐饮品牌。 breakfast neighborhood Chinese snacks morning",
-    "url": "brand.html?brand=xiaotaoyuan"
-  },
-  {
-    "type": "guide",
-    "slug": "xiaotaoyuan",
-    "title": "README",
-    "subtitle": "小桃园 · Xiaotaoyuan/README.md",
-    "text": "小桃园 中文优先的社区早餐与日常简餐 IP，为同里市集子 IP。 定位：中式早餐、社区简餐与日常门店 规范模式：继承并扩展同里市集 视觉状态：Provisional，待官方资产补充",
-    "url": "brand.html?brand=xiaotaoyuan"
-  },
-  {
-    "type": "ip",
-    "slug": "subangyuan",
-    "title": "苏帮袁",
-    "subtitle": "苏帮袁",
-    "text": "苏帮袁以苏帮菜、淮扬菜和江南饮食文化为核心，名称中的“袁”取意美食家袁枚。 苏帮菜、淮扬菜、江南餐饮、门店运营与品牌发展。 内部产品研究作为 API 受限私密 Notes 保存，不公开经营数据。 苏帮菜 淮扬菜 江南餐饮 品牌连锁 家庭聚餐 商务用餐 江南菜消费者 苏帮菜 淮扬菜 袁枚 江南 以苏帮菜、淮扬菜和江南饮食文化为核心的中式餐饮品牌。 Jiangnan Huaiyang cuisine Suzhou cuisine Chinese dining",
-    "url": "brand.html?brand=subangyuan"
-  },
-  {
-    "type": "guide",
-    "slug": "subangyuan",
-    "title": "README",
-    "subtitle": "苏帮袁 · Subangyuan/README.md",
-    "text": "苏帮袁 中文优先的苏帮菜与淮扬菜餐饮 IP。 定位：苏帮菜、淮扬菜与江南饮食文化 架构：母 IP 私密资料：内部产品研究仅通过授权 API / MCP 访问 视觉状态：Provisional，待官方资产补充",
-    "url": "brand.html?brand=subangyuan"
-  },
-  {
-    "type": "ip",
-    "slug": "youyuan-jingmeng",
-    "title": "游园京梦",
-    "subtitle": "游园京梦",
-    "text": "游园京梦自 2017 年起将淮扬菜与江南园林、昆曲意象融入城市商务与聚餐场景。 淮扬菜、城市商务餐饮、家庭聚餐与门店运营。 内部产品研究作为 API 受限私密 Notes 保存，不公开经营数据。 淮扬菜 城市餐饮 江南文化 商务客群 家庭聚餐 城市消费者 淮扬菜 江南园林 昆曲 北京 将淮扬菜与江南园林、昆曲意象融入城市餐饮场景的品牌。 Huaiyang cuisine Chinese garden Kunqu urban dining",
-    "url": "brand.html?brand=youyuan-jingmeng"
-  },
-  {
-    "type": "guide",
-    "slug": "youyuan-jingmeng",
-    "title": "README",
-    "subtitle": "游园京梦 · YouyuanJingmeng/README.md",
-    "text": "游园京梦 中文优先的淮扬菜与江南文化餐饮 IP。 定位：淮扬菜、江南园林意象与城市餐饮 架构：母 IP 私密资料：内部产品研究仅通过授权 API / MCP 访问 视觉状态：Provisional，待官方资产补充",
-    "url": "brand.html?brand=youyuan-jingmeng"
-  },
-  {
-    "type": "ip",
-    "slug": "qingshuiting",
-    "title": "清水亭",
-    "subtitle": "清水亭",
-    "text": "清水亭是围绕丹江口河鲜与湖北风味发展的商场型楚菜品牌，属于丹江渔村相关餐饮品牌矩阵。 楚菜、丹江口河鲜、湖北风味与商场餐饮门店运营。 楚菜 河鲜 湖北风味 商场餐饮 家庭聚餐 商场客群 湖北菜消费者 楚菜 丹江口 河鲜 湖北 围绕丹江口河鲜与湖北风味发展的商场型楚菜品牌。 Hubei cuisine river fish Danjiangkou mall dining",
-    "url": "brand.html?brand=qingshuiting"
-  },
-  {
-    "type": "guide",
-    "slug": "qingshuiting",
-    "title": "README",
-    "subtitle": "清水亭 · Qingshuiting/README.md",
-    "text": "清水亭 中文优先的楚菜与丹江口河鲜餐饮 IP。 定位：楚菜、丹江口河鲜、湖北风味与商场餐饮 架构：母 IP 视觉状态：Provisional，待官方资产补充",
-    "url": "brand.html?brand=qingshuiting"
+    "subtitle": "Sanctem · Sanctem/README.md",
+    "text": "Sanctem Sanctem is an oriental wellness and healing brand. 中文定位：东方康养疗愈品牌。 Brand Main IP name: Sanctem Chinese description: 东方康养疗愈品牌 Main language: English System role: wellness, healing, hospitality, and restorative living under an oriental care sensibility. Business 康养疗愈 东方身心护理 旅居疗愈体验 品牌化健康服务 Voice Calm, precise, and restorative. Speak with quiet confidence. Avoid medical overclaims, heavy mysticism, and decorative ",
+    "url": "brand.html?brand=sanctem"
   },
   {
     "type": "organization",

@@ -166,20 +166,31 @@
     "standalone"
   ],
   "version": {
-    "hash": "5c7c158e439448b77c640563fe8f129eee650152",
-    "shortHash": "5c7c158",
-    "date": "2026-09-27T11:46:29+08:00",
-    "message": "Add IPTrust design system and tokens",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/5c7c158e439448b77c640563fe8f129eee650152"
+    "hash": "e794e0a926857895b548de436e46b45c2c5a752a",
+    "shortHash": "e794e0a",
+    "date": "2026-11-05T22:56:06Z",
+    "message": "chore: remove GitHub Actions workflows; deploy and process assets locally",
+    "url": "https://github.com/ksamint/iptrust01/commit/e794e0a926857895b548de436e46b45c2c5a752a"
   },
   "historyUrl": "api/history/iptrust.json",
   "history": [
+    {
+      "hash": "53340b5287a42790703a21b20a84beb62e54cdf5",
+      "shortHash": "53340b5",
+      "date": "2026-10-18T08:59:45+08:00",
+      "message": "Point Tiansight design-system links to dsys_tiansight02 (#7)",
+      "url": "https://github.com/ksamint/iptrust01/commit/53340b5287a42790703a21b20a84beb62e54cdf5",
+      "sourcePaths": [
+        "config/brands.json",
+        "IPTRUST"
+      ]
+    },
     {
       "hash": "5c7c158e439448b77c640563fe8f129eee650152",
       "shortHash": "5c7c158",
       "date": "2026-09-27T11:46:29+08:00",
       "message": "Add IPTrust design system and tokens",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/5c7c158e439448b77c640563fe8f129eee650152",
+      "url": "https://github.com/ksamint/iptrust01/commit/5c7c158e439448b77c640563fe8f129eee650152",
       "sourcePaths": [
         "config/brands.json",
         "IPTRUST"
@@ -190,7 +201,7 @@
       "shortHash": "498680a",
       "date": "2026-09-19T22:53:07+08:00",
       "message": "Link every owned IP to its dedicated ksamint design-system repository",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/498680a80ec9173520489eca77f1247601798168",
+      "url": "https://github.com/ksamint/iptrust01/commit/498680a80ec9173520489eca77f1247601798168",
       "sourcePaths": [
         "config/brands.json",
         "IPTRUST"
@@ -201,7 +212,7 @@
       "shortHash": "17e8486",
       "date": "2026-09-19T20:28:40+08:00",
       "message": "Update ksamint repository references and rename Sidera sources to Tiansight",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/17e8486df5cc2896049164fdef9c876e5790897b",
+      "url": "https://github.com/ksamint/iptrust01/commit/17e8486df5cc2896049164fdef9c876e5790897b",
       "sourcePaths": [
         "config/brands.json",
         "IPTRUST"
@@ -212,7 +223,7 @@
       "shortHash": "6c28043",
       "date": "2026-08-14T08:33:39+08:00",
       "message": "feat: streamline brand pages and publish tiansight slug",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/6c28043d87c25fa124e6997cafb2c5e6492ffc0e",
+      "url": "https://github.com/ksamint/iptrust01/commit/6c28043d87c25fa124e6997cafb2c5e6492ffc0e",
       "sourcePaths": [
         "config/brands.json",
         "IPTRUST"
@@ -223,18 +234,7 @@
       "shortHash": "bcd28bc",
       "date": "2026-08-04T06:00:43+08:00",
       "message": "Rename 侍天 English brand name to tiansight",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/bcd28bc5dcefd3d090488e9f90ce43ec673b2ec6",
-      "sourcePaths": [
-        "config/brands.json",
-        "IPTRUST"
-      ]
-    },
-    {
-      "hash": "fa30da14e08bc70e600864c069a2cc55cf38631f",
-      "shortHash": "fa30da1",
-      "date": "2026-07-23T09:50:41+08:00",
-      "message": "feat: move Sidera to pale manuscript theme",
-      "url": "https://github.com/ksamint/tableai_designaha/commit/fa30da14e08bc70e600864c069a2cc55cf38631f",
+      "url": "https://github.com/ksamint/iptrust01/commit/bcd28bc5dcefd3d090488e9f90ce43ec673b2ec6",
       "sourcePaths": [
         "config/brands.json",
         "IPTRUST"
@@ -1931,7 +1931,46 @@
     "IPTRUST/IPTrust_DESIGN.md"
   ],
   "source": {
-    "github": "https://github.com/ksamint/tableai_designaha/tree/main/IPTRUST",
+    "github": "https://github.com/ksamint/iptrust01/tree/main/IPTRUST",
     "folder": "IPTRUST"
+  },
+  "repository": {
+    "configuredUrl": "https://github.com/ksamint/dsys_iptrust",
+    "url": "https://github.com/ksamint/dsys_iptrust",
+    "name": "dsys_iptrust",
+    "accessible": true,
+    "suffixValid": false,
+    "archived": false,
+    "lastUpdatedAt": "2026-09-27T03:46:47Z",
+    "commitUrl": "https://github.com/ksamint/dsys_iptrust/commit/bae82b9667e5fb9a9592aee9480fe1e0846e87df",
+    "commit": "bae82b9667e5fb9a9592aee9480fe1e0846e87df",
+    "branch": "main",
+    "pushedAt": "2026-09-27T03:46:50Z",
+    "metadataUpdatedAt": "2026-09-27T03:46:54Z",
+    "checkedAt": "2026-11-06T04:33:12.101Z",
+    "error": null
+  },
+  "lastUpdatedAt": "2026-09-27T03:46:47Z",
+  "completeness": {
+    "score": 70,
+    "total": 100,
+    "status": "developing",
+    "checks": {
+      "profile": true,
+      "business": true,
+      "guide": false,
+      "tokens": true,
+      "palette": true,
+      "logo": true,
+      "sources": false,
+      "classification": true,
+      "repository": true,
+      "repositoryName": false
+    },
+    "missing": [
+      "guide",
+      "sources",
+      "repositoryName"
+    ]
   }
 }

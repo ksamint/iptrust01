@@ -1,0 +1,17 @@
+:root {
+  --th-navy: #0F1E38;
+  --th-navy2: #1B3055;
+  --th-gold: #C8A45C;
+  --th-gold-l: #E5CE9C;
+  --th-ink: #1A2233;
+  --th-slate: #5B6B85;
+  --th-mist: #E8EDF5;
+  --th-card: #F1F3F7;
+  --th-paper: #FFFFFF;
+  --th-line: #22375C;
+  --th-bg: #0B1526;
+  --th-fg: #EEF2F8;
+  --th-muted: #9FB0CA;
+  --th-surface: #132441;
+  --th-font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+}

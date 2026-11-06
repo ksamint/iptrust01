@@ -2,7 +2,7 @@
   "name": "tableai-designaha",
   "version": "0.1.0",
   "private": true,
-  "description": "Design systems for Table AI Alliance brands — DTCG tokens, build pipeline, and agent integrations.",
+  "description": "Design systems for Table AI Alliance brands \u2014 DTCG tokens, build pipeline, and agent integrations.",
   "type": "module",
   "engines": {
     "node": ">=24.19.0 <25",
@@ -39,7 +39,9 @@
     "sync:font-directory": "node scripts/sync-google-fonts-directory.mjs",
     "seed:platform": "node scripts/build-platform-seed.mjs",
     "encrypt:ksamint-skills": "node scripts/encrypt-private-skills.mjs",
-    "sync:skill": "cp KiND/tokens/kind.tokens.json .cursor/skills/kind-design/tokens.json"
+    "sync:skill": "cp KiND/tokens/kind.tokens.json .cursor/skills/kind-design/tokens.json",
+    "sync:repositories": "node scripts/sync-repository-status.mjs",
+    "test:repositories": "node --test scripts/test/repository-status.test.mjs"
   },
   "devDependencies": {
     "style-dictionary": "5.5.1",
