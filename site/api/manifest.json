@@ -11,13 +11,13 @@
       "description": "IPTrust is an IP trust hub for people and agents."
     }
   },
-  "generatedAt": "2026-11-06T11:20:01.507Z",
+  "generatedAt": "2026-11-06T11:26:17.383Z",
   "version": {
-    "hash": "63a38e0ee2643ccb40ec03f984e621161ec5decd",
-    "shortHash": "63a38e0",
-    "date": "2026-11-06T12:38:08+08:00",
-    "message": "Check D1 credential access before building a production release",
-    "url": "https://github.com/ksamint/iptrust01/commit/63a38e0ee2643ccb40ec03f984e621161ec5decd"
+    "hash": "e88907a9c8e4da71290a5ed524a90cdda0f358eb",
+    "shortHash": "e88907a",
+    "date": "2026-11-06T19:21:49+08:00",
+    "message": "Preserve canonical English names in platform seed records",
+    "url": "https://github.com/ksamint/iptrust01/commit/e88907a9c8e4da71290a5ed524a90cdda0f358eb"
   },
   "brands": [
     {
@@ -501,11 +501,11 @@
     "apiUrl": "api/versions.json",
     "perBrandApiUrl": "api/history/{slug}.json",
     "latest": {
-      "hash": "63a38e0ee2643ccb40ec03f984e621161ec5decd",
-      "shortHash": "63a38e0",
-      "date": "2026-11-06T12:38:08+08:00",
-      "message": "Check D1 credential access before building a production release",
-      "url": "https://github.com/ksamint/iptrust01/commit/63a38e0ee2643ccb40ec03f984e621161ec5decd"
+      "hash": "e88907a9c8e4da71290a5ed524a90cdda0f358eb",
+      "shortHash": "e88907a",
+      "date": "2026-11-06T19:21:49+08:00",
+      "message": "Preserve canonical English names in platform seed records",
+      "url": "https://github.com/ksamint/iptrust01/commit/e88907a9c8e4da71290a5ed524a90cdda0f358eb"
     }
   },
   "sync": {

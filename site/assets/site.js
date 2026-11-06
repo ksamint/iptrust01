@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const BUILD_VERSION = "63a38e0-c88cf400";
+const BUILD_VERSION = "e88907a-f3c97d56";
 
 const i18n = {
   cn: {
@@ -2402,7 +2402,7 @@ async function renderDirectory() {
   for (const brand of rankedBrands) {
     if (!listedSlugs.has(brand.slug)) data.ips.push({ ...brand, names: { zh: brand.display?.zh?.name, en: brand.display?.en?.name } });
   }
-  data.ips = data.ips.map((ip) => ({ ...ip, names: brandBySlug.has(ip.slug) ? { zh: brandBySlug.get(ip.slug).display.zh.name, en: brandBySlug.get(ip.slug).display.en.name } : ip.names, designSystemUrl: brandBySlug.get(ip.slug)?.designSystemUrl || ip.designSystemUrl, repository: brandBySlug.get(ip.slug)?.repository, completeness: brandBySlug.get(ip.slug)?.completeness, lastUpdatedAt: brandBySlug.get(ip.slug)?.lastUpdatedAt })).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
+  data.ips = data.ips.map((ip) => ({ ...ip, names: brandBySlug.has(ip.slug) && !(ip.version > 1) ? { zh: brandBySlug.get(ip.slug).display.zh.name, en: brandBySlug.get(ip.slug).display.en.name } : ip.names, designSystemUrl: brandBySlug.get(ip.slug)?.designSystemUrl || ip.designSystemUrl, repository: brandBySlug.get(ip.slug)?.repository, completeness: brandBySlug.get(ip.slug)?.completeness, lastUpdatedAt: brandBySlug.get(ip.slug)?.lastUpdatedAt })).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
   const params = new URLSearchParams(location.search);
   const industry = params.get("industry") || "";
   const ipType = params.get("type") || "";

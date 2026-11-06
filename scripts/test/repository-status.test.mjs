@@ -74,3 +74,19 @@ test("bilingual directory names and a collapsed readiness bar", async () => {
   assert.ok(html.indexOf("dsys_example01") > html.indexOf("</summary>"));
   assert.doesNotMatch(html, /<details open/);
 });
+
+test("directory fixes seeded names while preserving newer admin names", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const { runInNewContext } = await import("node:vm");
+  const script = await readFile(new URL("../../site/assets/site.js", import.meta.url), "utf8");
+  const start = script.indexOf("  const data = await loadIpSystem();", script.indexOf("async function renderDirectory()"));
+  const end = script.indexOf("  const params =", start);
+  const canonical = { slug: "example", display: { zh: { name: "示例" }, en: { name: "Example" } } };
+  for (const version of [1, 2]) {
+    const data = await runInNewContext("(async () => {" + script.slice(start, end) + ";return data;})()", {
+      loadIpSystem: async () => ({ ips: [{ slug: "example", version, names: { zh: "示例", en: "Admin name" } }] }),
+      loadRankedBrands: async () => [canonical],
+    });
+    assert.equal(data.ips[0].names.en, version === 1 ? "Example" : "Admin name");
+  }
+});
