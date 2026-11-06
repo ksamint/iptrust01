@@ -166,14 +166,26 @@
     "standalone"
   ],
   "version": {
-    "hash": "e794e0a926857895b548de436e46b45c2c5a752a",
-    "shortHash": "e794e0a",
-    "date": "2026-11-05T22:56:06Z",
-    "message": "chore: remove GitHub Actions workflows; deploy and process assets locally",
-    "url": "https://github.com/ksamint/iptrust01/commit/e794e0a926857895b548de436e46b45c2c5a752a"
+    "hash": "63a38e0ee2643ccb40ec03f984e621161ec5decd",
+    "shortHash": "63a38e0",
+    "date": "2026-11-06T12:38:08+08:00",
+    "message": "Check D1 credential access before building a production release",
+    "url": "https://github.com/ksamint/iptrust01/commit/63a38e0ee2643ccb40ec03f984e621161ec5decd"
   },
   "historyUrl": "api/history/apuch.json",
   "history": [
+    {
+      "hash": "4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
+      "shortHash": "4c0351c",
+      "date": "2026-11-06T12:34:08+08:00",
+      "message": "Add IP repository audit, live update ranking and readiness scores",
+      "url": "https://github.com/ksamint/iptrust01/commit/4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
+      "sourcePaths": [
+        "config/brands.json",
+        "APUCH",
+        "APUCH/README.md"
+      ]
+    },
     {
       "hash": "53340b5287a42790703a21b20a84beb62e54cdf5",
       "shortHash": "53340b5",
@@ -228,18 +240,6 @@
       "date": "2026-08-04T06:00:43+08:00",
       "message": "Rename 侍天 English brand name to tiansight",
       "url": "https://github.com/ksamint/iptrust01/commit/bcd28bc5dcefd3d090488e9f90ce43ec673b2ec6",
-      "sourcePaths": [
-        "config/brands.json",
-        "APUCH",
-        "APUCH/README.md"
-      ]
-    },
-    {
-      "hash": "fa30da14e08bc70e600864c069a2cc55cf38631f",
-      "shortHash": "fa30da1",
-      "date": "2026-07-23T09:50:41+08:00",
-      "message": "feat: move Sidera to pale manuscript theme",
-      "url": "https://github.com/ksamint/iptrust01/commit/fa30da14e08bc70e600864c069a2cc55cf38631f",
       "sourcePaths": [
         "config/brands.json",
         "APUCH",

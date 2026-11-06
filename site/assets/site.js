@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const BUILD_VERSION = "e794e0a-7473d1ff";
+const BUILD_VERSION = "63a38e0-c88cf400";
 
 const i18n = {
   cn: {
@@ -862,7 +862,7 @@ function mainBrand(brand = {}) {
   const classification = localizedClassification(brand, lang);
   return {
     name,
-    secondaryName: alternate.name,
+    secondaryName: alternate.name || (/[㐀-鿿]/.test(name) ? "English name pending" : "中文名待补充"),
     secondaryLanguage: alternate.language,
     intro: brand.intro?.[lang] || fallback.intro || brand.description || "",
     business: brand.profile?.business?.[lang] || brand.business?.[lang] || "",
@@ -2152,11 +2152,11 @@ function ipHealth(brand, details = false) {
   const rank = cachedBrands?.findIndex((item) => item.slug === brand.slug) + 1;
   const date = brand.lastUpdatedAt ? new Date(brand.lastUpdatedAt).toLocaleString(localeMeta[currentLocale].dateLocale) : (en ? "Unknown" : "未知");
   const missing = brand.completeness.missing.map((key) => readinessLabels[key]?.[en ? 0 : 1] || key);
-  const summary = `#${rank || "—"} · ${en ? "Updated" : "更新"} ${date} · ${en ? "Completeness" : "完整度"} ${brand.completeness.score}%`;
+  const day = brand.lastUpdatedAt ? new Date(brand.lastUpdatedAt).toLocaleDateString(localeMeta[currentLocale].dateLocale) : date;
   const title = `${en ? "Missing" : "缺少"}: ${missing.join(" · ") || (en ? "None" : "无")}`;
-  const compact = `<small class="ip-health" title="${escapeHtml(title)}">${escapeHtml(summary)}</small>`;
+  const compact = `<small class="ip-health" title="${escapeHtml(title)}"><span>#${rank || "—"}</span><time${brand.lastUpdatedAt ? ` datetime="${escapeHtml(brand.lastUpdatedAt)}"` : ""} title="${escapeHtml(date)}">${en ? "Updated" : "更新"} ${escapeHtml(day)}</time><span class="ip-readiness">${en ? "Readiness" : "就绪度"} ${brand.completeness.score}% <meter min="0" max="100" value="${brand.completeness.score}" aria-label="${en ? "Inventory readiness" : "资料就绪度"}">${brand.completeness.score}%</meter></span></small>`;
   if (!details) return compact;
-  return `<div class="ip-health-panel">${compact}<span class="repo-audit">${escapeHtml(repo?.name || "—")} · ${repo?.suffixValid ? (en ? "Suffix OK" : "后缀合规") : (en ? "Needs 01 / 02 suffix" : "缺少 01 / 02 后缀")}${repo?.stale || repo?.error ? (en ? " · Cached; refresh unavailable" : " · 缓存；刷新不可用") : ""}</span><details><summary>${en ? "Readiness checklist" : "就绪度清单"} · ${brand.completeness.score}%</summary><ul>${Object.entries(brand.completeness.checks).map(([key, ok]) => `<li>${ok ? "✓" : "○"} ${escapeHtml(readinessLabels[key]?.[en ? 0 : 1] || key)}</li>`).join("")}</ul><p>${en ? "Checked" : "检查时间"}: ${escapeHtml(repo?.checkedAt || "—")}</p><p>${en ? "10 inventory checks, 10 points each. Content presence only; legal ownership and design quality are not reviewed." : "10 项资料检查，每项 10 分。只评估资料是否齐备；未审查法律权属或设计质量。"}</p></details></div>`;
+  return `<div class="ip-health-panel"><details><summary>${compact}</summary><div class="ip-health-more"><span class="repo-audit">${escapeHtml(repo?.name || "—")} · ${repo?.suffixValid ? (en ? "Suffix OK" : "后缀合规") : (en ? "Needs 01 / 02 suffix" : "缺少 01 / 02 后缀")}${repo?.stale || repo?.error ? (en ? " · Cached; refresh unavailable" : " · 缓存；刷新不可用") : ""}</span><ul>${Object.entries(brand.completeness.checks).map(([key, ok]) => `<li>${ok ? "✓" : "○"} ${escapeHtml(readinessLabels[key]?.[en ? 0 : 1] || key)}</li>`).join("")}</ul><p>${en ? "Last updated" : "最后更新"}: ${escapeHtml(date)}</p><p>${en ? "Checked" : "检查时间"}: ${escapeHtml(repo?.checkedAt || "—")}</p><p>${en ? "10 inventory checks, 10 points each. Content presence only; legal ownership and design quality are not reviewed." : "10 项资料检查，每项 10 分。只评估资料是否齐备；未审查法律权属或设计质量。"}</p></div></details></div>`;
 }
 
 async function renderHeroIndex() {
@@ -2371,7 +2371,7 @@ function primaryIpName(ip = {}) {
 
 function secondaryIpName(ip = {}) {
   const primary = primaryIpName(ip);
-  return [ip.names?.zh, ip.names?.en].find((name) => name && name !== primary) || "";
+  return [ip.names?.zh, ip.names?.en].find((name) => name && name !== primary) || (/[㐀-鿿]/.test(primary) ? "English name pending" : "中文名待补充");
 }
 
 async function loadIpSystem() {
@@ -2402,7 +2402,7 @@ async function renderDirectory() {
   for (const brand of rankedBrands) {
     if (!listedSlugs.has(brand.slug)) data.ips.push({ ...brand, names: { zh: brand.display?.zh?.name, en: brand.display?.en?.name } });
   }
-  data.ips = data.ips.map((ip) => ({ ...ip, designSystemUrl: brandBySlug.get(ip.slug)?.designSystemUrl || ip.designSystemUrl, repository: brandBySlug.get(ip.slug)?.repository, completeness: brandBySlug.get(ip.slug)?.completeness, lastUpdatedAt: brandBySlug.get(ip.slug)?.lastUpdatedAt })).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
+  data.ips = data.ips.map((ip) => ({ ...ip, names: brandBySlug.has(ip.slug) ? { zh: brandBySlug.get(ip.slug).display.zh.name, en: brandBySlug.get(ip.slug).display.en.name } : ip.names, designSystemUrl: brandBySlug.get(ip.slug)?.designSystemUrl || ip.designSystemUrl, repository: brandBySlug.get(ip.slug)?.repository, completeness: brandBySlug.get(ip.slug)?.completeness, lastUpdatedAt: brandBySlug.get(ip.slug)?.lastUpdatedAt })).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
   const params = new URLSearchParams(location.search);
   const industry = params.get("industry") || "";
   const ipType = params.get("type") || "";

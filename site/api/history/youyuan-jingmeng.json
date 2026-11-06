@@ -13,11 +13,11 @@
     "YouyuanJingmeng/README.md"
   ],
   "latest": {
-    "hash": "53340b5287a42790703a21b20a84beb62e54cdf5",
-    "shortHash": "53340b5",
-    "date": "2026-10-18T08:59:45+08:00",
-    "message": "Point Tiansight design-system links to dsys_tiansight02 (#7)",
-    "url": "https://github.com/ksamint/iptrust01/commit/53340b5287a42790703a21b20a84beb62e54cdf5",
+    "hash": "4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
+    "shortHash": "4c0351c",
+    "date": "2026-11-06T12:34:08+08:00",
+    "message": "Add IP repository audit, live update ranking and readiness scores",
+    "url": "https://github.com/ksamint/iptrust01/commit/4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
     "sourcePaths": [
       "config/brands.json",
       "YouyuanJingmeng",
@@ -25,6 +25,18 @@
     ]
   },
   "versions": [
+    {
+      "hash": "4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
+      "shortHash": "4c0351c",
+      "date": "2026-11-06T12:34:08+08:00",
+      "message": "Add IP repository audit, live update ranking and readiness scores",
+      "url": "https://github.com/ksamint/iptrust01/commit/4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
+      "sourcePaths": [
+        "config/brands.json",
+        "YouyuanJingmeng",
+        "YouyuanJingmeng/README.md"
+      ]
+    },
     {
       "hash": "53340b5287a42790703a21b20a84beb62e54cdf5",
       "shortHash": "53340b5",
@@ -247,18 +259,6 @@
       "date": "2026-07-06T12:50:10+08:00",
       "message": "Add IP classifications and iNucleus",
       "url": "https://github.com/ksamint/iptrust01/commit/3e24857f33d1f7b4c09df235064b2e6597a2732a",
-      "sourcePaths": [
-        "config/brands.json",
-        "YouyuanJingmeng",
-        "YouyuanJingmeng/README.md"
-      ]
-    },
-    {
-      "hash": "b0269d253a8cf1b693e2cbb6513aeefadb543b34",
-      "shortHash": "b0269d2",
-      "date": "2026-07-06T06:21:22+08:00",
-      "message": "Add ksamint IP",
-      "url": "https://github.com/ksamint/iptrust01/commit/b0269d253a8cf1b693e2cbb6513aeefadb543b34",
       "sourcePaths": [
         "config/brands.json",
         "YouyuanJingmeng",

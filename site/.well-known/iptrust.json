@@ -85,12 +85,12 @@
       }
     }
   },
-  "generatedAt": "2026-11-06T04:33:12.884Z",
+  "generatedAt": "2026-11-06T11:20:01.484Z",
   "version": {
-    "hash": "e794e0a926857895b548de436e46b45c2c5a752a",
-    "shortHash": "e794e0a",
-    "date": "2026-11-05T22:56:06Z",
-    "message": "chore: remove GitHub Actions workflows; deploy and process assets locally",
-    "url": "https://github.com/ksamint/iptrust01/commit/e794e0a926857895b548de436e46b45c2c5a752a"
+    "hash": "63a38e0ee2643ccb40ec03f984e621161ec5decd",
+    "shortHash": "63a38e0",
+    "date": "2026-11-06T12:38:08+08:00",
+    "message": "Check D1 credential access before building a production release",
+    "url": "https://github.com/ksamint/iptrust01/commit/63a38e0ee2643ccb40ec03f984e621161ec5decd"
   }
 }

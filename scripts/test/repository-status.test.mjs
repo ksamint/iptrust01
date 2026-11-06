@@ -57,3 +57,20 @@ test("live ranking updates canonical repo links and readiness status", async () 
   assert.equal(refreshed[0].completeness.score, 90);
   assert.equal(refreshed[0].completeness.status, "developing");
 });
+
+test("bilingual directory names and a collapsed readiness bar", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const { runInNewContext } = await import("node:vm");
+  const ips = JSON.parse(await readFile(new URL("../../site/api/ips.json", import.meta.url)));
+  assert.equal(ips.items.find((ip) => ip.slug === "mtongheng").names.en, "Tong Heng International");
+  const script = await readFile(new URL("../../site/assets/site.js", import.meta.url), "utf8");
+  const start = script.indexOf("let repositoryStatusPromise = null;");
+  const end = script.indexOf("async function renderHeroIndex()", start);
+  const brand = { slug: "example", lastUpdatedAt: "2026-11-06T04:00:00Z", repository: { name: "dsys_example01", suffixValid: true }, completeness: { score: 90, missing: ["logo"], checks: { logo: false } } };
+  const html = runInNewContext(script.slice(start, end) + "\nipHealth(brand, true)", { brand, cachedBrands: [brand], currentLocale: "en", localeMeta: { en: { dateLocale: "en-US" } }, escapeHtml: (text) => String(text) });
+  assert.match(html, /Readiness 90%/);
+  assert.match(html, /<time[^>]+datetime="2026-11-06T04:00:00Z"/);
+  assert.match(html, /<meter[^>]+aria-label="Inventory readiness"/);
+  assert.ok(html.indexOf("dsys_example01") > html.indexOf("</summary>"));
+  assert.doesNotMatch(html, /<details open/);
+});

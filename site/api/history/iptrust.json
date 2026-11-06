@@ -12,17 +12,28 @@
     "IPTRUST"
   ],
   "latest": {
-    "hash": "53340b5287a42790703a21b20a84beb62e54cdf5",
-    "shortHash": "53340b5",
-    "date": "2026-10-18T08:59:45+08:00",
-    "message": "Point Tiansight design-system links to dsys_tiansight02 (#7)",
-    "url": "https://github.com/ksamint/iptrust01/commit/53340b5287a42790703a21b20a84beb62e54cdf5",
+    "hash": "4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
+    "shortHash": "4c0351c",
+    "date": "2026-11-06T12:34:08+08:00",
+    "message": "Add IP repository audit, live update ranking and readiness scores",
+    "url": "https://github.com/ksamint/iptrust01/commit/4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
     "sourcePaths": [
       "config/brands.json",
       "IPTRUST"
     ]
   },
   "versions": [
+    {
+      "hash": "4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
+      "shortHash": "4c0351c",
+      "date": "2026-11-06T12:34:08+08:00",
+      "message": "Add IP repository audit, live update ranking and readiness scores",
+      "url": "https://github.com/ksamint/iptrust01/commit/4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
+      "sourcePaths": [
+        "config/brands.json",
+        "IPTRUST"
+      ]
+    },
     {
       "hash": "53340b5287a42790703a21b20a84beb62e54cdf5",
       "shortHash": "53340b5",
@@ -227,17 +238,6 @@
       "date": "2026-07-08T03:28:03+08:00",
       "message": "Update OPC Global primary language",
       "url": "https://github.com/ksamint/iptrust01/commit/4c1ae93145b837340d2ad6b92c80cf9935868ecb",
-      "sourcePaths": [
-        "config/brands.json",
-        "IPTRUST"
-      ]
-    },
-    {
-      "hash": "4efc463d2f51813f4aae7c47083471b15ca8d1bf",
-      "shortHash": "4efc463",
-      "date": "2026-07-08T03:23:22+08:00",
-      "message": "Add Zhongzhiyou Group IP",
-      "url": "https://github.com/ksamint/iptrust01/commit/4efc463d2f51813f4aae7c47083471b15ca8d1bf",
       "sourcePaths": [
         "config/brands.json",
         "IPTRUST"
