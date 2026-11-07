@@ -1,0 +1,37 @@
+{
+  "source": {
+    "filename": "烤鱼神话logo符号(3).ai",
+    "sha256": "e7f64c62b8b04bfca4eaf1ebd523b29a1822969d6942ae5645e6081475e63cc6"
+  },
+  "conversion": "pdftocairo SVG; original filled paths partitioned into three wordmarks and one symbol; dashed dividers removed; 2pt padding; outlined text; no embedded raster images",
+  "assets": [
+    {
+      "file": "kaoyu-shenhua-logo-stacked-cuisine.svg",
+      "title": "烤鱼神话中英组合标志（含川湘菜）",
+      "sourcePage": 1,
+      "sha256": "1de60c10cb3114278bb239bbf3e2f62eb1842115b5f6fdd7264a24d8d960585d",
+      "paths": 26
+    },
+    {
+      "file": "kaoyu-shenhua-logo-stacked.svg",
+      "title": "烤鱼神话中英组合标志",
+      "sourcePage": 1,
+      "sha256": "bc5df09ced8ea4be275aa4cda320d5105be6458ad4a2452523207307f9e16f53",
+      "paths": 22
+    },
+    {
+      "file": "kaoyu-shenhua-logo-horizontal.svg",
+      "title": "烤鱼神话横向组合标志（含川湘菜）",
+      "sourcePage": 1,
+      "sha256": "21d023fbc6afb052b92a56adf54993a70f425530fbddf5a51997f4478258e059",
+      "paths": 26
+    },
+    {
+      "file": "kaoyu-shenhua-logo-symbol.svg",
+      "title": "烤鱼神话鱼字图形标志",
+      "sourcePage": 2,
+      "sha256": "d9c23817055877a8dbc16e1d37e4ce0590ee493b8450fa6f93e9e13c85e3b42c",
+      "paths": 6
+    }
+  ]
+}

@@ -23,6 +23,21 @@
 
 原始标志以 Adobe Illustrator 文件归档。网站提供逐页 PNG/JPG 预览与导出版本；原始文件、导出文件、格式、尺寸、文件大小及公开地址均通过品牌 API 的 `adobeAssets` 与 `images` 字段调用。
 
+### Agent 可直接使用的 SVG
+
+优先使用以下独立矢量文件：文字已转轮廓，无需安装字体；透明背景，保持原始深墨棕颜色、比例与组合关系。每个文件只含一个标志，不含原稿分隔线。
+
+| 标志 | 文件 | 使用场景 |
+| --- | --- | --- |
+| 中英竖排，含「川湘菜」 | [kaoyu-shenhua-logo-stacked-cuisine.svg](assets/logos/kaoyu-shenhua-logo-stacked-cuisine.svg) | 门店、菜单及需要说明菜系的物料 |
+| 中英竖排 | [kaoyu-shenhua-logo-stacked.svg](assets/logos/kaoyu-shenhua-logo-stacked.svg) | 常规品牌署名 |
+| 横向组合，含「川湘菜」 | [kaoyu-shenhua-logo-horizontal.svg](assets/logos/kaoyu-shenhua-logo-horizontal.svg) | 横幅、页眉与狭长空间 |
+| 鱼字图形 | [kaoyu-shenhua-logo-symbol.svg](assets/logos/kaoyu-shenhua-logo-symbol.svg) | 图标或已有品牌名称的场景 |
+
+Agent 下载模板：`https://raw.githubusercontent.com/ksamint/iptrust01/main/KaoyuShenhua/assets/logos/<文件名>`。使用原始文件内容，不以 GitHub 页面截图或重新生成的文字替代标志。需要烤鱼神话全称时选择前三款之一；鱼字图形作为辅助识别。
+
+[转换来源与 SHA-256](assets/logos/manifest.json)记录原始 AI 的哈希、对应页码及每个 SVG 的哈希。SVG 从原始 AI 的 PDF 兼容矢量路径导出，移除参考分隔线并分离组合；文字不可作为文本编辑。
+
 ## 使用原则
 
 - 优先使用原始矢量标志或透明背景 PNG。
