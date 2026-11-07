@@ -1,5 +1,4 @@
 const EDGE_ORIGIN = "https://edge.apuch.art";
-
 function canonicalIpEvolution(request) {
   if (!["GET", "HEAD"].includes(request.method)) return null;
   const url = new URL(request.url);
@@ -16,12 +15,11 @@ function canonicalIpEvolution(request) {
     headers: {
       Location: url.toString(),
       "Cache-Control": "private, no-store",
-      "X-IPTrust-Route": "canonical-ip-evolution",
-    },
+      "X-IPTrust-Route": "canonical-ip-evolution"
+    }
   });
 }
-
-export default {
+var gateway_default = {
   async fetch(request) {
     const canonical = canonicalIpEvolution(request);
     if (canonical) return canonical;
@@ -34,14 +32,17 @@ export default {
       method: request.method,
       headers,
       body: ["GET", "HEAD"].includes(request.method) ? null : request.body,
-      redirect: "manual",
+      redirect: "manual"
     }));
     const responseHeaders = new Headers(response.headers);
     responseHeaders.set("X-IPTrust-Edge", "pages-gateway");
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
-      headers: responseHeaders,
+      headers: responseHeaders
     });
-  },
+  }
+};
+export {
+  gateway_default as default
 };

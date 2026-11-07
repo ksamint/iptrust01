@@ -8,34 +8,35 @@ const state = {
   limit: 60,
   total: 0,
   items: [],
-  locale: localStorage.getItem("iptrust-locale") === "en" ? "en" : "cn",
+  locale: localStorage.getItem("iptrust-locale") === "en" ? "en" : "cn"
 };
 const $ = (selector) => document.querySelector(selector);
 let searchTimer;
-
 function escapeHtml(value = "") {
-  return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+  return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
 }
-
-function copy(cn, en) { return state.locale === "en" ? en : cn; }
-function initials(name = "") { return name.trim().split(/\s+/).slice(0, 2).map((x) => x[0]).join("").slice(0, 2).toUpperCase() || "IP"; }
+function copy(cn, en) {
+  return state.locale === "en" ? en : cn;
+}
+function initials(name = "") {
+  return name.trim().split(/\s+/).slice(0, 2).map((x) => x[0]).join("").slice(0, 2).toUpperCase() || "IP";
+}
 function logoStatus(item) {
   if (item.logoStatus === "verified" && item.logoQuality === "vector") return copy("矢量已核验", "Verified vector");
   if (item.logoStatus === "verified") return copy("官方已核验", "Officially verified");
   return copy("字标待核验", "Monogram pending");
 }
-
 function bindLogoFallbacks(root) {
   root.querySelectorAll("img[data-logo-fallback]").forEach((image) => image.addEventListener("error", () => {
     const markNode = image.parentElement;
+    if (!markNode) return;
     markNode.classList.remove("has-logo");
     markNode.classList.add("is-fallback");
     markNode.replaceChildren(document.createTextNode(image.dataset.logoFallback || "IP"));
   }, { once: true }));
 }
-
 async function fetchLibrary() {
-  const params = new URLSearchParams({ limit: state.limit, offset: state.offset });
+  const params = new URLSearchParams({ limit: String(state.limit), offset: String(state.offset) });
   if (state.q) params.set("q", state.q);
   if (state.source && state.type === "organizations") params.set("source", state.source);
   const dynamicUrl = `../api/library/${state.type}?${params}`;
@@ -51,14 +52,12 @@ async function fetchLibrary() {
     return { total: items.length, items: items.slice(state.offset, state.offset + state.limit), storage: "git-snapshot" };
   }
 }
-
 function mark(item) {
   const src = item.logoStatus === "verified" && item.logoUrl ? item.logoUrl : "";
   const fallback = initials(item.name);
   const status = logoStatus(item);
   return `<span class="organization-mark ${src ? "has-logo" : "is-fallback"}" data-logo-status="${escapeHtml(item.logoStatus || "pending")}" title="${escapeHtml(status)}">${src ? `<img src="${escapeHtml(src)}" alt="${escapeHtml(item.name)} logo" width="44" height="44" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-logo-fallback="${escapeHtml(fallback)}">` : escapeHtml(fallback)}</span>`;
 }
-
 function organizationCard(item) {
   return `<button class="organization-card" type="button" data-library-id="${escapeHtml(item.id)}">
     <span class="organization-card-head">${mark(item)}<span class="organization-rank">${item.rank ? `#${item.rank}` : "—"}</span></span>
@@ -67,7 +66,6 @@ function organizationCard(item) {
     <span class="organization-meta"><span>${escapeHtml(item.industry || item.country || "—")}</span><span>${escapeHtml(item.year || "")}</span></span>
   </button>`;
 }
-
 function itemCard(item) {
   const title = item.title?.[state.locale === "en" ? "en" : "zh"] || item.title?.zh || item.title?.en || item.slug;
   const summary = item.summary?.[state.locale === "en" ? "en" : "zh"] || item.summary?.zh || item.summary?.en || "";
@@ -76,7 +74,6 @@ function itemCard(item) {
     <h2>${escapeHtml(title)}</h2><p>${escapeHtml(summary)}</p><span class="organization-meta"><span>${escapeHtml(item.sourcePublisher || "—")}</span><span>${escapeHtml(item.publishedAt || "")}</span></span>
   </button>`;
 }
-
 function render() {
   const grid = $("#libraryGrid");
   if (!state.items.length) {
@@ -89,16 +86,14 @@ function render() {
   $("#libraryMore").classList.toggle("hidden", state.items.length >= state.total);
   grid.querySelectorAll("[data-library-id]").forEach((button) => button.addEventListener("click", () => openDetail(button.dataset.libraryId)));
 }
-
 async function load({ append = false } = {}) {
   $("#libraryStatus").textContent = copy("更新中…", "Updating…");
   const data = await fetchLibrary();
   state.total = data.total || 0;
-  state.items = append ? [...state.items, ...(data.items || [])] : (data.items || []);
+  state.items = append ? [...state.items, ...data.items || []] : data.items || [];
   $("#libraryStatus").textContent = `${copy("来源", "Source")}: ${data.storage === "d1" ? "Cloudflare D1" : "Git snapshot"}`;
   render();
 }
-
 function openDetail(id) {
   const item = state.items.find((entry) => entry.id === id);
   if (!item) return;
@@ -121,10 +116,13 @@ function openDetail(id) {
     $("#libraryDetailContent").innerHTML = `<p class="eyebrow">${escapeHtml(item.type)}</p><h2>${escapeHtml(title)}</h2><p>${escapeHtml(summary)}</p><div class="detail-links">${item.sourceUrl ? `<a href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="noreferrer">${copy("出处", "Source")}</a>` : ""}${item.fileUrl ? `<a href="${escapeHtml(item.fileUrl)}">${copy("文件", "File")}</a>` : ""}</div>`;
   }
   bindLogoFallbacks(detail);
-  detail.classList.remove("hidden"); $("#detailScrim").classList.remove("hidden");
+  detail.classList.remove("hidden");
+  $("#detailScrim").classList.remove("hidden");
 }
-
-function closeDetail() { $("#libraryDetail").classList.add("hidden"); $("#detailScrim").classList.add("hidden"); }
+function closeDetail() {
+  $("#libraryDetail").classList.add("hidden");
+  $("#detailScrim").classList.add("hidden");
+}
 function applyLocale() {
   document.documentElement.lang = state.locale === "en" ? "en" : "zh-CN";
   document.querySelectorAll("[data-cn][data-en]").forEach((node) => node.textContent = node.dataset[state.locale]);
@@ -132,21 +130,43 @@ function applyLocale() {
   $("#libraryLang").innerHTML = `<span class="${state.locale === "cn" ? "is-active" : ""}">CN</span><span class="lang-divider">/</span><span class="${state.locale === "en" ? "is-active" : ""}">EN</span>`;
   render();
 }
-
 document.querySelectorAll("[data-library-type]").forEach((button) => {
   button.classList.toggle("is-active", button.dataset.libraryType === state.type);
   button.addEventListener("click", () => {
-  document.querySelectorAll("[data-library-type]").forEach((node) => node.classList.toggle("is-active", node === button));
-  state.type = button.dataset.libraryType; state.offset = 0; state.items = [];
-  $("#sourceFilterLabel").classList.toggle("hidden", state.type !== "organizations"); load();
+    document.querySelectorAll("[data-library-type]").forEach((node) => node.classList.toggle("is-active", node === button));
+    state.type = button.dataset.libraryType;
+    state.offset = 0;
+    state.items = [];
+    $("#sourceFilterLabel").classList.toggle("hidden", state.type !== "organizations");
+    load();
   });
 });
 $("#librarySearch").value = state.q;
 $("#sourceFilter").value = state.source;
 $("#sourceFilterLabel").classList.toggle("hidden", state.type !== "organizations");
-$("#sourceFilter").addEventListener("change", (event) => { state.source = event.target.value; state.offset = 0; load(); });
-$("#librarySearch").addEventListener("input", (event) => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { state.q = event.target.value.trim(); state.offset = 0; load(); }, 220); });
-$("#libraryMore").addEventListener("click", () => { state.offset += state.limit; load({ append: true }); });
-$("#libraryLang").addEventListener("click", () => { state.locale = state.locale === "cn" ? "en" : "cn"; localStorage.setItem("iptrust-locale", state.locale); applyLocale(); });
-$("#detailClose").addEventListener("click", closeDetail); $("#detailScrim").addEventListener("click", closeDetail);
-applyLocale(); load().catch((error) => $("#libraryStatus").textContent = error.message);
+$("#sourceFilter").addEventListener("change", (event) => {
+  state.source = event.target.value;
+  state.offset = 0;
+  load();
+});
+$("#librarySearch").addEventListener("input", (event) => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    state.q = event.target.value.trim();
+    state.offset = 0;
+    load();
+  }, 220);
+});
+$("#libraryMore").addEventListener("click", () => {
+  state.offset += state.limit;
+  load({ append: true });
+});
+$("#libraryLang").addEventListener("click", () => {
+  state.locale = state.locale === "cn" ? "en" : "cn";
+  localStorage.setItem("iptrust-locale", state.locale);
+  applyLocale();
+});
+$("#detailClose").addEventListener("click", closeDetail);
+$("#detailScrim").addEventListener("click", closeDetail);
+applyLocale();
+load().catch((error) => $("#libraryStatus").textContent = error.message);

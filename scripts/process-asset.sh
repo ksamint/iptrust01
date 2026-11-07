@@ -5,7 +5,7 @@
 # Actions). Same steps as the workflow: fetch metadata and a 10-minute signed
 # source URL from the API, check the file type, ClamAV-scan it with fresh
 # signatures, render the preview (pdftoppm for ai/pdf, ImageMagick otherwise),
-# upload it with scripts/upload-derived-asset.mjs, and report a failure back to
+# upload it with scripts/upload-derived-asset.ts, and report a failure back to
 # the API when any step fails.
 #
 # The edge Worker still marks these assets 'converting' and sends a GitHub
@@ -118,7 +118,7 @@ process_one() {
   test -s output/preview.png
 
   log "[$asset_id] upload public derivative"
-  node "$REPO/scripts/upload-derived-asset.mjs" output/preview.png "$asset_id" preview
+  node "$REPO/scripts/upload-derived-asset.ts" output/preview.png "$asset_id" preview
 }
 
 report_failure() {

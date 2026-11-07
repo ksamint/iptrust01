@@ -5,7 +5,7 @@ import sqlite3
 import subprocess
 
 root = Path(__file__).resolve().parents[1]
-subprocess.run(['node', 'scripts/build-platform-seed.mjs', '--brands-only'], cwd=root, check=True)
+subprocess.run(['node', 'scripts/build-platform-seed.ts', '--brands-only'], cwd=root, check=True)
 db = sqlite3.connect(':memory:')
 for migration in sorted((root / 'migrations').glob('*.sql')):
     db.executescript(migration.read_text())

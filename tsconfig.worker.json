@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "types": [], "lib": ["ES2023"] },
+  "include": ["edge/**/*.ts", "functions/**/*.ts", "frontend/gateway.ts", "types/worker*.d.ts"]
+}

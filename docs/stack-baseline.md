@@ -1,6 +1,6 @@
 # IPTrust stack baseline
 
-Verified: 2026-08-12
+Verified: 2026-11-07
 
 ## Supported runtime
 
@@ -8,7 +8,8 @@ Verified: 2026-08-12
 - npm: 11.17.0
 - Cloudflare Wrangler: 4.121.0
 - Workers compatibility date: 2026-05-03
-- JavaScript: native ESM, no frontend framework
+- TypeScript: compiler-checked ESM, no frontend framework
+- TypeScript compiler: 5.9.3; browser compilation: esbuild 0.28.1
 
 The exact Node version lives in `.node-version` and `.nvmrc`. The local
 release scripts read that file and refuse any other Node version instead of
@@ -16,7 +17,7 @@ carrying a separate runtime version.
 
 ## Application stack
 
-- Static site generator: `scripts/build-site.mjs`
+- Static site generator: `scripts/build-site.ts`
 - Markdown rendering: `marked` 18.0.9
 - Design token tooling: Style Dictionary 5.5.1
 - Static hosting: Cloudflare Pages
@@ -29,6 +30,13 @@ carrying a separate runtime version.
 Style Dictionary 5.5.1 is the minimum supported release because earlier 4.x
 versions contain a published prototype-pollution vulnerability. The current
 token build has been verified against 5.5.1.
+
+Node runs the erasable TypeScript scripts directly. `npm run typecheck` checks
+Node scripts, browser sources, Worker sources and the strict MCP project.
+`npm test` runs the maintained Node test suite. Browser and Worker deployment
+artifacts remain JavaScript. The new application configs use gradual typing
+(`strict: false`); the existing MCP project retains `strict: true`. KiND’s
+published JavaScript Tailwind preset remains a consumer compatibility asset.
 
 ## Sources of truth
 

@@ -1,0 +1,155 @@
+import type { LibraryItem, PageList } from "./types.ts";
+export {};
+const initialParams = new URLSearchParams(location.search);
+const initialType = ["organizations", "cases", "reports", "datasets"].includes(initialParams.get("type")) ? initialParams.get("type") : "organizations";
+const state: { type: string; q: string; source: string; offset: number; limit: number; total: number; items: LibraryItem[]; locale: "en" | "cn" } = {
+  type: initialType,
+  q: initialParams.get("q")?.trim() || "",
+  source: initialParams.get("source")?.trim() || "",
+  offset: 0,
+  limit: 60,
+  total: 0,
+  items: [],
+  locale: localStorage.getItem("iptrust-locale") === "en" ? "en" : "cn",
+};
+const $ = <T extends Element = HTMLElement>(selector: string): T | null => document.querySelector<T>(selector);
+let searchTimer: ReturnType<typeof setTimeout>;
+
+function escapeHtml(value: unknown = "") {
+  return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+}
+
+function copy(cn: string, en: string) { return state.locale === "en" ? en : cn; }
+function initials(name = "") { return name.trim().split(/\s+/).slice(0, 2).map((x) => x[0]).join("").slice(0, 2).toUpperCase() || "IP"; }
+function logoStatus(item: LibraryItem) {
+  if (item.logoStatus === "verified" && item.logoQuality === "vector") return copy("矢量已核验", "Verified vector");
+  if (item.logoStatus === "verified") return copy("官方已核验", "Officially verified");
+  return copy("字标待核验", "Monogram pending");
+}
+
+function bindLogoFallbacks(root: HTMLElement) {
+  root.querySelectorAll<HTMLElement>("img[data-logo-fallback]").forEach((image) => image.addEventListener("error", () => {
+    const markNode = image.parentElement;
+    if (!markNode) return;
+    markNode.classList.remove("has-logo");
+    markNode.classList.add("is-fallback");
+    markNode.replaceChildren(document.createTextNode(image.dataset.logoFallback || "IP"));
+  }, { once: true }));
+}
+
+async function fetchLibrary(): Promise<PageList<LibraryItem>> {
+  const params = new URLSearchParams({ limit: String(state.limit), offset: String(state.offset) });
+  if (state.q) params.set("q", state.q);
+  if (state.source && state.type === "organizations") params.set("source", state.source);
+  const dynamicUrl = `../api/library/${state.type}?${params}`;
+  try {
+    const response = await fetch(dynamicUrl, { cache: "no-cache" });
+    if (!response.ok || !(response.headers.get("content-type") || "").includes("json")) throw new Error("dynamic unavailable");
+    return response.json();
+  } catch {
+    const response = await fetch(`../api/library/${state.type}.json`, { cache: "no-cache" });
+    let items: LibraryItem[] = response.ok ? await response.json() : [];
+    if (state.q) items = items.filter((item) => JSON.stringify(item).toLowerCase().includes(state.q.toLowerCase()));
+    if (state.source && state.type === "organizations") items = items.filter((item) => item.sourceId === state.source);
+    return { total: items.length, items: items.slice(state.offset, state.offset + state.limit), storage: "git-snapshot" };
+  }
+}
+
+function mark(item: LibraryItem) {
+  const src = item.logoStatus === "verified" && item.logoUrl ? item.logoUrl : "";
+  const fallback = initials(item.name);
+  const status = logoStatus(item);
+  return `<span class="organization-mark ${src ? "has-logo" : "is-fallback"}" data-logo-status="${escapeHtml(item.logoStatus || "pending")}" title="${escapeHtml(status)}">${src ? `<img src="${escapeHtml(src)}" alt="${escapeHtml(item.name)} logo" width="44" height="44" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-logo-fallback="${escapeHtml(fallback)}">` : escapeHtml(fallback)}</span>`;
+}
+
+function organizationCard(item: LibraryItem) {
+  return `<button class="organization-card" type="button" data-library-id="${escapeHtml(item.id)}">
+    <span class="organization-card-head">${mark(item)}<span class="organization-rank">${item.rank ? `#${item.rank}` : "—"}</span></span>
+    <h2>${escapeHtml(item.name)}</h2>
+    <p>${escapeHtml(item.description || copy("资料待核验补充。", "Profile pending verification."))}</p>
+    <span class="organization-meta"><span>${escapeHtml(item.industry || item.country || "—")}</span><span>${escapeHtml(item.year || "")}</span></span>
+  </button>`;
+}
+
+function itemCard(item: LibraryItem) {
+  const title = item.title?.[state.locale === "en" ? "en" : "zh"] || item.title?.zh || item.title?.en || item.slug;
+  const summary = item.summary?.[state.locale === "en" ? "en" : "zh"] || item.summary?.zh || item.summary?.en || "";
+  return `<button class="organization-card" type="button" data-library-id="${escapeHtml(item.id)}">
+    <span class="organization-card-head"><span class="organization-mark">${escapeHtml(item.type?.slice(0, 2).toUpperCase())}</span><span class="organization-rank">${escapeHtml(item.access || "metadata")}</span></span>
+    <h2>${escapeHtml(title)}</h2><p>${escapeHtml(summary)}</p><span class="organization-meta"><span>${escapeHtml(item.sourcePublisher || "—")}</span><span>${escapeHtml(item.publishedAt || "")}</span></span>
+  </button>`;
+}
+
+function render() {
+  const grid = $("#libraryGrid");
+  if (!state.items.length) {
+    grid.innerHTML = `<div class="empty-library">${copy("暂无条目。连接 API 后可创建并关联。", "No items yet. Connect API to create and link one.")}</div>`;
+  } else {
+    grid.innerHTML = state.items.map(state.type === "organizations" ? organizationCard : itemCard).join("");
+  }
+  bindLogoFallbacks(grid);
+  $("#libraryCount").textContent = state.total.toLocaleString();
+  $("#libraryMore").classList.toggle("hidden", state.items.length >= state.total);
+  grid.querySelectorAll<HTMLElement>("[data-library-id]").forEach((button) => button.addEventListener("click", () => openDetail(button.dataset.libraryId)));
+}
+
+async function load({ append = false } = {}) {
+  $("#libraryStatus").textContent = copy("更新中…", "Updating…");
+  const data = await fetchLibrary();
+  state.total = data.total || 0;
+  state.items = append ? [...state.items, ...(data.items || [])] : (data.items || []);
+  $("#libraryStatus").textContent = `${copy("来源", "Source")}: ${data.storage === "d1" ? "Cloudflare D1" : "Git snapshot"}`;
+  render();
+}
+
+function openDetail(id: string) {
+  const item = state.items.find((entry) => entry.id === id);
+  if (!item) return;
+  const detail = $("#libraryDetail");
+  if (state.type === "organizations") {
+    $("#libraryDetailContent").innerHTML = `${mark(item).replace("organization-mark", "detail-mark")}
+      <p class="eyebrow">${escapeHtml(item.sourcePublisher || "SOURCE")}${item.rank ? ` · #${item.rank}` : ""}</p>
+      <h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.description || copy("资料待核验补充。", "Profile pending verification."))}</p>
+      <div class="detail-data">
+        <div><span>${copy("行业", "Industry")}</span>${escapeHtml(item.industry || "—")}</div>
+        <div><span>${copy("国家", "Country")}</span>${escapeHtml(item.country || "—")}</div>
+        <div><span>${copy("总部", "Headquarters")}</span>${escapeHtml(item.headquarters || "—")}</div>
+        <div><span>${copy("核验", "Verification")}</span>${escapeHtml(item.verificationStatus || "—")}</div>
+        <div><span>${copy("Logo 状态", "Logo status")}</span>${escapeHtml(logoStatus(item))}</div>
+        <div><span>${copy("Logo 来源", "Logo provenance")}</span>${escapeHtml(item.logoProvider || (item.logoStatus === "verified" ? "Official asset registry" : copy("待补充", "Pending")))}</div>
+      </div><div class="detail-links">${item.officialWebsite ? `<a href="${escapeHtml(item.officialWebsite)}" target="_blank" rel="noreferrer">${copy("官网", "Website")}</a>` : ""}${item.logoProvenanceUrl ? `<a href="${escapeHtml(item.logoProvenanceUrl)}" target="_blank" rel="noreferrer">${copy("Logo 出处", "Logo source")}</a>` : ""}<a href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="noreferrer">${copy("资料出处", "Source")}</a></div>`;
+  } else {
+    const title = item.title?.[state.locale === "en" ? "en" : "zh"] || item.title?.zh || item.title?.en || item.slug;
+    const summary = item.summary?.[state.locale === "en" ? "en" : "zh"] || item.summary?.zh || item.summary?.en || "";
+    $("#libraryDetailContent").innerHTML = `<p class="eyebrow">${escapeHtml(item.type)}</p><h2>${escapeHtml(title)}</h2><p>${escapeHtml(summary)}</p><div class="detail-links">${item.sourceUrl ? `<a href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="noreferrer">${copy("出处", "Source")}</a>` : ""}${item.fileUrl ? `<a href="${escapeHtml(item.fileUrl)}">${copy("文件", "File")}</a>` : ""}</div>`;
+  }
+  bindLogoFallbacks(detail);
+  detail.classList.remove("hidden"); $("#detailScrim").classList.remove("hidden");
+}
+
+function closeDetail() { $("#libraryDetail").classList.add("hidden"); $("#detailScrim").classList.add("hidden"); }
+function applyLocale() {
+  document.documentElement.lang = state.locale === "en" ? "en" : "zh-CN";
+  document.querySelectorAll<HTMLElement>("[data-cn][data-en]").forEach((node) => node.textContent = node.dataset[state.locale]);
+  $<HTMLInputElement>("#librarySearch").placeholder = copy("搜索组织、案例、报告、数据集", "Search organizations, cases, reports, datasets");
+  $("#libraryLang").innerHTML = `<span class="${state.locale === "cn" ? "is-active" : ""}">CN</span><span class="lang-divider">/</span><span class="${state.locale === "en" ? "is-active" : ""}">EN</span>`;
+  render();
+}
+
+document.querySelectorAll<HTMLElement>("[data-library-type]").forEach((button) => {
+  button.classList.toggle("is-active", button.dataset.libraryType === state.type);
+  button.addEventListener("click", () => {
+  document.querySelectorAll<HTMLElement>("[data-library-type]").forEach((node) => node.classList.toggle("is-active", node === button));
+  state.type = button.dataset.libraryType; state.offset = 0; state.items = [];
+  $("#sourceFilterLabel").classList.toggle("hidden", state.type !== "organizations"); load();
+  });
+});
+$<HTMLInputElement>("#librarySearch").value = state.q;
+$<HTMLSelectElement>("#sourceFilter").value = state.source;
+$("#sourceFilterLabel").classList.toggle("hidden", state.type !== "organizations");
+$<HTMLSelectElement>("#sourceFilter").addEventListener("change", (event) => { state.source = (event.target as HTMLInputElement).value; state.offset = 0; load(); });
+$<HTMLInputElement>("#librarySearch").addEventListener("input", (event) => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { state.q = (event.target as HTMLInputElement).value.trim(); state.offset = 0; load(); }, 220); });
+$("#libraryMore").addEventListener("click", () => { state.offset += state.limit; load({ append: true }); });
+$("#libraryLang").addEventListener("click", () => { state.locale = state.locale === "cn" ? "en" : "cn"; localStorage.setItem("iptrust-locale", state.locale); applyLocale(); });
+$("#detailClose").addEventListener("click", closeDetail); $("#detailScrim").addEventListener("click", closeDetail);
+applyLocale(); load().catch((error) => $("#libraryStatus").textContent = error.message);

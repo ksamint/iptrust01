@@ -8,7 +8,7 @@
 #   Pages deploy (project tableai-designaha, branch main), production check.
 #
 # Usage: scripts/deploy-cloudflare.sh [--font-sync-base REV]
-#   --font-sync-base REV  compare scripts/sync-font-library.mjs and
+#   --font-sync-base REV  compare scripts/sync-font-library.ts and
 #                         data/fonts.json against REV instead of HEAD^ (use the
 #                         last deployed commit when releasing several commits).
 #
@@ -58,7 +58,7 @@ log "verify D1 authorization"
 wrangler d1 execute iptrust-library --remote --config edge/wrangler.toml --command "SELECT 1 AS authorized"
 
 log "font previews"
-if git diff --quiet "$FONT_SYNC_BASE" HEAD -- scripts/sync-font-library.mjs data/fonts.json; then
+if git diff --quiet "$FONT_SYNC_BASE" HEAD -- scripts/sync-font-library.ts data/fonts.json; then
   echo "Font catalog unchanged since $FONT_SYNC_BASE; skipping R2 font sync."
 else
   python3 -m venv "$RELEASE_TMP/py"

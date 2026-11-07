@@ -1,5 +1,19 @@
 [
   {
+    "hash": "499ce861eb9818ca1d769874759728bd06ba788b",
+    "shortHash": "499ce86",
+    "date": "2026-11-07T14:11:52+08:00",
+    "message": "Render homepage controls immediately and refresh repository data in background",
+    "url": "https://github.com/ksamint/iptrust01/commit/499ce861eb9818ca1d769874759728bd06ba788b"
+  },
+  {
+    "hash": "b46b6bd9fb3056aab2bc4a62441e0fb778127c43",
+    "shortHash": "b46b6bd",
+    "date": "2026-11-07T13:33:01+08:00",
+    "message": "Add standalone Kaoyu Shenhua SVG logos and agent usage guide",
+    "url": "https://github.com/ksamint/iptrust01/commit/b46b6bd9fb3056aab2bc4a62441e0fb778127c43"
+  },
+  {
     "hash": "2a869971124785f1724593c963e7d5c68814feb0",
     "shortHash": "2a86997",
     "date": "2026-11-07T12:51:08+08:00",
@@ -124,19 +138,5 @@
     "date": "2026-09-13T22:40:14-07:00",
     "message": "Merge pull request #4 from fengurt/codex/brand-github-links",
     "url": "https://github.com/ksamint/iptrust01/commit/f6b8982bb90efdd941e80e154f421c0ffd0133f3"
-  },
-  {
-    "hash": "04cf5f8e0f7e9e196089266276f7d976e5a2dc65",
-    "shortHash": "04cf5f8",
-    "date": "2026-09-14T13:38:58+08:00",
-    "message": "feat: link brand pages to GitHub sources",
-    "url": "https://github.com/ksamint/iptrust01/commit/04cf5f8e0f7e9e196089266276f7d976e5a2dc65"
-  },
-  {
-    "hash": "74a829b2df1b50b1411b06dcf66a13ee6648c008",
-    "shortHash": "74a829b",
-    "date": "2026-09-01T17:03:57+08:00",
-    "message": "feat: add interactive IP evolution map",
-    "url": "https://github.com/ksamint/iptrust01/commit/74a829b2df1b50b1411b06dcf66a13ee6648c008"
   }
 ]

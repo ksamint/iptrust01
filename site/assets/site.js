@@ -1,8 +1,7 @@
 const $ = (selector) => document.querySelector(selector);
-const BUILD_VERSION = "2a86997-3eb3e341";
-const MORE_IP_SLUGS = new Set(["qingshuiting","youyuan-jingmeng","subangyuan","xiaotaoyuan","ganglao-baozailu","shuangxi-shaola","mutangwan","tongxianghui","tongli-market"]);
-const FEATURED_IP_SLUGS = new Set(["iptrust","tableai","opcglobal","sidera"]);
-
+const BUILD_VERSION = "499ce86-a4e03d75";
+const MORE_IP_SLUGS = /* @__PURE__ */ new Set(["qingshuiting", "youyuan-jingmeng", "subangyuan", "xiaotaoyuan", "ganglao-baozailu", "shuangxi-shaola", "mutangwan", "tongxianghui", "tongli-market"]);
+const FEATURED_IP_SLUGS = /* @__PURE__ */ new Set(["iptrust", "tableai", "opcglobal", "sidera"]);
 const i18n = {
   cn: {
     "hub.name": "岁知社",
@@ -497,18 +496,15 @@ const i18n = {
     "admin.editorPlaceholder": "Load file..."
   }
 };
-
 const localeMeta = {
   cn: { label: "CN", htmlLang: "zh-CN", contentLang: "zh", dateLocale: "zh-CN" },
-  en: { label: "EN", htmlLang: "en", contentLang: "en", dateLocale: "en-US" },
+  en: { label: "EN", htmlLang: "en", contentLang: "en", dateLocale: "en-US" }
 };
-
 function normalizeLocale(value) {
   if (value === "zh" || value === "cn" || value === "CN") return "cn";
   if (value === "en" || value === "EN") return "en";
   return "cn";
 }
-
 let currentLocale = normalizeLocale(localStorage.getItem("iptrust-locale") || localStorage.getItem("iptrust-lang"));
 const publishedDirectory = document.getElementById("directorySnapshot") ? JSON.parse(document.getElementById("directorySnapshot").textContent) : null;
 let cachedBrands = document.getElementById("brandListSnapshot") ? JSON.parse(document.getElementById("brandListSnapshot").textContent) : null;
@@ -520,15 +516,12 @@ let cachedPortalSkillText = "";
 let fontCatalogCache = null;
 let googleFontDirectoryCache = null;
 let fontSpecimenObserver = null;
-
 function contentLang(locale = currentLocale) {
   return localeMeta[locale]?.contentLang || "zh";
 }
-
 function t(key) {
   return i18n[currentLocale]?.[key] || i18n.cn[key] || key;
 }
-
 function renderLanguageToggle() {
   const toggle = $("#langToggle");
   if (!toggle) return;
@@ -539,7 +532,6 @@ function renderLanguageToggle() {
     <span class="${currentLocale === "en" ? "is-active" : ""}">EN</span>
   `;
 }
-
 function applyI18n() {
   document.documentElement.lang = localeMeta[currentLocale].htmlLang;
   document.documentElement.dataset.locale = currentLocale;
@@ -562,7 +554,6 @@ function applyI18n() {
   applyFontLibraryLocale();
   setupAgentGateway();
 }
-
 function setupLanguageToggle() {
   const toggle = $("#langToggle");
   if (!toggle) return;
@@ -577,7 +568,6 @@ function setupLanguageToggle() {
     await renderBrand();
   });
 }
-
 function setupSearch() {
   const search = $("#brandSearch");
   if (!search || search.dataset.ready) return;
@@ -602,18 +592,17 @@ function setupSearch() {
     $("#globalResults")?.classList.remove("is-open");
   });
   document.addEventListener("click", (event) => {
-    if (event.target.closest(".topbar-search")) return;
+    if ((event.target instanceof Element ? event.target : null)?.closest(".topbar-search")) return;
     $("#globalResults")?.classList.remove("is-open");
   });
 }
-
 async function loadJson(path) {
   const url = path.startsWith("api/") ? new URL("../" + path, import.meta.url) : new URL(path, location.href);
   url.searchParams.set("v", BUILD_VERSION);
   let lastError;
   for (let attempt = 0; attempt < 2; attempt += 1) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), attempt ? 9000 : 6500);
+    const timeout = setTimeout(() => controller.abort(), attempt ? 9e3 : 6500);
     try {
       const res = await fetch(url, { cache: attempt ? "reload" : "force-cache", signal: controller.signal });
       if (!res.ok) throw new Error(`Could not load ${path}: ${res.status}`);
@@ -627,22 +616,19 @@ async function loadJson(path) {
   }
   throw lastError || new Error(`Could not load ${path}`);
 }
-
 async function loadSearch() {
   cachedSearch ??= await loadJson("api/search.json");
   return cachedSearch;
 }
-
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
-    "'": "&#039;",
-  }[char]));
+    "'": "&#039;"
+  })[char]);
 }
-
 function mediaPreviewUrl(value, size = "640") {
   try {
     const url = new URL(value, location.href);
@@ -654,7 +640,6 @@ function mediaPreviewUrl(value, size = "640") {
     return String(value || "");
   }
 }
-
 function responsiveImageAttributes(value, widths = [320, 640, 1280], sizes = "100vw") {
   const normalized = [...new Set(widths.map(String))];
   const fallback = normalized[Math.min(1, normalized.length - 1)] || "640";
@@ -662,12 +647,11 @@ function responsiveImageAttributes(value, widths = [320, 640, 1280], sizes = "10
   const srcset = normalized.map((width) => mediaPreviewUrl(value, width) + " " + width + "w").join(", ");
   return 'src="' + escapeHtml(src) + '" srcset="' + escapeHtml(srcset) + '" sizes="' + escapeHtml(sizes) + '"';
 }
-
 function imageDimensionAttributes(asset = {}) {
   let width = Number(asset.width || 0);
   let height = Number(asset.height || 0);
   if ((!width || !height) && asset.dimensions) {
-    const match = String(asset.dimensions).match(/(d+)s*[x×]s*(d+)/i);
+    const match = String(asset.dimensions).match(/(\d+)\s*[x×]\s*(\d+)/i);
     if (match) {
       width = Number(match[1]);
       height = Number(match[2]);
@@ -675,19 +659,15 @@ function imageDimensionAttributes(asset = {}) {
   }
   return width > 0 && height > 0 ? 'width="' + width + '" height="' + height + '"' : "";
 }
-
 function copyIcon() {
   return `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="10" height="10" rx="2"></rect><path d="M5 15V7a2 2 0 0 1 2-2h8"></path></svg>`;
 }
-
 function githubIcon() {
   return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.55 9.55 0 0 1 12 6.82c.85 0 1.71.11 2.51.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85V21c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"></path></svg>`;
 }
-
 function downloadIcon() {
   return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-4-4 4 4 4-4M5 20h14"></path></svg>`;
 }
-
 function themeStyle(theme = {}) {
   const isDark = theme.mode === "dark";
   const buttonText = theme.buttonText || (isDark ? theme.surface || "#14100A" : "#ffffff");
@@ -700,25 +680,20 @@ function themeStyle(theme = {}) {
     "--brand-ink": theme.ink,
     "--brand-muted": theme.muted,
     "--brand-line": theme.line,
-    "--brand-button-text": buttonText,
+    "--brand-button-text": buttonText
   };
-  return Object.entries(vars)
-    .filter(([, value]) => value)
-    .map(([key, value]) => `${key}:${value}`)
-    .join(";");
+  return Object.entries(vars).filter(([, value]) => value).map(([key, value]) => `${key}:${value}`).join(";");
 }
-
 function themeClass(theme = {}) {
   return theme.mode === "dark" ? "theme-dark" : "theme-light";
 }
-
 function swatches(theme = {}, labeled = false) {
   const colors = [
     ["Primary", theme.primary],
     ["Accent", theme.accent],
     ["Secondary", theme.secondary],
     ["Surface", theme.surface],
-    ["Ink", theme.ink],
+    ["Ink", theme.ink]
   ].filter(([, value]) => value);
   return `<div class="swatches">${colors.map(([label, value]) => `
     <span class="swatch-pair">
@@ -727,30 +702,26 @@ function swatches(theme = {}, labeled = false) {
     </span>
   `).join("")}</div>`;
 }
-
 function palette(theme = {}) {
   return [
     ["Primary", theme.primary],
     ["Accent", theme.accent],
-    ["Secondary", theme.secondary],
+    ["Secondary", theme.secondary]
   ].filter(([, value]) => value);
 }
-
 function hexToRgb(hex = "") {
   const clean = hex.replace("#", "").trim();
   if (!/^[0-9a-f]{6}$/i.test(clean)) return null;
   return {
     r: parseInt(clean.slice(0, 2), 16),
     g: parseInt(clean.slice(2, 4), 16),
-    b: parseInt(clean.slice(4, 6), 16),
+    b: parseInt(clean.slice(4, 6), 16)
   };
 }
-
 function rgbValue(hex) {
   const rgb = hexToRgb(hex);
   return rgb ? `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` : hex;
 }
-
 function pantoneApprox(hex) {
   const rgb = hexToRgb(hex);
   if (!rgb) return `PANTONE approx ${hex}`;
@@ -759,7 +730,7 @@ function pantoneApprox(hex) {
   const delta = max - min;
   let hue = 0;
   if (delta) {
-    if (max === rgb.r) hue = ((rgb.g - rgb.b) / delta) % 6;
+    if (max === rgb.r) hue = (rgb.g - rgb.b) / delta % 6;
     if (max === rgb.g) hue = (rgb.b - rgb.r) / delta + 2;
     if (max === rgb.b) hue = (rgb.r - rgb.g) / delta + 4;
     hue = Math.round(hue * 60);
@@ -776,19 +747,16 @@ function pantoneApprox(hex) {
   if (hue < 292) return "PANTONE 7673 C";
   return "PANTONE 7645 C";
 }
-
 function colorDots(theme = {}) {
   return `<span class="hero-index-colors">${palette(theme).map(([label, value]) => `
     <button class="color-dot" type="button" data-copy-rgb="${escapeHtml(rgbValue(value))}" data-copy-pantone="${escapeHtml(pantoneApprox(value))}" data-color-tooltip="${escapeHtml(label)} · ${escapeHtml(rgbValue(value))} · Tab ${escapeHtml(pantoneApprox(value))}" aria-label="Copy ${escapeHtml(label)} ${escapeHtml(rgbValue(value))}" title="${escapeHtml(label)} ${escapeHtml(rgbValue(value))}" style="--dot:${escapeHtml(value)}"></button>
   `).join("")}</span>`;
 }
-
 function miniPalette(theme = {}) {
   return `<span class="mini-palette" aria-hidden="true">${palette(theme).map(([, value]) => `
     <span class="mini-swatch" style="--dot:${escapeHtml(value)}"></span>
   `).join("")}</span>`;
 }
-
 function brandInitial(brand = {}) {
   if (brand.slug === "fengzhi") return "界";
   if (brand.slug === "sidera") return "侍";
@@ -798,20 +766,16 @@ function brandInitial(brand = {}) {
   if (brand.slug === "tableai") return "AI";
   return String(brand.name || brand.slug || "IP").slice(0, 2);
 }
-
 function cardClass(brand = {}) {
   return `ip-card ${themeClass(brand.theme)}`;
 }
-
 function cardHeroImage(brand = {}, localized = {}) {
   if (!brand.heroImage) return "";
   return `<img ${responsiveImageAttributes(brand.heroImage, [320, 640, 1280], "(max-width: 760px) 100vw, 33vw")} alt="${escapeHtml(localized.name || brand.name || "")}" loading="lazy" decoding="async">`;
 }
-
 function statusLabel(status) {
   return status === "documented" ? t("status.documented") : t("status.placeholder");
 }
-
 function localizedBrand(brand = {}) {
   const lang = contentLang();
   const display = brand.display?.[lang] || {};
@@ -821,43 +785,37 @@ function localizedBrand(brand = {}) {
   return {
     name: display.name || brand.name || brand.slug,
     secondaryName: display.secondaryName || brand.nativeName || "",
-    intro: hasIntro ? (brand.intro?.[lang] ?? "") : (brand.primaryExcerpt || brand.description || ""),
-    business: hasBusiness ? ((brand.profile?.business ?? brand.business)?.[lang] ?? "") : "",
-    notes: hasNotes ? ((brand.profile?.notes ?? brand.notes)?.[lang] ?? "") : "",
+    intro: hasIntro ? brand.intro?.[lang] ?? "" : brand.primaryExcerpt || brand.description || "",
+    business: hasBusiness ? (brand.profile?.business ?? brand.business)?.[lang] ?? "" : "",
+    notes: hasNotes ? (brand.profile?.notes ?? brand.notes)?.[lang] ?? "" : ""
   };
 }
-
 function localizedClassification(brand = {}, lang = contentLang()) {
   const source = brand.profile?.classification || brand.classification || {};
   const fallbackLang = lang === "zh" ? "en" : "zh";
   const get = (field) => {
     const primary = source[field]?.[lang];
     const fallback = source[field]?.[fallbackLang];
-    return Array.isArray(primary) && primary.length ? primary : (Array.isArray(fallback) ? fallback : []);
+    return Array.isArray(primary) && primary.length ? primary : Array.isArray(fallback) ? fallback : [];
   };
   return {
     tracks: get("tracks"),
     audiences: get("audiences"),
-    tags: get("tags"),
+    tags: get("tags")
   };
 }
-
 function listText(values = []) {
   return values.filter(Boolean).join(" · ");
 }
-
 function alternateBrandName(brand = {}, main = "") {
   const mainLanguage = brand.display?.default?.language || brand.mainLanguage || contentLang();
   const alternateLang = mainLanguage === "zh" || mainLanguage === "cn" ? "en" : "zh";
-  const alternate = brand.display?.[alternateLang]?.name
-    || (alternateLang === "zh" ? brand.nativeName : brand.name)
-    || "";
+  const alternate = brand.display?.[alternateLang]?.name || (alternateLang === "zh" ? brand.nativeName : brand.name) || "";
   return {
     language: alternateLang,
-    name: alternate && alternate !== main ? alternate : "",
+    name: alternate && alternate !== main ? alternate : ""
   };
 }
-
 function mainBrand(brand = {}) {
   const display = brand.display?.default || {};
   const lang = display.language || brand.mainLanguage || contentLang();
@@ -873,20 +831,17 @@ function mainBrand(brand = {}) {
     business: brand.profile?.business?.[lang] || brand.business?.[lang] || "",
     notes: brand.profile?.notes?.[lang] || brand.notes?.[lang] || "",
     classification,
-    language: lang,
+    language: lang
   };
 }
-
 function fieldValue(value) {
   return value || t("brand.blank");
 }
-
 function languageLabel(value) {
   if (value === "zh" || value === "cn") return "CN";
   if (value === "en") return "EN";
   return value || "";
 }
-
 function skillBaseText(skill = "") {
   const skillUrl = new URL("skills/iptrust-live-update/SKILL.md", document.baseURI).href;
   return [
@@ -898,10 +853,9 @@ function skillBaseText(skill = "") {
     "MCP: " + new URL("mcp", location.href).href,
     `Skill: ${skillUrl}`,
     "",
-    skill || "Use the IPTrust manifest and brand APIs to read each IP's latest name, colors, intro, business, language, and guideline files.",
+    skill || "Use the IPTrust manifest and brand APIs to read each IP's latest name, colors, intro, business, language, and guideline files."
   ].join("\n");
 }
-
 async function portalSkillText() {
   const skillUrl = new URL("skills/iptrust-live-update/SKILL.md", document.baseURI);
   skillUrl.searchParams.set("v", BUILD_VERSION);
@@ -914,7 +868,6 @@ async function portalSkillText() {
   }
   return skillBaseText(skill);
 }
-
 function referenceText(brand = {}) {
   const localized = mainBrand(brand);
   const ipPageUrl = new URL(brand.url || `brand.html?brand=${brand.slug}`, location.href).href;
@@ -928,9 +881,7 @@ function referenceText(brand = {}) {
   const logoPath = preferredLogo?.sitePath || brand.logoUrl || brand.heroImage || "";
   const logoUrl = logoPath ? new URL(logoPath, location.href).href : "TBD";
   const publicAssetUrls = (brand.images || []).map((image) => image.sitePath).filter(Boolean).map((path) => new URL(path, location.href).href);
-  const colors = palette(brand.theme)
-    .map(([label, value]) => `${label}: ${value} / ${rgbValue(value)}`)
-    .join("\n");
+  const colors = palette(brand.theme).map(([label, value]) => `${label}: ${value} / ${rgbValue(value)}`).join("\n");
   return [
     "IPTrust Agent Reference",
     "",
@@ -951,7 +902,8 @@ function referenceText(brand = {}) {
     `Field schema: ${schemaUrl}`,
     `IPTrust Skill: ${skillUrl}`,
     `MCP endpoint: ${mcpSource}`,
-    publicAssetUrls.length ? `Public assets:\n${publicAssetUrls.map((url) => "- " + url).join("\n")}` : "",
+    publicAssetUrls.length ? `Public assets:
+${publicAssetUrls.map((url) => "- " + url).join("\n")}` : "",
     "",
     "[Core]",
     `Intro: ${localized.intro || "TBD"}`,
@@ -974,23 +926,20 @@ function referenceText(brand = {}) {
     `get_brand({ "assetKey": "${brand.assetKey || brand.slug}" })`,
     `get_guideline({ "assetKey": "${brand.assetKey || brand.slug}" })`,
     `list_tokens({ "assetKey": "${brand.assetKey || brand.slug}" })`,
-    `validate_color({ "assetKey": "${brand.assetKey || brand.slug}", "hex": "${brand.theme?.primary || "#000000"}" })`,
+    `validate_color({ "assetKey": "${brand.assetKey || brand.slug}", "hex": "${brand.theme?.primary || "#000000"}" })`
   ].join("\n");
 }
-
 function minimalReferenceText(brand = {}) {
-  const transparentLogo = (brand.images || []).find((image) => image.documentLogo)
-    || (brand.images || []).find((image) => image.backgroundTransparent && image.format === "PNG");
+  const transparentLogo = (brand.images || []).find((image) => image.documentLogo) || (brand.images || []).find((image) => image.backgroundTransparent && image.format === "PNG");
   return [
     `中文名: ${brand.display?.zh?.name || "暂无"}`,
     `English: ${brand.display?.en?.name || "TBD"}`,
     `主色: ${brand.theme?.primary || "TBD"}`,
     `辅助色: ${brand.theme?.accent || brand.theme?.secondary || "TBD"}`,
     `透明 PNG: ${transparentLogo?.sitePath || "暂无"}`,
-    `设计系统: ${brand.designSystemUrl || "暂无"}`,
+    `设计系统: ${brand.designSystemUrl || "暂无"}`
   ].join("\n");
 }
-
 function ipSystemApplyText(brand = {}) {
   const localized = mainBrand(brand);
   const brandUrl = new URL(brand.url || `brand.html?brand=${brand.slug}`, location.href).href;
@@ -1011,10 +960,9 @@ function ipSystemApplyText(brand = {}) {
     `Brand API: ${brandApi}`,
     "",
     "Instruction:",
-    "Use Brand IP System v2 as the universal operating framework. Apply it to this IP's latest API fields, then produce: 0) brand architecture judgment, 1) IP core, 2) expression system, 3) asset ladder, 4) governance and measurement loop. Keep all recommendations aligned with the IP's main language, tracks, audiences, tags, colors, intro, business, and notes.",
+    "Use Brand IP System v2 as the universal operating framework. Apply it to this IP's latest API fields, then produce: 0) brand architecture judgment, 1) IP core, 2) expression system, 3) asset ladder, 4) governance and measurement loop. Keep all recommendations aligned with the IP's main language, tracks, audiences, tags, colors, intro, business, and notes."
   ].join("\n");
 }
-
 function copyWithTextarea(text) {
   const textarea = document.createElement("textarea");
   textarea.value = text;
@@ -1027,7 +975,6 @@ function copyWithTextarea(text) {
   textarea.remove();
   return ok;
 }
-
 function showManualCopy(text) {
   document.querySelector(".copy-manual")?.remove();
   const panel = document.createElement("div");
@@ -1040,7 +987,6 @@ function showManualCopy(text) {
   textarea.focus();
   textarea.select();
 }
-
 function toastStack() {
   let stack = document.querySelector(".toast-stack");
   if (stack) return stack;
@@ -1051,7 +997,6 @@ function toastStack() {
   document.body.appendChild(stack);
   return stack;
 }
-
 function showToast(message) {
   const stack = toastStack();
   const toast = document.createElement("div");
@@ -1063,17 +1008,15 @@ function showToast(message) {
     toast.addEventListener("animationend", () => toast.remove(), { once: true });
   }, 1800);
 }
-
 function feedbackMessage(result, copiedKey) {
   return result === "selected" ? t("copy.selected") : t(copiedKey);
 }
-
 async function writeClipboardText(text) {
   try {
     if (navigator.clipboard?.writeText) {
       await Promise.race([
         navigator.clipboard.writeText(text),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Clipboard timeout.")), 900)),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Clipboard timeout.")), 900))
       ]);
       return "copied";
     }
@@ -1088,7 +1031,6 @@ async function writeClipboardText(text) {
   showManualCopy(text);
   return "selected";
 }
-
 function fontCatalogData() {
   if (fontCatalogCache) return fontCatalogCache;
   const node = $("#fontCatalogData");
@@ -1101,7 +1043,6 @@ function fontCatalogData() {
   }
   return fontCatalogCache;
 }
-
 function applyFontLibraryLocale() {
   document.querySelectorAll("[data-font-zh][data-font-en]").forEach((node) => {
     node.textContent = currentLocale === "en" ? node.dataset.fontEn : node.dataset.fontZh;
@@ -1110,14 +1051,12 @@ function applyFontLibraryLocale() {
     node.textContent = t(node.dataset.fontState || "fonts.ready");
   });
 }
-
 function setFontLoadState(article, key) {
   const state = article.querySelector("[data-font-load-state]");
   if (!state) return;
   state.dataset.fontState = key;
   state.textContent = t(key);
 }
-
 async function loadFontSpecimen(article) {
   if (article.dataset.fontLoaded || article.hidden) return;
   const catalog = fontCatalogData();
@@ -1141,9 +1080,9 @@ async function loadFontSpecimen(article) {
       await Promise.race([
         document.fonts.load(
           `${weight} 32px "${alias}"`,
-          String((font.group === "en" ? catalog.specimens?.en : catalog.specimens?.zh) || font.sample).slice(0, 80),
+          String((font.group === "en" ? catalog.specimens?.en : catalog.specimens?.zh) || font.sample).slice(0, 80)
         ),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("font_timeout")), 7000)),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("font_timeout")), 7e3))
       ]);
     }
     article.dataset.fontLoaded = "true";
@@ -1156,7 +1095,6 @@ async function loadFontSpecimen(article) {
     console.warn(`Font specimen failed: ${font.id}`, error);
   }
 }
-
 function setupFontLibrary() {
   const root = $("#open-source-type");
   if (!root || root.dataset.ready) return;
@@ -1182,7 +1120,6 @@ function setupFontLibrary() {
   const hostedByFamily = new Map((catalog?.fonts || []).map((font) => [String(font.family || font.name).toLowerCase(), font.id]));
   let referenceLimit = 80;
   let referenceLoading = null;
-
   const renderOfficialDirectory = () => {
     if (!googleFontDirectoryCache || !referenceList || !referenceStatus) return;
     const normalizedQuery = directoryQuery.trim().toLowerCase();
@@ -1207,7 +1144,6 @@ function setupFontLibrary() {
     }).join("");
     if (referenceMore) referenceMore.hidden = visible.length >= filtered.length;
   };
-
   const activateOfficialDirectory = async () => {
     if (googleFontDirectoryCache) {
       renderOfficialDirectory();
@@ -1215,19 +1151,17 @@ function setupFontLibrary() {
     }
     if (referenceLoading) return referenceLoading;
     if (referenceStatus) referenceStatus.textContent = t("fonts.directoryLoading");
-    referenceLoading = loadJson("api/google-fonts.json")
-      .then((data) => {
-        googleFontDirectoryCache = data;
-        renderOfficialDirectory();
-      })
-      .catch((error) => {
-        console.warn("Google Fonts directory failed to load.", error);
-        if (referenceStatus) referenceStatus.textContent = t("fonts.directoryFailed");
-      })
-      .finally(() => { referenceLoading = null; });
+    referenceLoading = loadJson("api/google-fonts.json").then((data) => {
+      googleFontDirectoryCache = data;
+      renderOfficialDirectory();
+    }).catch((error) => {
+      console.warn("Google Fonts directory failed to load.", error);
+      if (referenceStatus) referenceStatus.textContent = t("fonts.directoryFailed");
+    }).finally(() => {
+      referenceLoading = null;
+    });
     return referenceLoading;
   };
-
   const applyFilter = () => {
     root.dataset.activeFontGroup = activeGroup;
     filterButtons.forEach((button) => button.setAttribute("aria-selected", String(button.dataset.fontFilter === activeGroup)));
@@ -1254,12 +1188,20 @@ function setupFontLibrary() {
     if (googleFontDirectoryCache) renderOfficialDirectory();
     else if (directoryQuery) activateOfficialDirectory();
   };
-
-  filterButtons.forEach((button) => button.addEventListener("click", () => { activeGroup = button.dataset.fontFilter; applyFilter(); }));
-  categoryButtons.forEach((button) => button.addEventListener("click", () => { activeCategory = button.dataset.fontCategory; applyFilter(); }));
+  filterButtons.forEach((button) => button.addEventListener("click", () => {
+    activeGroup = button.dataset.fontFilter;
+    applyFilter();
+  }));
+  categoryButtons.forEach((button) => button.addEventListener("click", () => {
+    activeCategory = button.dataset.fontCategory;
+    applyFilter();
+  }));
   if (directorySearch) {
     directorySearch.value = directoryQuery;
-    directorySearch.addEventListener("input", () => { directoryQuery = directorySearch.value; applyFilter(); });
+    directorySearch.addEventListener("input", () => {
+      directoryQuery = directorySearch.value;
+      applyFilter();
+    });
   }
   referenceMore?.addEventListener("click", () => {
     referenceLimit += 80;
@@ -1271,25 +1213,28 @@ function setupFontLibrary() {
   });
   weight?.addEventListener("change", () => root.style.setProperty("--font-demo-weight", weight.value));
   root.addEventListener("click", async (event) => {
-    const button = event.target.closest("[data-copy-font]");
+    const button = (event.target instanceof Element ? event.target : null)?.closest("[data-copy-font]");
     if (!button) return;
     const font = catalog?.fonts?.find((item) => item.id === button.dataset.copyFont);
     if (!font) return;
-    const result = await writeClipboardText(`font-family: ${font.cssStack};\nfont-weight: ${weight?.value || "400"};`);
+    const result = await writeClipboardText(`font-family: ${font.cssStack};
+font-weight: ${weight?.value || "400"};`);
     const message = result === "selected" ? t("copy.selected") : t("fonts.cssCopied");
     showToast(message);
     const previous = button.textContent;
     button.textContent = message;
-    setTimeout(() => { button.textContent = previous; }, 1600);
+    setTimeout(() => {
+      button.textContent = previous;
+    }, 1600);
   });
-
   if ("IntersectionObserver" in window) {
-    const network = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const networkNavigator = navigator;
+    const network = networkNavigator.connection || networkNavigator.mozConnection || networkNavigator.webkitConnection;
     const conservativeLoading = network?.saveData || /(^|-)2g$/.test(network?.effectiveType || "");
     fontSpecimenObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-        loadFontSpecimen(entry.target);
+        if (entry.target instanceof HTMLElement) loadFontSpecimen(entry.target);
         fontSpecimenObserver.unobserve(entry.target);
       });
     }, { rootMargin: conservativeLoading ? "0px" : "160px 0px" });
@@ -1305,11 +1250,9 @@ function setupFontLibrary() {
   } else if (referenceSection) {
     activateOfficialDirectory();
   }
-
   applyFilter();
   applyFontLibraryLocale();
 }
-
 async function copyReference(brand, button, minimal = false) {
   const previous = button.textContent;
   if (!button.dataset.iconOnly) button.textContent = t("copy.copying");
@@ -1329,18 +1272,16 @@ async function copyReference(brand, button, minimal = false) {
     delete button.dataset.feedback;
   }, 1200);
 }
-
 function mcpConfigText() {
   return JSON.stringify({
     mcpServers: {
       iptrust: {
         type: "http",
-        url: new URL("mcp", location.origin + "/").href,
-      },
-    },
+        url: new URL("mcp", location.origin + "/").href
+      }
+    }
   }, null, 2);
 }
-
 function setupAgentGateway() {
   const copyButton = document.querySelector("[data-copy-mcp-config]");
   if (copyButton && !copyButton.dataset.ready) {
@@ -1352,7 +1293,7 @@ function setupAgentGateway() {
       showToast(message);
       const statusNode = document.querySelector('[data-portal-status="agent"]');
       if (statusNode) statusNode.textContent = message;
-      setTimeout(() => copyButton.classList.remove("copied"), 1000);
+      setTimeout(() => copyButton.classList.remove("copied"), 1e3);
     });
   }
   const health = document.querySelector("[data-agent-health]");
@@ -1367,21 +1308,17 @@ function setupAgentGateway() {
   fetch(new URL("mcp", location.origin + "/"), {
     headers: { Accept: "application/json" },
     cache: "no-store",
-    signal: controller.signal,
-  })
-    .then((response) => {
-      if (!response.ok) throw new Error("MCP unavailable");
-      health.dataset.state = "online";
-      health.classList.add("is-online");
-      if (label) label.textContent = t("portal.agentOnline");
-    })
-    .catch(() => {
-      health.dataset.state = "fallback";
-      if (label) label.textContent = t("portal.agentOffline");
-    })
-    .finally(() => clearTimeout(timeout));
+    signal: controller.signal
+  }).then((response) => {
+    if (!response.ok) throw new Error("MCP unavailable");
+    health.dataset.state = "online";
+    health.classList.add("is-online");
+    if (label) label.textContent = t("portal.agentOnline");
+  }).catch(() => {
+    health.dataset.state = "fallback";
+    if (label) label.textContent = t("portal.agentOffline");
+  }).finally(() => clearTimeout(timeout));
 }
-
 function setupPortalActions() {
   cachedPortalSkillText = skillBaseText();
   portalSkillText().then((text) => cachedPortalSkillText = text).catch(console.error);
@@ -1406,7 +1343,7 @@ function setupPortalActions() {
           button.classList.add("copied");
           if (statusNode) statusNode.textContent = message;
           showToast(message);
-          setTimeout(() => button.classList.remove("copied"), 1000);
+          setTimeout(() => button.classList.remove("copied"), 1e3);
           openTarget();
           return;
         }
@@ -1414,7 +1351,7 @@ function setupPortalActions() {
           if (statusNode) statusNode.textContent = t("portal.partnerStatus");
           button.classList.add("copied");
           showToast(t("portal.partnerStatus"));
-          setTimeout(() => button.classList.remove("copied"), 1000);
+          setTimeout(() => button.classList.remove("copied"), 1e3);
           openTarget();
           return;
         }
@@ -1422,7 +1359,7 @@ function setupPortalActions() {
           if (statusNode) statusNode.textContent = t("portal.collabStatus");
           button.classList.add("copied");
           showToast(t("portal.collabStatus"));
-          setTimeout(() => button.classList.remove("copied"), 1000);
+          setTimeout(() => button.classList.remove("copied"), 1e3);
           openTarget();
         }
       } catch (error) {
@@ -1432,32 +1369,27 @@ function setupPortalActions() {
     });
   });
 }
-
 function apiStatus(message, isError = false) {
   const node = $("#apiConnectStatus");
   if (!node) return;
   node.textContent = message;
   node.style.color = isError ? "#b12137" : "#0E8C7B";
 }
-
 function apiErrorMessage(error) {
   if (error === "admin_auth_not_configured") return t("api.notConfigured");
   if (error === "bad_api_key") return t("api.badKey");
   if (error === "bad_totp") return t("api.badTotp");
   return error || t("api.failed");
 }
-
 function apiCurlTemplate() {
   return [
     `curl -X POST "${new URL("api/v2/auth/exchange", location.href).href}"`,
     `  -H "Content-Type: application/json"`,
-    `  -d '{"apiKey":"<SYSTEM_API_KEY>","totp":"<TOTP>"}'`,
+    `  -d '{"apiKey":"<SYSTEM_API_KEY>","totp":"<TOTP>"}'`
   ].join("\n");
 }
-
 const API_CSRF_SESSION = "iptrust_csrf";
 let apiConnection = null;
-
 function renderApiConnected(scopes = ["*"], ipScopes = ["*"]) {
   apiConnection = { scopes, ipScopes };
   $("#apiConnectButton")?.classList.add("api-connected");
@@ -1471,7 +1403,6 @@ function renderApiConnected(scopes = ["*"], ipScopes = ["*"]) {
   apiStatus(t("api.connected"));
   window.dispatchEvent(new CustomEvent("iptrust:api-connected", { detail: { scopes } }));
 }
-
 async function loadProtectedResources() {
   const summary = $("#apiResourceSummary");
   if (!summary) return;
@@ -1488,13 +1419,12 @@ async function loadProtectedResources() {
     if (!res.ok) throw new Error(data.hint || data.error || t("api.failed"));
     summary.textContent = JSON.stringify({
       assets: data.total,
-      items: data.items?.map((item) => ({ id: item.id, ip: item.ownerId, access: item.access, status: item.status })) || [],
+      items: data.items?.map((item) => ({ id: item.id, ip: item.ownerId, access: item.access, status: item.status })) || []
     }, null, 2);
   } catch (error) {
     summary.textContent = error.message || t("api.failed");
   }
 }
-
 function setupApiConnect() {
   const button = $("#apiConnectButton");
   const panel = $("#apiConnectPanel");
@@ -1504,13 +1434,12 @@ function setupApiConnect() {
   const ops = $("#apiConnectedOps");
   if (!button || !panel || button.dataset.ready) return;
   button.dataset.ready = "true";
-
   fetch("api/v2/auth/session", { credentials: "include" }).then(async (res) => {
     if (!res.ok) return;
     const data = await res.json();
     renderApiConnected(data.actor?.scopes || [], data.actor?.ipScopes || []);
-  }).catch(() => {});
-
+  }).catch(() => {
+  });
   button.addEventListener("click", async () => {
     panel.classList.toggle("hidden");
     if (!panel.classList.contains("hidden") && !button.classList.contains("api-connected")) {
@@ -1527,7 +1456,6 @@ function setupApiConnect() {
     });
   });
   $("#apiResourcesButton")?.addEventListener("click", loadProtectedResources);
-
   const connectApi = async () => {
     const adminKey = $("#apiAdminKey")?.value || "";
     const totp = $("#apiTotpCode")?.value || "";
@@ -1536,10 +1464,10 @@ function setupApiConnect() {
       const res = await fetch("api/v2/auth/exchange", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         credentials: "include",
-        body: JSON.stringify({ apiKey: adminKey, totp }),
+        body: JSON.stringify({ apiKey: adminKey, totp })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -1570,29 +1498,24 @@ function setupApiConnect() {
     void connectApi();
   });
 }
-
 function apiKeyForWrite() {
   return sessionStorage.getItem(API_CSRF_SESSION) || "";
 }
-
 function apiScopesForWrite() {
   return apiConnection?.ipScopes || [];
 }
-
 function canManageBrand(slug) {
   const scopes = apiScopesForWrite();
   const permissions = apiConnection?.scopes || [];
   const canWrite = permissions.includes("system:*") || permissions.includes("brands:*") || permissions.includes("brands:write");
   return Boolean(apiKeyForWrite()) && canWrite && (scopes.includes("*") || scopes.includes(slug));
 }
-
 function setProfileStatus(message, isError = false) {
   const node = $("#profileEditStatus");
   if (!node) return;
   node.textContent = message;
   node.style.color = isError ? "#b12137" : "#0e8c7b";
 }
-
 function setProfileEditorAccess(slug) {
   const editor = $("#profileEditor");
   const button = $("#profileEditButton");
@@ -1603,24 +1526,15 @@ function setProfileEditorAccess(slug) {
   if (!unlocked) setProfileStatus(t("brand.apiFirst"), false);
   else setProfileStatus(t("brand.editReady"), false);
 }
-
 function fieldPatchValue(form, name) {
   const node = form.querySelector(`[data-profile-field="${name}"]`);
   return node ? node.value : "";
 }
-
 function fieldListValue(form, name) {
-  return fieldPatchValue(form, name)
-    .split(/[,\n·]+/)
-    .map((item) => item.trim())
-    .filter(Boolean);
+  return fieldPatchValue(form, name).split(/[,\n·]+/).map((item) => item.trim()).filter(Boolean);
 }
-
 function profilePatchFromForm(form) {
-  const keywords = fieldPatchValue(form, "theme.keywords")
-    .split(/[,\n·]+/)
-    .map((item) => item.trim())
-    .filter(Boolean);
+  const keywords = fieldPatchValue(form, "theme.keywords").split(/[,\n·]+/).map((item) => item.trim()).filter(Boolean);
   return {
     name: fieldPatchValue(form, "name"),
     nativeName: fieldPatchValue(form, "nativeName"),
@@ -1629,39 +1543,38 @@ function profilePatchFromForm(form) {
     mainLanguage: fieldPatchValue(form, "mainLanguage"),
     intro: {
       zh: fieldPatchValue(form, "intro.zh"),
-      en: fieldPatchValue(form, "intro.en"),
+      en: fieldPatchValue(form, "intro.en")
     },
     business: {
       zh: fieldPatchValue(form, "business.zh"),
-      en: fieldPatchValue(form, "business.en"),
+      en: fieldPatchValue(form, "business.en")
     },
     notes: {
       zh: fieldPatchValue(form, "notes.zh"),
-      en: fieldPatchValue(form, "notes.en"),
+      en: fieldPatchValue(form, "notes.en")
     },
     classification: {
       tracks: {
         zh: fieldListValue(form, "classification.tracks.zh"),
-        en: fieldListValue(form, "classification.tracks.en"),
+        en: fieldListValue(form, "classification.tracks.en")
       },
       audiences: {
         zh: fieldListValue(form, "classification.audiences.zh"),
-        en: fieldListValue(form, "classification.audiences.en"),
+        en: fieldListValue(form, "classification.audiences.en")
       },
       tags: {
         zh: fieldListValue(form, "classification.tags.zh"),
-        en: fieldListValue(form, "classification.tags.en"),
-      },
+        en: fieldListValue(form, "classification.tags.en")
+      }
     },
     theme: {
       primary: fieldPatchValue(form, "theme.primary"),
       accent: fieldPatchValue(form, "theme.accent"),
       secondary: fieldPatchValue(form, "theme.secondary"),
-      keywords,
-    },
+      keywords
+    }
   };
 }
-
 function profileEditor(brand = {}) {
   const profile = brand.profile || {};
   const intro = brand.intro || profile.intro || {};
@@ -1714,7 +1627,6 @@ function profileEditor(brand = {}) {
     </section>
   `;
 }
-
 function setupProfileEditor(brand = {}) {
   const editor = $("#profileEditor");
   const form = $("#profileEditForm");
@@ -1724,7 +1636,6 @@ function setupProfileEditor(brand = {}) {
   editor.dataset.ready = "true";
   setProfileEditorAccess(brand.slug);
   window.addEventListener("iptrust:api-connected", () => setProfileEditorAccess(brand.slug));
-
   editButton.addEventListener("click", () => {
     if (!canManageBrand(brand.slug)) {
       setProfileStatus(t("brand.apiFirst"), true);
@@ -1757,12 +1668,12 @@ function setupProfileEditor(brand = {}) {
           "Content-Type": "application/json",
           "X-CSRF-Token": key,
           "If-Match": etag || "",
-          "Idempotency-Key": crypto.randomUUID(),
+          "Idempotency-Key": crypto.randomUUID()
         },
         credentials: "include",
         body: JSON.stringify({
-          patch: profilePatchFromForm(form),
-        }),
+          patch: profilePatchFromForm(form)
+        })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.hint || data.error || t("brand.saveFailed"));
@@ -1775,7 +1686,6 @@ function setupProfileEditor(brand = {}) {
     }
   });
 }
-
 function setupCopyButtons(brands) {
   const bySlug = new Map(brands.map((brand) => [brand.slug, brand]));
   document.querySelectorAll("[data-copy-brand]").forEach((button) => {
@@ -1814,7 +1724,6 @@ function setupCopyButtons(brands) {
     });
   });
 }
-
 function setupAssetCopyButtons() {
   document.querySelectorAll("[data-copy-asset-url]").forEach((button) => {
     if (button.dataset.ready) return;
@@ -1836,11 +1745,9 @@ function setupAssetCopyButtons() {
     });
   });
 }
-
 function normalizeSearchText(value = "") {
   return String(value).toLowerCase();
 }
-
 function assetScore(image = {}) {
   const text = [image.path, image.sitePath, image.title].filter(Boolean).join(" ").toLowerCase();
   let score = 0;
@@ -1858,19 +1765,16 @@ function assetScore(image = {}) {
   if (text.includes("brand-hero")) score -= 90;
   return score;
 }
-
 function preferredBrandImage(images = []) {
   if (!images.length) return null;
   const candidates = [...images].sort((a, b) => assetScore(b) - assetScore(a));
   return assetScore(candidates[0]) > 0 ? candidates[0] : images[0];
 }
-
 function assetDownloadUrl(asset = {}) {
   const url = new URL(asset.sitePath, location.href);
   url.searchParams.set("download", String(asset.path || url.pathname).split("/").pop() || "asset");
   return url.href;
 }
-
 function assetActions(asset = {}) {
   if (!asset.sitePath) return "";
   return `
@@ -1880,7 +1784,6 @@ function assetActions(asset = {}) {
     </div>
   `;
 }
-
 function brandAssetStrip(images = []) {
   if (!images.length) return "";
   return `
@@ -1909,7 +1812,6 @@ function brandAssetStrip(images = []) {
     </section>
   `;
 }
-
 function adobeAssetPanel(adobeAssets = []) {
   if (!adobeAssets.length) return "";
   return `
@@ -1932,9 +1834,9 @@ function adobeAssetPanel(adobeAssets = []) {
               ${asset.source?.sitePath ? `<a href="${escapeHtml(asset.source.sitePath)}" download>${escapeHtml(t("brand.original"))}</a>` : ""}
               ${asset.preview?.sitePath ? `<a href="${escapeHtml(asset.preview.sitePath)}" target="_blank">${escapeHtml(t("brand.preview"))}</a>` : ""}
               ${(asset.exports || []).flatMap((page) => [
-                page.png?.sitePath ? `<a href="${escapeHtml(page.png.sitePath)}" download>p${page.page} · ${escapeHtml(t("brand.exportPng"))}</a>` : "",
-                page.jpg?.sitePath ? `<a href="${escapeHtml(page.jpg.sitePath)}" download>p${page.page} · ${escapeHtml(t("brand.exportJpg"))}</a>` : "",
-              ]).filter(Boolean).join("")}
+    page.png?.sitePath ? `<a href="${escapeHtml(page.png.sitePath)}" download>p${page.page} · ${escapeHtml(t("brand.exportPng"))}</a>` : "",
+    page.jpg?.sitePath ? `<a href="${escapeHtml(page.jpg.sitePath)}" download>p${page.page} · ${escapeHtml(t("brand.exportJpg"))}</a>` : ""
+  ]).filter(Boolean).join("")}
             </div>
           </div>
         </article>
@@ -1942,7 +1844,6 @@ function adobeAssetPanel(adobeAssets = []) {
     </section>
   `;
 }
-
 function endpointCard(label, href, code) {
   return `
     <a class="endpoint-card" href="${escapeHtml(href)}">
@@ -1952,7 +1853,6 @@ function endpointCard(label, href, code) {
     </a>
   `;
 }
-
 function brandAssetHub(brand = {}) {
   const key = brand.assetKey || brand.slug;
   const endpoints = brand.assetKit?.endpoints || {};
@@ -1976,7 +1876,6 @@ function brandAssetHub(brand = {}) {
     </section>
   `;
 }
-
 function ipSystemPanel(brand = {}) {
   return `
     <section class="ip-system-panel" aria-label="IP System">
@@ -1994,7 +1893,6 @@ function ipSystemPanel(brand = {}) {
     </section>
   `;
 }
-
 function setupIpSystemPanel(brand = {}) {
   document.querySelectorAll("[data-apply-ip-system]").forEach((button) => {
     if (button.dataset.ready) return;
@@ -2004,11 +1902,10 @@ function setupIpSystemPanel(brand = {}) {
       const message = result === "selected" ? t("copy.selected") : t("brand.ipSystemCopied");
       showToast(message);
       button.classList.add("copied");
-      setTimeout(() => button.classList.remove("copied"), 1000);
+      setTimeout(() => button.classList.remove("copied"), 1e3);
     });
   });
 }
-
 function moodColorStyle(value = "") {
   const hex = String(value).trim();
   let ink = "var(--brand-ink, var(--ink))";
@@ -2017,11 +1914,10 @@ function moodColorStyle(value = "") {
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
     const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-    ink = luminance < .52 ? "#fff" : "#111";
+    ink = luminance < 0.52 ? "#fff" : "#111";
   }
   return `--mood-color:${escapeHtml(value)};--mood-ink:${ink}`;
 }
-
 function moodBoard(brand = {}) {
   const colors = palette(brand.theme).slice(0, 7);
   const keywords = brand.moodboard?.keywords?.length ? brand.moodboard.keywords : brand.theme?.keywords || [];
@@ -2055,24 +1951,22 @@ function moodBoard(brand = {}) {
     </section>
   `;
 }
-
 function compactBrandFacts(brand = {}, display = {}, localized = {}) {
   const facts = [
     brand.officialWebsite ? [t("brand.website"), `<a href="${escapeHtml(brand.officialWebsite)}">${escapeHtml(brand.officialWebsite)}</a>`] : null,
     localized.business ? [t("brand.business"), escapeHtml(localized.business)] : null,
     display.classification?.tracks?.length ? [t("brand.tracks"), escapeHtml(listText(display.classification.tracks))] : null,
     display.classification?.audiences?.length ? [t("brand.audiences"), escapeHtml(listText(display.classification.audiences))] : null,
-    localized.notes ? [t("brand.notes"), escapeHtml(localized.notes)] : null,
+    localized.notes ? [t("brand.notes"), escapeHtml(localized.notes)] : null
   ].filter(Boolean);
   if (!facts.length) return "";
   return `<section class="brand-facts">${facts.map(([label, value]) => `<div><strong>${escapeHtml(label)}</strong><p>${value}</p></div>`).join("")}</section>`;
 }
-
 function brandAdvancedDetails(brand = {}, display = {}, localized = {}) {
   const guideHtml = brand.guides?.map((guide) => `
     <details class="brand-guide">
       <summary>${escapeHtml(guide.title || t("brand.guideline"))}</summary>
-      <div class="rendered-document brand-guide-document">${guide.html || ("<p>" + escapeHtml(guide.excerpt || "") + "</p>")}</div>
+      <div class="rendered-document brand-guide-document">${guide.html || "<p>" + escapeHtml(guide.excerpt || "") + "</p>"}</div>
     </details>
   `).join("") || "";
   return `
@@ -2093,7 +1987,6 @@ function brandAdvancedDetails(brand = {}, display = {}, localized = {}) {
     </details>
   `;
 }
-
 async function renderGlobalResults(query) {
   const panel = $("#globalResults");
   if (!panel) return;
@@ -2104,9 +1997,7 @@ async function renderGlobalResults(query) {
     return;
   }
   const search = await loadSearch();
-  const results = search
-    .filter((item) => [item.title, item.subtitle, item.text, item.slug, item.type].join(" ").toLowerCase().includes(q))
-    .slice(0, 9);
+  const results = search.filter((item) => [item.title, item.subtitle, item.text, item.slug, item.type].join(" ").toLowerCase().includes(q)).slice(0, 9);
   if (!results.length) {
     panel.classList.add("is-open");
     panel.innerHTML = `<div class="global-result"><span>${escapeHtml(t("home.noResults"))}</span></div>`;
@@ -2121,21 +2012,24 @@ async function renderGlobalResults(query) {
     </a>
   `).join("");
 }
-
 let repositoryStatusPromise = null;
 let repositoryStatusFetchedAt = 0;
 let repositoryRefreshMode = "snapshot";
 const readinessLabels = {
-  profile: ["Profile", "简介"], business: ["Business description", "业务说明"],
-  guide: ["Primary guide", "主指南"], tokens: ["Design tokens", "设计令牌"],
-  palette: ["Color palette", "色板"], logo: ["Public logo", "公开标志"],
-  sources: ["Source notes", "来源记录"], classification: ["Classification", "分类"],
-  repository: ["Accessible active repository", "可访问的活跃仓库"], repositoryName: ["Two-digit repo suffix", "仓库两位数字后缀"],
+  profile: ["Profile", "简介"],
+  business: ["Business description", "业务说明"],
+  guide: ["Primary guide", "主指南"],
+  tokens: ["Design tokens", "设计令牌"],
+  palette: ["Color palette", "色板"],
+  logo: ["Public logo", "公开标志"],
+  sources: ["Source notes", "来源记录"],
+  classification: ["Classification", "分类"],
+  repository: ["Accessible active repository", "可访问的活跃仓库"],
+  repositoryName: ["Two-digit repo suffix", "仓库两位数字后缀"]
 };
-
 async function loadRankedBrands() {
   cachedBrands ??= await loadJson("api/brands.json");
-  if (!repositoryStatusPromise || Date.now() - repositoryStatusFetchedAt > 60000) {
+  if (!repositoryStatusPromise || Date.now() - repositoryStatusFetchedAt > 6e4) {
     repositoryStatusFetchedAt = Date.now();
     repositoryStatusPromise = loadJson("api/v2/repository-status").catch(() => loadJson("api/repository-status.json")).catch(() => null);
   }
@@ -2149,21 +2043,19 @@ async function loadRankedBrands() {
   }).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
   return cachedBrands;
 }
-
 function ipHealth(brand, details = false) {
   if (!brand.completeness) return details ? `<p class="ip-health">${currentLocale === "en" ? "Reference IP · inventory not scored" : "参考 IP · 不计资料完整度分数"}</p>` : "";
   const en = currentLocale === "en";
   const repo = brand.repository;
   const rank = cachedBrands?.findIndex((item) => item.slug === brand.slug) + 1;
-  const date = brand.lastUpdatedAt ? new Date(brand.lastUpdatedAt).toLocaleString(localeMeta[currentLocale].dateLocale) : (en ? "Unknown" : "未知");
+  const date = brand.lastUpdatedAt ? new Date(brand.lastUpdatedAt).toLocaleString(localeMeta[currentLocale].dateLocale) : en ? "Unknown" : "未知";
   const missing = brand.completeness.missing.map((key) => readinessLabels[key]?.[en ? 0 : 1] || key);
   const day = brand.lastUpdatedAt ? new Date(brand.lastUpdatedAt).toLocaleDateString(localeMeta[currentLocale].dateLocale) : date;
   const title = `${en ? "Missing" : "缺少"}: ${missing.join(" · ") || (en ? "None" : "无")}`;
   const compact = `<small class="ip-health" title="${escapeHtml(title)}"><span>#${rank || "—"}</span><time${brand.lastUpdatedAt ? ` datetime="${escapeHtml(brand.lastUpdatedAt)}"` : ""} title="${escapeHtml(date)}">${en ? "Updated" : "更新"} ${escapeHtml(day)}</time><span class="ip-readiness">${en ? "Readiness" : "就绪度"} ${brand.completeness.score}% <meter min="0" max="100" value="${brand.completeness.score}" aria-label="${en ? "Inventory readiness" : "资料就绪度"}">${brand.completeness.score}%</meter></span></small>`;
   if (!details) return compact;
-  return `<div class="ip-health-panel"><details><summary>${compact}</summary><div class="ip-health-more"><span class="repo-audit">${escapeHtml(repo?.name || "—")} · ${repo?.suffixValid ? (en ? "Suffix OK" : "后缀合规") : (en ? "Needs 01 / 02 suffix" : "缺少 01 / 02 后缀")}${repo?.stale || repo?.error ? (en ? " · Cached; refresh unavailable" : " · 缓存；刷新不可用") : ""}</span><ul>${Object.entries(brand.completeness.checks).map(([key, ok]) => `<li>${ok ? "✓" : "○"} ${escapeHtml(readinessLabels[key]?.[en ? 0 : 1] || key)}</li>`).join("")}</ul><p>${en ? "Last updated" : "最后更新"}: ${escapeHtml(date)}</p><p>${en ? "Checked" : "检查时间"}: ${escapeHtml(repo?.checkedAt || "—")}</p><p>${en ? "10 inventory checks, 10 points each. Content presence only; legal ownership and design quality are not reviewed." : "10 项资料检查，每项 10 分。只评估资料是否齐备；未审查法律权属或设计质量。"}</p></div></details></div>`;
+  return `<div class="ip-health-panel"><details><summary>${compact}</summary><div class="ip-health-more"><span class="repo-audit">${escapeHtml(repo?.name || "—")} · ${repo?.suffixValid ? en ? "Suffix OK" : "后缀合规" : en ? "Needs 01 / 02 suffix" : "缺少 01 / 02 后缀"}${repo?.stale || repo?.error ? en ? " · Cached; refresh unavailable" : " · 缓存；刷新不可用" : ""}</span><ul>${Object.entries(brand.completeness.checks).map(([key, ok]) => `<li>${ok ? "✓" : "○"} ${escapeHtml(readinessLabels[key]?.[en ? 0 : 1] || key)}</li>`).join("")}</ul><p>${en ? "Last updated" : "最后更新"}: ${escapeHtml(date)}</p><p>${en ? "Checked" : "检查时间"}: ${escapeHtml(repo?.checkedAt || "—")}</p><p>${en ? "10 inventory checks, 10 points each. Content presence only; legal ownership and design quality are not reviewed." : "10 项资料检查，每项 10 分。只评估资料是否齐备；未审查法律权属或设计质量。"}</p></div></details></div>`;
 }
-
 async function renderHeroIndex(refresh = false) {
   const index = $("#heroIndex");
   if (!index) return;
@@ -2184,12 +2076,10 @@ async function renderHeroIndex(refresh = false) {
       </div>
     `;
   };
-  index.innerHTML = cachedBrands.filter((brand) => !MORE_IP_SLUGS.has(brand.slug)).map(row).join("")
-    + `<details class="more-ips" ${moreOpen ? "open" : ""}><summary>${currentLocale === "en" ? "More IPs" : "更多 IP"} · ${MORE_IP_SLUGS.size}</summary><div class="more-ip-items">${cachedBrands.filter((brand) => MORE_IP_SLUGS.has(brand.slug)).map(row).join("")}</div></details>`;
+  index.innerHTML = cachedBrands.filter((brand) => !MORE_IP_SLUGS.has(brand.slug)).map(row).join("") + `<details class="more-ips" ${moreOpen ? "open" : ""}><summary>${currentLocale === "en" ? "More IPs" : "更多 IP"} · ${MORE_IP_SLUGS.size}</summary><div class="more-ip-items">${cachedBrands.filter((brand) => MORE_IP_SLUGS.has(brand.slug)).map(row).join("")}</div></details>`;
   index.scrollTop = previousScrollTop;
   setupCopyButtons(cachedBrands);
 }
-
 async function renderVersions() {
   const list = $("#versionList");
   if (!list) return;
@@ -2206,41 +2096,38 @@ async function renderVersions() {
     </a>
   `).join("");
 }
-
 async function renderIndex() {
   const grid = $("#brandGrid");
   if (!grid) return;
   await loadRankedBrands();
   const brands = cachedBrands;
-  const filtered = currentQuery
-    ? brands.filter((brand) => {
-        const localized = mainBrand(brand);
-        return [
-          brand.slug,
-          brand.name,
-          brand.nativeName,
-          brand.mainName,
-          brand.mainLanguage,
-          brand.officialWebsite,
-          brand.profile?.business?.zh,
-          brand.profile?.business?.en,
-          brand.profile?.notes?.zh,
-          brand.profile?.notes?.en,
-          brand.profile?.classification?.tracks?.zh?.join(" "),
-          brand.profile?.classification?.tracks?.en?.join(" "),
-          brand.profile?.classification?.audiences?.zh?.join(" "),
-          brand.profile?.classification?.audiences?.en?.join(" "),
-          brand.profile?.classification?.tags?.zh?.join(" "),
-          brand.profile?.classification?.tags?.en?.join(" "),
-          localized.name,
-          localized.secondaryName,
-          localized.intro,
-          localized.business,
-          localized.notes,
-          brand.theme?.keywords?.join(" "),
-        ].join(" ").toLowerCase().includes(currentQuery);
-      })
-    : brands;
+  const filtered = currentQuery ? brands.filter((brand) => {
+    const localized = mainBrand(brand);
+    return [
+      brand.slug,
+      brand.name,
+      brand.nativeName,
+      brand.mainName,
+      brand.mainLanguage,
+      brand.officialWebsite,
+      brand.profile?.business?.zh,
+      brand.profile?.business?.en,
+      brand.profile?.notes?.zh,
+      brand.profile?.notes?.en,
+      brand.profile?.classification?.tracks?.zh?.join(" "),
+      brand.profile?.classification?.tracks?.en?.join(" "),
+      brand.profile?.classification?.audiences?.zh?.join(" "),
+      brand.profile?.classification?.audiences?.en?.join(" "),
+      brand.profile?.classification?.tags?.zh?.join(" "),
+      brand.profile?.classification?.tags?.en?.join(" "),
+      localized.name,
+      localized.secondaryName,
+      localized.intro,
+      localized.business,
+      localized.notes,
+      brand.theme?.keywords?.join(" ")
+    ].join(" ").toLowerCase().includes(currentQuery);
+  }) : brands;
   const count = $("#brandCount");
   if (count) count.textContent = currentQuery ? `${filtered.length}/${brands.length} IP` : `${brands.length} IP`;
   await renderGlobalResults(currentQuery);
@@ -2282,7 +2169,6 @@ async function renderIndex() {
   }).join("");
   setupCopyButtons(filtered);
 }
-
 async function renderBrand() {
   const page = $("#brandPage");
   if (!page) return;
@@ -2295,9 +2181,7 @@ async function renderBrand() {
   if (descriptionMeta) descriptionMeta.setAttribute("content", localized.intro || brand.description || "IPTrust brand guideline and assets.");
   const canonical = document.querySelector('link[rel="canonical"]');
   if (canonical) canonical.setAttribute("href", new URL(`brand?brand=${encodeURIComponent(brand.publicSlug || brand.slug)}`, location.origin + "/").href);
-  const hero = brand.adobeAssets?.[0]?.hero?.sitePath
-    ? brand.adobeAssets[0].hero
-    : preferredBrandImage(brand.images || []);
+  const hero = brand.adobeAssets?.[0]?.hero?.sitePath ? brand.adobeAssets[0].hero : preferredBrandImage(brand.images || []);
   page.innerHTML = `
     <div class="brand-shell brand-detail ${themeClass(brand.theme)}" style="${themeStyle(brand.theme)}">
       <nav class="brand-breadcrumb" aria-label="${currentLocale === "en" ? "Breadcrumb" : "当前位置"}"><a href="directory">← ${currentLocale === "en" ? "All IPs" : "全部 IP"}</a><span>/</span><span>${escapeHtml(display.name)}</span></nav>
@@ -2358,7 +2242,6 @@ async function renderBrand() {
     renderBrandArchitecture(brand.slug).catch(console.error);
   });
 }
-
 function renderBrandFailure(error) {
   console.error(error);
   const page = $("#brandPage");
@@ -2374,16 +2257,13 @@ function renderBrandFailure(error) {
   `;
   $("#brandReload")?.addEventListener("click", () => location.reload());
 }
-
 function primaryIpName(ip = {}) {
-  return ip.mainLanguage === "en" ? (ip.names?.en || ip.names?.zh || ip.slug) : (ip.names?.zh || ip.names?.en || ip.slug);
+  return ip.mainLanguage === "en" ? ip.names?.en || ip.names?.zh || ip.slug : ip.names?.zh || ip.names?.en || ip.slug;
 }
-
 function secondaryIpName(ip = {}) {
   const primary = primaryIpName(ip);
   return [ip.names?.zh, ip.names?.en].find((name) => name && name !== primary) || (/[㐀-鿿]/.test(primary) ? "English name pending" : "中文名待补充");
 }
-
 async function loadIpSystem() {
   try {
     const [ips, taxonomy, applications, relationships] = await Promise.all([loadJson("api/v2/ips"), loadJson("api/v2/taxonomy"), loadJson("api/v2/applications"), loadJson("api/v2/ip-relations")]);
@@ -2394,20 +2274,17 @@ async function loadIpSystem() {
     return { ips: snapshot.items || [], taxonomy, applications: snapshot.applications || [], relationships: snapshot.relationships || [] };
   }
 }
-
 function taxonomyLabel(term = {}) {
   return term.labels?.[currentLocale === "en" ? "en" : "zh"] || term[currentLocale === "en" ? "en" : "zh"] || term.id || "";
 }
-
 function selectOptions(items, active, empty) {
   return `<option value="">${escapeHtml(empty)}</option>${items.map((item) => `<option value="${escapeHtml(item.id)}" ${active === item.id ? "selected" : ""}>${escapeHtml(taxonomyLabel(item))}</option>`).join("")}`;
 }
-
 async function renderDirectory(initialData = null, snapshotMode = false) {
   const page = $("#directoryPage");
   if (!page) return;
   const data = initialData || await loadIpSystem();
-  const rankedBrands = snapshotMode ? (cachedBrands || data.ips.filter((ip) => ip.recordClass === "owned").map((ip) => ({ ...ip, display: { zh: { name: ip.names.zh }, en: { name: ip.names.en } } }))) : await loadRankedBrands();
+  const rankedBrands = snapshotMode ? cachedBrands || data.ips.filter((ip) => ip.recordClass === "owned").map((ip) => ({ ...ip, display: { zh: { name: ip.names.zh }, en: { name: ip.names.en } } })) : await loadRankedBrands();
   cachedBrands ??= rankedBrands;
   const brandBySlug = new Map(rankedBrands.map((brand) => [brand.slug, brand]));
   const listedSlugs = new Set(data.ips.map((ip) => ip.slug));
@@ -2430,13 +2307,13 @@ async function renderDirectory(initialData = null, snapshotMode = false) {
   const moreIps = filtered.filter((ip) => MORE_IP_SLUGS.has(ip.slug));
   const moreIpsOpen = Boolean(page.querySelector(".more-ips[open]") || query || industry || ipType || parent || architectureRole);
   const renderIpEntry = (ip) => {
-      const parentIp = data.ips.find((candidate) => candidate.slug === parents.get(ip.slug));
-      const href = ip.recordClass === "owned" ? (ip.url || `brand.html?brand=${ip.slug}`) : `ip?ip=${ip.slug}`;
-      return `<div class="directory-entry${FEATURED_IP_SLUGS.has(ip.slug) ? " is-featured" : ""}"><a class="directory-row" href="${escapeHtml(href)}"><span class="directory-name"><strong>${escapeHtml(primaryIpName(ip))}</strong>${secondaryIpName(ip) ? `<small>${escapeHtml(secondaryIpName(ip))}</small>` : ""}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.industries || []).find((item) => item.id === ip.primaryIndustry)))}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.ipTypes || []).find((item) => item.id === ip.ipType)))}</span><span>${parentIp ? `↳ ${escapeHtml(primaryIpName(parentIp))}` : ""}</span><b>↗</b></a>${ip.designSystemUrl ? `<a class="directory-design-system" href="${escapeHtml(ip.designSystemUrl)}" target="_blank" rel="noreferrer">${currentLocale === "en" ? "Design system" : "设计系统"} ↗</a>` : ""}${ipHealth(ip, true)}</div>`;
+    const parentIp = data.ips.find((candidate) => candidate.slug === parents.get(ip.slug));
+    const href = ip.recordClass === "owned" ? ip.url || `brand.html?brand=${ip.slug}` : `ip?ip=${ip.slug}`;
+    return `<div class="directory-entry${FEATURED_IP_SLUGS.has(ip.slug) ? " is-featured" : ""}"><a class="directory-row" href="${escapeHtml(href)}"><span class="directory-name"><strong>${escapeHtml(primaryIpName(ip))}</strong>${secondaryIpName(ip) ? `<small>${escapeHtml(secondaryIpName(ip))}</small>` : ""}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.industries || []).find((item) => item.id === ip.primaryIndustry)))}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.ipTypes || []).find((item) => item.id === ip.ipType)))}</span><span>${parentIp ? `↳ ${escapeHtml(primaryIpName(parentIp))}` : ""}</span><b>↗</b></a>${ip.designSystemUrl ? `<a class="directory-design-system" href="${escapeHtml(ip.designSystemUrl)}" target="_blank" rel="noreferrer">${currentLocale === "en" ? "Design system" : "设计系统"} ↗</a>` : ""}${ipHealth(ip, true)}</div>`;
   };
   page.innerHTML = `
     <header class="directory-hero"><p class="eyebrow">IPTrust Directory</p><h1>${currentLocale === "en" ? "IP, clearly structured." : "IP，一目了然。"}</h1><p>${data.ips.length} IP · ${data.applications.length} ${currentLocale === "en" ? "applications" : "项目应用"}</p></header>
-    <p class="muted">${currentLocale === "en" ? "Newest repository commit first · refresh every 60 seconds" : "按仓库最新提交排序 · 每 60 秒刷新"} · ${repositoryRefreshMode === "live" ? (currentLocale === "en" ? "Live" : "实时") : (currentLocale === "en" ? "Cached snapshot" : "缓存快照")}</p>
+    <p class="muted">${currentLocale === "en" ? "Newest repository commit first · refresh every 60 seconds" : "按仓库最新提交排序 · 每 60 秒刷新"} · ${repositoryRefreshMode === "live" ? currentLocale === "en" ? "Live" : "实时" : currentLocale === "en" ? "Cached snapshot" : "缓存快照"}</p>
     <form class="directory-filters" id="directoryFilters">
       <input type="search" aria-label="Search IP / 搜索 IP" name="q" value="${escapeHtml(params.get("q") || "")}" placeholder="${currentLocale === "en" ? "Search IP" : "搜索 IP"}">
       <select name="industry" aria-label="Industry / 行业">${selectOptions(data.taxonomy.industries || [], industry, currentLocale === "en" ? "All industries" : "全部行业")}</select>
@@ -2449,10 +2326,9 @@ async function renderDirectory(initialData = null, snapshotMode = false) {
     </form>
     <section class="directory-list">${visibleIps.map(renderIpEntry).join("") || (!moreIps.length ? `<p class="empty-state">${escapeHtml(t("home.noResults"))}</p>` : "")}</section>
     ${moreIps.length ? `<details class="more-ips directory-more-ips" ${moreIpsOpen ? "open" : ""}><summary>${currentLocale === "en" ? "More IPs" : "更多 IP"} · ${moreIps.length}</summary><div class="directory-list">${moreIps.map(renderIpEntry).join("")}</div></details>` : ""}
-    <section class="application-directory"><header><p class="eyebrow">Applications</p><h2>${currentLocale === "en" ? "Project applications" : "项目应用"}</h2></header>${data.applications.map((app) => `<a href="application?application=${escapeHtml(app.slug)}"><strong>${escapeHtml(app.mainLanguage === "en" ? (app.names?.en || app.names?.zh) : (app.names?.zh || app.names?.en))}</strong><span>${escapeHtml(app.applicationType)}</span><b>↗</b></a>`).join("")}</section>
+    <section class="application-directory"><header><p class="eyebrow">Applications</p><h2>${currentLocale === "en" ? "Project applications" : "项目应用"}</h2></header>${data.applications.map((app) => `<a href="application?application=${escapeHtml(app.slug)}"><strong>${escapeHtml(app.mainLanguage === "en" ? app.names?.en || app.names?.zh : app.names?.zh || app.names?.en)}</strong><span>${escapeHtml(app.applicationType)}</span><b>↗</b></a>`).join("")}</section>
   `;
 }
-
 async function fallbackGraph(slug) {
   const data = await loadIpSystem();
   const ip = data.ips.find((item) => item.slug === slug);
@@ -2462,66 +2338,73 @@ async function fallbackGraph(slug) {
     ip,
     parents: data.relationships.filter((item) => item.child === slug).map((item) => ({ ...item, parentNames: findNames(item.parent), childNames: findNames(item.child) })),
     children: data.relationships.filter((item) => item.parent === slug).map((item) => ({ ...item, parentNames: findNames(item.parent), childNames: findNames(item.child) })),
-    applications: data.applications.filter((app) => app.links?.some((link) => link.ip === slug)),
+    applications: data.applications.filter((app) => app.links?.some((link) => link.ip === slug))
   };
 }
-
 async function loadGraph(slug) {
-  try { return await loadJson(`api/v2/ips/${encodeURIComponent(slug)}/graph`); } catch { return fallbackGraph(slug); }
+  try {
+    return await loadJson(`api/v2/ips/${encodeURIComponent(slug)}/graph`);
+  } catch {
+    return fallbackGraph(slug);
+  }
 }
-
 async function renderIpRecord() {
   const page = $("#ipRecordPage");
   if (!page) return;
   const slug = new URLSearchParams(location.search).get("ip") || "";
   const graph = await loadGraph(slug);
-  if (!graph) { page.innerHTML = `<p class="empty-state">IP not found.</p>`; return; }
+  if (!graph) {
+    page.innerHTML = `<p class="empty-state">IP not found.</p>`;
+    return;
+  }
   const ip = graph.ip;
   page.innerHTML = `<article class="record-detail"><p class="eyebrow">${escapeHtml(ip.recordClass)} · ${escapeHtml(ip.ipType)}</p><h1>${escapeHtml(primaryIpName(ip))}</h1><p class="record-secondary">${escapeHtml(secondaryIpName(ip))}</p><div class="record-facts"><span>${escapeHtml(ip.primaryIndustry)}</span><span>${escapeHtml(ip.lifecycleStatus)}</span><span>${escapeHtml(ip.guidelineMode)}</span></div>${ip.designSystemUrl ? `<a class="button" href="${escapeHtml(ip.designSystemUrl)}" target="_blank" rel="noreferrer">${currentLocale === "en" ? "Design system" : "设计系统"} ↗</a>` : ""}${ip.sourceUrl ? `<a class="button" href="${escapeHtml(ip.sourceUrl)}" rel="noreferrer">Official source ↗</a>` : ""}</article>${graph.parents?.length ? `<section class="lineage-block"><p class="eyebrow">Parent IP</p>${graph.parents.map((relation) => `<a href="ip?ip=${relation.parent}">${escapeHtml(relation.parentNames?.zh || relation.parentNames?.en || relation.parent)}</a>`).join("")}</section>` : ""}${graph.children?.length ? `<section class="lineage-block"><p class="eyebrow">Child IP</p>${graph.children.map((relation) => `<a href="ip?ip=${relation.child}">${escapeHtml(relation.childNames?.zh || relation.childNames?.en || relation.child)}</a>`).join("")}</section>` : ""}${graph.applications?.length ? `<section class="lineage-block"><p class="eyebrow">Applications</p>${graph.applications.map((app) => `<a href="application?application=${app.slug}">${escapeHtml(primaryIpName(app))}</a>`).join("")}</section>` : ""}`;
 }
-
 async function renderApplicationPage() {
   const page = $("#applicationPage");
   if (!page) return;
   const slug = new URLSearchParams(location.search).get("application") || "";
   const ipSystemData = await loadIpSystem();
   let app;
-  try { app = await loadJson(`api/v2/applications/${encodeURIComponent(slug)}`); } catch { app = ipSystemData.applications.find((item) => item.slug === slug); }
-  if (!app) { page.innerHTML = `<p class="empty-state">Application not found.</p>`; return; }
-  const title = app.mainLanguage === "en" ? (app.names?.en || app.names?.zh) : (app.names?.zh || app.names?.en);
+  try {
+    app = await loadJson(`api/v2/applications/${encodeURIComponent(slug)}`);
+  } catch {
+    app = ipSystemData.applications.find((item) => item.slug === slug);
+  }
+  if (!app) {
+    page.innerHTML = `<p class="empty-state">Application not found.</p>`;
+    return;
+  }
+  const title = app.mainLanguage === "en" ? app.names?.en || app.names?.zh : app.names?.zh || app.names?.en;
   const primary = app.links?.find((link) => link.role === "primary")?.ip || "";
   const primaryRecord = ipSystemData.ips.find((item) => item.slug === primary);
   page.innerHTML = `<article class="record-detail"><p class="eyebrow">${escapeHtml(app.applicationType)} · Application</p><h1>${escapeHtml(title)}</h1><p class="record-secondary">${escapeHtml(app.description?.[currentLocale === "en" ? "en" : "zh"] || app.description?.zh || app.description?.en || "")}</p><div class="record-facts"><a href="ip?ip=${escapeHtml(primary)}">Primary IP · ${escapeHtml(primaryRecord ? primaryIpName(primaryRecord) : primary)}</a><span>${escapeHtml(app.guidelineMode)} guidelines</span><span>${escapeHtml([app.location?.province, app.location?.city].filter(Boolean).join(" · "))}</span></div></article>`;
   const [assetData, historyData] = await Promise.all([
     loadJson("api/v2/assets?ownerType=ip-application&ownerId=" + encodeURIComponent(slug)).catch(() => ({ items: [] })),
-    loadJson("api/v2/applications/" + encodeURIComponent(slug) + "/history").catch(() => ({ items: [] })),
+    loadJson("api/v2/applications/" + encodeURIComponent(slug) + "/history").catch(() => ({ items: [] }))
   ]);
   const details = document.createElement("section");
   details.className = "application-details";
   const linked = (app.links || []).filter((link) => link.role !== "primary");
   const business = app.business?.[currentLocale === "en" ? "en" : "zh"] || app.business?.zh || app.business?.en || "";
-  details.innerHTML = '<div><p class="eyebrow">Guideline inheritance</p><h2>' + escapeHtml(app.guidelineMode === "inherit" ? "继承主 IP 规范" : app.guidelineMode) + '</h2><p>' + escapeHtml(Object.keys(app.overrides || {}).length ? "含局部覆盖" : "无局部覆盖") + '</p></div>'
-    + '<div><p class="eyebrow">Linked IP</p>' + (linked.map((link) => '<a href="ip?ip=' + escapeHtml(link.ip) + '">' + escapeHtml(link.role + " · " + link.ip) + '</a>').join("") || '<p class="muted">None</p>') + '</div>'
-    + '<div><p class="eyebrow">Business</p><p>' + escapeHtml(business || t("brand.blank")) + '</p></div>'
-    + '<div><p class="eyebrow">Assets</p><p>' + escapeHtml(String(assetData.items?.length || 0)) + ' files</p></div>'
-    + '<div><p class="eyebrow">History</p><p>' + escapeHtml(String(historyData.items?.length || 0)) + ' revisions</p></div>';
+  details.innerHTML = '<div><p class="eyebrow">Guideline inheritance</p><h2>' + escapeHtml(app.guidelineMode === "inherit" ? "继承主 IP 规范" : app.guidelineMode) + "</h2><p>" + escapeHtml(Object.keys(app.overrides || {}).length ? "含局部覆盖" : "无局部覆盖") + '</p></div><div><p class="eyebrow">Linked IP</p>' + (linked.map((link) => '<a href="ip?ip=' + escapeHtml(link.ip) + '">' + escapeHtml(link.role + " · " + link.ip) + "</a>").join("") || '<p class="muted">None</p>') + '</div><div><p class="eyebrow">Business</p><p>' + escapeHtml(business || t("brand.blank")) + '</p></div><div><p class="eyebrow">Assets</p><p>' + escapeHtml(String(assetData.items?.length || 0)) + ' files</p></div><div><p class="eyebrow">History</p><p>' + escapeHtml(String(historyData.items?.length || 0)) + " revisions</p></div>";
   page.append(details);
 }
-
 async function renderBrandArchitecture(slug) {
   const node = $("#brandArchitecture");
   if (!node) return;
   const graph = await loadGraph(slug);
-  if (!graph || (!graph.parents?.length && !graph.children?.length && !graph.applications?.length)) { node.remove(); return; }
+  if (!graph || !graph.parents?.length && !graph.children?.length && !graph.applications?.length) {
+    node.remove();
+    return;
+  }
   node.innerHTML = `<header><p class="eyebrow">Architecture</p><h2>${currentLocale === "en" ? "Brand lineage" : "品牌谱系"}</h2></header><div class="lineage-grid">${graph.parents.map((relation) => `<a href="ip?ip=${relation.parent}"><small>Parent IP</small><strong>${escapeHtml(relation.parentNames?.zh || relation.parentNames?.en || relation.parent)}</strong></a>`).join("")}${graph.children.map((relation) => `<a href="ip?ip=${relation.child}"><small>Child IP</small><strong>${escapeHtml(relation.childNames?.zh || relation.childNames?.en || relation.child)}</strong></a>`).join("")}${graph.applications.map((app) => `<a href="application?application=${app.slug}"><small>Application</small><strong>${escapeHtml(app.names?.zh || app.names?.en || app.slug)}</strong></a>`).join("")}</div>`;
 }
-
 function setupEvolutionMap() {
   const root = document.querySelector("[data-evolution-map]");
   const documentNode = document.querySelector(".ip-system-document");
   if (!root || !documentNode || root.dataset.ready) return;
   root.dataset.ready = "true";
-
   let parentId = "";
   const sections = [...documentNode.querySelectorAll("h2, h3")].map((heading, index) => {
     const depth = Number(heading.tagName.slice(1));
@@ -2535,7 +2418,6 @@ function setupEvolutionMap() {
     return { id: heading.id, label: heading.textContent.trim(), depth, parentId: depth === 3 ? parentId : "", index, nodes, text: nodes.map((node) => node.textContent).join(" ").toLowerCase() };
   });
   if (!sections.length) return;
-
   const nodesRoot = $("#evolutionMapNodes");
   const detail = $("#evolutionMapDetail");
   const detailIndex = root.querySelector("[data-map-detail-index]");
@@ -2546,9 +2428,8 @@ function setupEvolutionMap() {
   const reset = $("#evolutionMapReset");
   const canvas = $("#evolutionMapCanvas");
   const svg = $("#evolutionMapLinks");
-  const buttons = new Map();
+  const buttons = /* @__PURE__ */ new Map();
   let activeId = "";
-
   const splitLabel = (section) => {
     const parts = section.label.split("·").map((part) => part.trim());
     return parts.length > 1 ? [parts.shift(), parts.join(" · ")] : [String(section.index + 1).padStart(2, "0"), section.label];
@@ -2567,7 +2448,6 @@ function setupEvolutionMap() {
     buttons.set(section.id, button);
     return button;
   };
-
   for (const section of sections.filter((item) => item.depth === 2)) {
     const group = document.createElement("article");
     group.className = "evolution-map-group";
@@ -2583,7 +2463,6 @@ function setupEvolutionMap() {
     nodesRoot.append(group);
   }
   count.textContent = String(sections.length);
-
   const drawLinks = () => {
     const box = canvas.getBoundingClientRect();
     const main = sections.filter((item) => item.depth === 2).map((item) => buttons.get(item.id));
@@ -2609,7 +2488,6 @@ function setupEvolutionMap() {
       svg.append(path);
     });
   };
-
   const showSection = (id, updateUrl = true) => {
     const section = sections.find((item) => item.id === id) || sections[0];
     activeId = section.id;
@@ -2629,7 +2507,6 @@ function setupEvolutionMap() {
     if (updateUrl) history.replaceState(null, "", `${location.pathname}${location.search}#${section.id}`);
     requestAnimationFrame(drawLinks);
   };
-
   const filter = () => {
     const query = search.value.trim().toLowerCase();
     const matches = new Set(sections.filter((section) => !query || section.text.includes(query)).map((section) => section.id));
@@ -2641,9 +2518,8 @@ function setupEvolutionMap() {
     status.textContent = query ? `${matches.size} / ${sections.length}` : `${sections.length}`;
     return matches;
   };
-
   nodesRoot.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-map-target]");
+    const button = (event.target instanceof Element ? event.target : null)?.closest("[data-map-target]");
     if (button) showSection(button.dataset.mapTarget);
   });
   search.addEventListener("input", filter);
@@ -2652,7 +2528,12 @@ function setupEvolutionMap() {
     const first = [...filter()][0];
     if (first) showSection(first);
   });
-  reset.addEventListener("click", () => { search.value = ""; filter(); showSection(sections[0].id); search.focus(); });
+  reset.addEventListener("click", () => {
+    search.value = "";
+    filter();
+    showSection(sections[0].id);
+    search.focus();
+  });
   if ("ResizeObserver" in window) new ResizeObserver(() => requestAnimationFrame(drawLinks)).observe(canvas);
   else addEventListener("resize", () => requestAnimationFrame(drawLinks));
   const initial = sections.some((section) => `#${section.id}` === location.hash) ? location.hash.slice(1) : sections[0].id;
@@ -2660,7 +2541,6 @@ function setupEvolutionMap() {
   showSection(initial, false);
   root.classList.add("is-ready");
 }
-
 function setupWebVitals() {
   if (!("PerformanceObserver" in window) || Math.random() > 0.1) return;
   const metrics = { ttfb: 0, lcp: 0, cls: 0, inp: 0, transferSize: 0 };
@@ -2674,11 +2554,18 @@ function setupWebVitals() {
     try {
       const observer = new PerformanceObserver((list) => list.getEntries().forEach(callback));
       observer.observe({ type, buffered: true, ...options });
-    } catch {}
+    } catch {
+    }
   };
-  observe("largest-contentful-paint", (entry) => { metrics.lcp = Math.max(metrics.lcp, entry.startTime || 0); });
-  observe("layout-shift", (entry) => { if (!entry.hadRecentInput) metrics.cls += entry.value || 0; });
-  observe("event", (entry) => { metrics.inp = Math.max(metrics.inp, entry.duration || 0); }, { durationThreshold: 40 });
+  observe("largest-contentful-paint", (entry) => {
+    metrics.lcp = Math.max(metrics.lcp, entry.startTime || 0);
+  });
+  observe("layout-shift", (entry) => {
+    if (!entry.hadRecentInput) metrics.cls += entry.value || 0;
+  });
+  observe("event", (entry) => {
+    metrics.inp = Math.max(metrics.inp, entry.duration || 0);
+  }, { durationThreshold: 40 });
   let reported = false;
   const report = () => {
     if (reported) return;
@@ -2689,9 +2576,10 @@ function setupWebVitals() {
     navigator.sendBeacon(new URL("/api/v2/metrics/web-vitals", location.origin), new Blob([body], { type: "application/json" }));
   };
   addEventListener("pagehide", report, { once: true });
-  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") report(); }, { once: true });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") report();
+  }, { once: true });
 }
-
 applyI18n();
 setupLanguageToggle();
 setupSearch();
@@ -2710,7 +2598,7 @@ setInterval(() => {
   if (document.hidden || !$("#directoryPage, #heroIndex, #brandGrid") || document.activeElement?.closest("#directoryFilters") || $(".ip-health-panel details[open], .more-ips[open]")) return;
   repositoryStatusFetchedAt = 0;
   Promise.all([renderHeroIndex(true), renderIndex(), renderDirectory()]).catch(console.error);
-}, 60000);
+}, 6e4);
 renderIpRecord().catch(console.error);
 renderApplicationPage().catch(console.error);
 setupWebVitals();

@@ -14,7 +14,7 @@
   <link rel="alternate" href="../llms.txt" type="text/plain" title="IPTrust LLM Guide">
   <link rel="alternate" href="../api/openapi.json" type="application/vnd.oai.openapi+json" title="IPTrust OpenAPI">
   <link rel="alternate" href="../api/fonts.json" type="application/json" title="IPTrust Open-source Type Library">
-  <link rel="stylesheet" href="../assets/site-2a86997-3eb3e341.css">
+  <link rel="stylesheet" href="../assets/site-499ce86-a4e03d75.css">
   <style>
     .kaoyu-story-page {
       --brand-primary: #241714;
@@ -114,6 +114,39 @@
 </ul>
 <h2 id="kaoyu-shenhua-guide-1-视觉资产">视觉资产</h2>
 <p>原始标志以 Adobe Illustrator 文件归档。网站提供逐页 PNG/JPG 预览与导出版本；原始文件、导出文件、格式、尺寸、文件大小及公开地址均通过品牌 API 的 <code>adobeAssets</code> 与 <code>images</code> 字段调用。</p>
+<h3 id="kaoyu-shenhua-guide-1-agent-可直接使用的-svg">Agent 可直接使用的 SVG</h3>
+<p>优先使用以下独立矢量文件：文字已转轮廓，无需安装字体；透明背景，保持原始深墨棕颜色、比例与组合关系。每个文件只含一个标志，不含原稿分隔线。</p>
+<table>
+<thead>
+<tr>
+<th>标志</th>
+<th>文件</th>
+<th>使用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>中英竖排，含「川湘菜」</td>
+<td><a href="assets/logos/kaoyu-shenhua-logo-stacked-cuisine.svg">kaoyu-shenhua-logo-stacked-cuisine.svg</a></td>
+<td>门店、菜单及需要说明菜系的物料</td>
+</tr>
+<tr>
+<td>中英竖排</td>
+<td><a href="assets/logos/kaoyu-shenhua-logo-stacked.svg">kaoyu-shenhua-logo-stacked.svg</a></td>
+<td>常规品牌署名</td>
+</tr>
+<tr>
+<td>横向组合，含「川湘菜」</td>
+<td><a href="assets/logos/kaoyu-shenhua-logo-horizontal.svg">kaoyu-shenhua-logo-horizontal.svg</a></td>
+<td>横幅、页眉与狭长空间</td>
+</tr>
+<tr>
+<td>鱼字图形</td>
+<td><a href="assets/logos/kaoyu-shenhua-logo-symbol.svg">kaoyu-shenhua-logo-symbol.svg</a></td>
+<td>图标或已有品牌名称的场景</td>
+</tr>
+</tbody></table>
+<p>Agent 下载模板：<code>https://raw.githubusercontent.com/ksamint/iptrust01/main/KaoyuShenhua/assets/logos/&lt;文件名&gt;</code>。使用原始文件内容，不以 GitHub 页面截图或重新生成的文字替代标志。需要烤鱼神话全称时选择前三款之一；鱼字图形作为辅助识别。</p>
+<p><a href="assets/logos/manifest.json">转换来源与 SHA-256</a>记录原始 AI 的哈希、对应页码及每个 SVG 的哈希。SVG 从原始 AI 的 PDF 兼容矢量路径导出，移除参考分隔线并分离组合；文字不可作为文本编辑。</p>
 <h2 id="kaoyu-shenhua-guide-1-使用原则">使用原则</h2>
 <ul>
 <li>优先使用原始矢量标志或透明背景 PNG。</li>

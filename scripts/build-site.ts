@@ -1,0 +1,4673 @@
+import { transform } from "esbuild";
+import { completeness } from "../edge/src/repository-status.ts";
+import { mkdir, readFile, rm, writeFile, copyFile, readdir, stat } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { dirname, extname, join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
+import { marked, Renderer, type Tokens } from "marked";
+import type { Asset, Theme } from "../frontend/types.ts";
+
+const root = dirname(dirname(fileURLToPath(import.meta.url)));
+const siteDir = join(root, "site");
+const apiDir = join(siteDir, "api");
+const brandApiDir = join(apiDir, "brands");
+const historyApiDir = join(apiDir, "history");
+const libraryApiDir = join(apiDir, "library");
+const assetsDir = join(siteDir, "assets");
+const imageDir = join(assetsDir, "brand-images");
+const adobeDir = join(assetsDir, "adobe");
+const contactDir = join(assetsDir, "contact");
+const librarySiteDir = join(siteDir, "library");
+const libraryDataDir = join(root, "data", "library");
+const assetManifestPath = join(root, "data", "assets", "manifest.json");
+const fontCatalogPath = join(root, "data", "fonts.json");
+const googleFontDirectoryPath = join(root, "data", "google-fonts-directory.json");
+const fontLicenseArchiveDir = join(root, "licenses", "fonts");
+
+const repositorySnapshot = JSON.parse(await readFile(join(root, "data/repository-status.json"), "utf8"));
+const brands = JSON.parse(await readFile(join(root, "config/brands.json"), "utf8"));
+const moreIpSlugs = new Set(["qingshuiting", "youyuan-jingmeng", "subangyuan", "xiaotaoyuan", "ganglao-baozailu", "shuangxi-shaola", "mutangwan", "tongxianghui", "tongli-market"]);
+const featuredIpSlugs = new Set(["iptrust", "tableai", "opcglobal", "sidera"]);
+const ipSystem = JSON.parse(await readFile(join(root, "config/ip-system.json"), "utf8"));
+const assetManifest = existsSync(assetManifestPath)
+  ? JSON.parse(await readFile(assetManifestPath, "utf8"))
+  : null;
+const fontCatalog = JSON.parse(await readFile(fontCatalogPath, "utf8"));
+const googleFontDirectory = JSON.parse(await readFile(googleFontDirectoryPath, "utf8"));
+const fontCatalogEmbeddedJson = JSON.stringify(fontCatalog).replaceAll("<", "\\u003c");
+const hubLogoUrl = assetManifest?.items?.find((item) => item.sourcePath === "IPTRUST/assets/brand-images/iptrust-logo-black.png")?.mediaUrl || "assets/brand-images/iptrust-logo-black.png";
+const hubTouchIconUrl = assetManifest?.items?.find((item) => item.sourcePath === "IPTRUST/assets/brand-images/logo-set/黑色/logohdpi.png")?.mediaUrl || hubLogoUrl;
+const librarySnapshotNames = ["sources", "organizations", "cases", "reports", "datasets", "relations", "sync"];
+const librarySnapshots = Object.fromEntries(await Promise.all(librarySnapshotNames.map(async (name) => [
+  name,
+  JSON.parse(await readFile(join(libraryDataDir, `${name}.json`), "utf8")),
+])));
+const privateLibraryIds = new Set(["cases", "reports", "datasets"].flatMap((name) => librarySnapshots[name].filter((item) => item.access === "private").map((item) => item.id)));
+const relationParentSlugs = new Set(ipSystem.relationships.filter((item) => item.type === "brand_parent").map((item) => item.parent));
+const relationChildSlugs = new Set(ipSystem.relationships.filter((item) => item.type === "brand_parent").map((item) => item.child));
+
+function architectureRolesFor(slug, parentCapable = false) {
+  const roles = [];
+  if (parentCapable || relationParentSlugs.has(slug)) roles.push("parent");
+  if (relationChildSlugs.has(slug)) roles.push("child");
+  return roles.length ? roles : ["standalone"];
+}
+const hubName = "岁知社 IPTrust";
+const hubNameCn = "岁知社";
+const hubNameEn = "IPTrust";
+const repository = { owner: "ksamint", repo: "iptrust01", branch: "main" };
+const hubDescription = "岁知社 IPTrust 是一个面向人和 Agent 的 IP 品牌信任中枢。";
+const hubDescriptionEn = "IPTrust is an IP trust hub for people and agents.";
+const publicOrigin = "https://apuch.art";
+
+function commonDiscoveryHead(prefix = "") {
+  return html`  <meta name="theme-color" content="#FFFEFA">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="${hubTouchIconUrl}">
+  <link rel="manifest" href="${prefix}site.webmanifest">
+  <link rel="alternate" href="${prefix}agent.json" type="application/json" title="IPTrust Agent Entry">
+  <link rel="alternate" href="${prefix}llms.txt" type="text/plain" title="IPTrust LLM Guide">
+  <link rel="alternate" href="${prefix}api/openapi.json" type="application/vnd.oai.openapi+json" title="IPTrust OpenAPI">
+  <link rel="alternate" href="${prefix}api/fonts.json" type="application/json" title="IPTrust Open-source Type Library">`;
+}
+
+async function walk(dir) {
+  if (!existsSync(dir)) return [];
+  const entries = await readdir(dir);
+  const files = [];
+  for (const entry of entries) {
+    if (entry === ".DS_Store" || entry === "private") continue;
+    const full = join(dir, entry);
+    const s = await stat(full);
+    if (s.isDirectory()) {
+      files.push(...await walk(full));
+    } else {
+      files.push(full);
+    }
+  }
+  return files;
+}
+
+function isGuide(path) {
+  const ext = extname(path).toLowerCase();
+  return ext === ".md" || ext === ".html";
+}
+
+function isToken(path) {
+  return path.includes("/tokens/") && [".json", ".css"].includes(extname(path).toLowerCase());
+}
+
+function isBrandImage(path) {
+  return path.includes("/assets/brand-images/") && [".png", ".jpg", ".jpeg", ".webp"].includes(extname(path).toLowerCase());
+}
+
+function isAdobeManifest(path) {
+  return path.includes("/assets/adobe-assets/") && extname(path).toLowerCase() === ".json";
+}
+
+function formatFileSize(bytes = 0) {
+  if (!Number.isFinite(bytes) || bytes < 1) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
+  const unit = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  const value = bytes / (1024 ** unit);
+  const precision = unit === 0 || value >= 100 ? 0 : value >= 10 ? 1 : 2;
+  return `${value.toFixed(precision)} ${units[unit]}`;
+}
+
+function jpegDimensions(buffer) {
+  let offset = 2;
+  while (offset + 8 < buffer.length) {
+    if (buffer[offset] !== 0xff) {
+      offset += 1;
+      continue;
+    }
+    const marker = buffer[offset + 1];
+    if (marker === 0xd8 || marker === 0xd9) {
+      offset += 2;
+      continue;
+    }
+    const length = buffer.readUInt16BE(offset + 2);
+    if (length < 2 || offset + length + 2 > buffer.length) break;
+    if ([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf].includes(marker)) {
+      return { width: buffer.readUInt16BE(offset + 7), height: buffer.readUInt16BE(offset + 5) };
+    }
+    offset += length + 2;
+  }
+  return {};
+}
+
+function webpDimensions(buffer) {
+  const chunk = buffer.toString("ascii", 12, 16);
+  if (chunk === "VP8X" && buffer.length >= 30) {
+    return {
+      width: 1 + buffer.readUIntLE(24, 3),
+      height: 1 + buffer.readUIntLE(27, 3),
+    };
+  }
+  if (chunk === "VP8 " && buffer.length >= 30) {
+    return {
+      width: buffer.readUInt16LE(26) & 0x3fff,
+      height: buffer.readUInt16LE(28) & 0x3fff,
+    };
+  }
+  if (chunk === "VP8L" && buffer.length >= 25) {
+    const bits = buffer.readUInt32LE(21);
+    return {
+      width: 1 + (bits & 0x3fff),
+      height: 1 + ((bits >> 14) & 0x3fff),
+    };
+  }
+  return {};
+}
+
+async function imageFileMetadata(full, rel) {
+  const extension = extname(rel).toLowerCase().slice(1);
+  const format = extension === "jpeg" ? "JPG" : extension.toUpperCase();
+  const [file, fileStat] = await Promise.all([readFile(full), stat(full)]);
+  let dimensions: { width?: number; height?: number } = {};
+  if (extension === "png" && file.length >= 24 && file.toString("ascii", 1, 4) === "PNG") {
+    dimensions = { width: file.readUInt32BE(16), height: file.readUInt32BE(20) };
+  } else if (["jpg", "jpeg"].includes(extension) && file.length >= 4) {
+    dimensions = jpegDimensions(file);
+  } else if (extension === "webp" && file.length >= 30) {
+    dimensions = webpDimensions(file);
+  }
+  const width = dimensions.width || null;
+  const height = dimensions.height || null;
+  return {
+    format,
+    bytes: fileStat.size,
+    size: formatFileSize(fileStat.size),
+    width,
+    height,
+    dimensions: width && height ? `${width} x ${height} px` : "",
+  };
+}
+
+function safeAssetStem(value) {
+  const safe = value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return safe || "image";
+}
+
+function brandImageOutputName(brand, rel, usedNames) {
+  const ext = extname(rel).toLowerCase();
+  const parts = rel.split("/");
+  const filename = parts.at(-1) ?? "image";
+  const stem = filename.replace(/\.[^.]+$/, "");
+  if (brand.slug === "iptrust" && stem === `${brand.slug}-logo-black`) {
+    const canonical = `${stem}${ext}`;
+    usedNames.add(canonical);
+    return canonical;
+  }
+  if (stem === `${brand.slug}-brand-hero` || stem.endsWith("-brand-hero")) {
+    return `${brand.slug}${ext}`;
+  }
+  const parent = parts.at(-2) ?? "";
+  const rawStem = parent === "brand-images" ? stem : `${parent}-${stem}`;
+  const base = `${brand.slug}-${safeAssetStem(rawStem)}`;
+  let candidate = `${base}${ext}`;
+  let index = 2;
+  while (usedNames.has(candidate)) {
+    candidate = `${base}-${index}${ext}`;
+    index += 1;
+  }
+  usedNames.add(candidate);
+  return candidate;
+}
+
+function buildAssetScore(image: Asset = {}) {
+  const text = [image.path, image.sitePath, image.title].filter(Boolean).join(" ").toLowerCase();
+  let score = 0;
+  if (image.documentLogo) score += 140;
+  if (image.backgroundTransparent) score += 70;
+  if (text.includes("logo")) score += 60;
+  if (text.includes("a2a")) score += 35;
+  if (text.includes("transparent") || text.includes("clear")) score += 42;
+  if (text.includes("wide") || text.includes("wordmark")) score += 25;
+  if (text.includes("color") || text.includes("red")) score += 32;
+  if (text.includes("black")) score += 10;
+  if (text.includes("white")) score -= 18;
+  if (String(image.sitePath || "").toLowerCase().endsWith(".png")) score += 10;
+  if (String(image.sitePath || "").toLowerCase().endsWith(".jpg")) score -= 4;
+  if (text.includes("brand-hero")) score -= 90;
+  return score;
+}
+
+function buildPreferredBrandImage(images: Asset[] = []) {
+  if (!images.length) return null;
+  return [...images].sort((a, b) => buildAssetScore(b) - buildAssetScore(a))[0] || images[0];
+}
+
+function titleFromPath(path) {
+  return path
+    .split("/")
+    .pop()
+    .replace(/\.[^.]+$/, "")
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+}
+
+function excerpt(text) {
+  return text
+    .replace(/^---[\s\S]*?---/, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/[#*_`>|-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 420);
+}
+
+function hasCjk(text = "") {
+  return /[\u3400-\u9fff]/.test(text);
+}
+
+function zhName(brand) {
+  if (hasCjk(brand.name)) return brand.name;
+  if (brand.nativeName && hasCjk(brand.nativeName)) return brand.nativeName;
+  return brand.name;
+}
+
+function enName(brand) {
+  if (!hasCjk(brand.name)) return brand.name;
+  if (brand.nativeName && /[A-Za-z]/.test(brand.nativeName)) {
+    return brand.nativeName.replace(/\s*[·|｜/]\s*[\u3400-\u9fff].*$/, "").trim() || brand.nativeName;
+  }
+  return brand.name;
+}
+
+function mainLanguage(brand) {
+  if (["zh", "en"].includes(brand.mainLanguage)) return brand.mainLanguage;
+  return hasCjk(brand.name) ? "zh" : "en";
+}
+
+function mainName(brand) {
+  return mainLanguage(brand) === "zh" ? zhName(brand) : enName(brand);
+}
+
+function publicLanguageLabel(value) {
+  if (value === "zh" || value === "cn") return "CN";
+  if (value === "en") return "EN";
+  return value || "";
+}
+
+function secondaryName(primary, secondary) {
+  return primary && secondary && primary !== secondary ? secondary : "";
+}
+
+function uniqueValues<T>(values: T[]): T[] {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function introLines(text = "") {
+  return text
+    .replace(/^---[\s\S]*?---/, "")
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/<[^>]+>/g, " ")
+    .split(/\n+/)
+    .map((line) => line.replace(/^#+\s*/, "").replace(/^[-*]\s*/, "").trim())
+    .filter((line) => {
+      if (!line) return false;
+      if (/^(chinese name|english name|english descriptor):/i.test(line)) return false;
+      if (/^(brand role|visual direction|agent notes|overview|purpose)$/i.test(line)) return false;
+      if (/^use\s+/i.test(line)) return false;
+      if (/[`]|\/|\\/.test(line)) return false;
+      if (line.length < 18 && !/[。！？.!?]/.test(line)) return false;
+      return true;
+    });
+}
+
+function cjkRatio(text = "") {
+  if (!text.length) return 0;
+  return (text.match(/[\u3400-\u9fff]/g) || []).length / text.length;
+}
+
+function clipSentence(text = "", max = 170) {
+  const clean = text.replace(/[#*_`>|]/g, "").replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const boundary = clean.slice(0, max).search(/[。！？.!?](?!.*[。！？.!?])/);
+  if (boundary > 48) return clean.slice(0, boundary + 1);
+  return `${clean.slice(0, max - 1).trim()}…`;
+}
+
+function liveIntro(brand, guides, lang) {
+  if (Object.prototype.hasOwnProperty.call(brand.intro ?? {}, lang)) {
+    return clipSentence(brand.intro[lang] ?? "");
+  }
+  const primary = guides.find((g) => g.primary) ?? guides[0];
+  const lines = introLines(primary?.text || "");
+  const fromGuide = lang === "zh"
+    ? lines.find((line) => hasCjk(line) && line.length >= 24)
+    : lines.find((line) => /[A-Za-z]/.test(line) && line.length >= 44 && cjkRatio(line) < 0.18);
+  if (fromGuide && !/placeholder/i.test(fromGuide)) return clipSentence(fromGuide);
+  if (lang === "zh") {
+    return `${zhName(brand)}的 IP 品牌系统，实时汇总最新规范、颜色、语气、资产与 Agent 可读源文件。`;
+  }
+  return `${enName(brand)} brand system with live guidelines, colors, voice, assets, and agent-readable source files.`;
+}
+
+function profile(brand) {
+  return {
+    officialWebsite: brand.officialWebsite ?? "",
+    mainLanguage: mainLanguage(brand),
+    mainLocale: publicLanguageLabel(mainLanguage(brand)),
+    intro: {
+      zh: brand.intro?.zh ?? "",
+      en: brand.intro?.en ?? "",
+    },
+    business: {
+      zh: brand.business?.zh ?? "",
+      en: brand.business?.en ?? "",
+    },
+    notes: {
+      zh: brand.notes?.zh ?? "",
+      en: brand.notes?.en ?? "",
+    },
+    classification: {
+      tracks: {
+        zh: brand.classification?.tracks?.zh ?? [],
+        en: brand.classification?.tracks?.en ?? [],
+      },
+      audiences: {
+        zh: brand.classification?.audiences?.zh ?? [],
+        en: brand.classification?.audiences?.en ?? [],
+      },
+      tags: {
+        zh: brand.classification?.tags?.zh ?? [],
+        en: brand.classification?.tags?.en ?? [],
+      },
+    },
+  };
+}
+
+function html(strings, ...values) {
+  return String.raw({ raw: strings }, ...values);
+}
+
+function escapeBuildHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function markdownSlug(value = "") {
+  return String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
+    .replace(/^-+|-+$/g, "") || "section";
+}
+
+function renderMarkdownDocument(markdown = "", prefix = "document") {
+  const renderer = new Renderer();
+  const seen = new Map();
+  renderer.heading = function ({ tokens, depth, text }) {
+    const base = `${prefix}-${markdownSlug(text)}`;
+    const count = seen.get(base) || 0;
+    seen.set(base, count + 1);
+    const id = count ? `${base}-${count + 1}` : base;
+    return `<h${depth} id="${id}">${this.parser.parseInline(tokens)}</h${depth}>\n`;
+  };
+  return marked.parse(markdown, { gfm: true, renderer });
+}
+
+function markdownToc(markdown = "", prefix = "document") {
+  return marked.lexer(markdown)
+    .filter((token): token is Tokens.Heading => token.type === "heading" && token.depth === 2)
+    .map((token) => `<a href="#${prefix}-${markdownSlug(token.text)}">${escapeBuildHtml(token.text)}</a>`)
+    .join("\n");
+}
+
+function fontLibraryRows(catalog) {
+  const specimens = {
+    zh: catalog.specimens?.zh || "高楼宾客似曾识，日光底下无新事",
+    en: catalog.specimens?.en || "Building Tomorrow, Today.",
+  };
+  return catalog.fonts.map((font) => {
+    const searchText = [font.name, font.nameZh, font.category.zh, font.category.en, font.useCases.zh, font.useCases.en, font.source.publisher, font.scripts.join(" ")].filter(Boolean).join(" ").toLowerCase();
+    const download = font.package ? `<a href="${escapeBuildHtml(font.package.mediaUrl)}" download="${escapeBuildHtml(font.package.filename)}" title="${escapeBuildHtml(`${font.package.filename} · ${font.package.contents.length} files · ${formatFileSize(font.package.bytes)}`)}"><span data-i18n="fonts.downloadPackage">下载字体包</span> · ZIP · ${formatFileSize(font.package.bytes)}</a>` : "";
+    return `<article class="font-specimen" id="font-${escapeBuildHtml(font.id)}" data-font-id="${escapeBuildHtml(font.id)}" data-font-group="${escapeBuildHtml(font.group)}" data-font-category="${escapeBuildHtml(font.categoryKey || "sans")}" data-font-popularity="${font.popularity || ""}" data-font-search-text="${escapeBuildHtml(searchText)}">
+    <header class="font-specimen-head">
+      <div>
+        <p class="font-specimen-name">${escapeBuildHtml(font.name)}${font.nameZh && font.nameZh !== font.name ? ` <span>${escapeBuildHtml(font.nameZh)}</span>` : ""}</p>
+        <p class="font-specimen-meta"><span data-font-zh="${escapeBuildHtml(font.category.zh)}" data-font-en="${escapeBuildHtml(font.category.en)}">${escapeBuildHtml(font.category.zh)}</span> · ${escapeBuildHtml(font.license.spdx)}${font.popularity ? ` · GF #${font.popularity}` : ""} · ${escapeBuildHtml(catalog.verifiedAt)}</p>
+      </div>
+      <div class="font-specimen-use" data-font-zh="${escapeBuildHtml(font.useCases.zh)}" data-font-en="${escapeBuildHtml(font.useCases.en)}">${escapeBuildHtml(font.useCases.zh)}</div>
+      <div class="font-specimen-actions">
+        <a href="${escapeBuildHtml(font.source.projectUrl)}" target="_blank" rel="noreferrer" data-i18n="fonts.source">官方出处</a>
+        <a href="${escapeBuildHtml(font.license.url)}" target="_blank" rel="noreferrer">${escapeBuildHtml(font.license.spdx)} · <span data-i18n="fonts.commercial">可商用</span></a>
+        ${download}
+        <button type="button" data-copy-font="${escapeBuildHtml(font.id)}" data-i18n="fonts.copyCss">复制 CSS</button>
+      </div>
+    </header>
+    <div class="font-specimen-samples">
+      <p class="font-specimen-sample" lang="zh-CN">${escapeBuildHtml(specimens.zh)}</p>
+      <p class="font-specimen-sample" lang="en">${escapeBuildHtml(specimens.en)}</p>
+    </div>
+    <p class="font-load-state" data-font-load-state aria-live="polite" data-i18n="fonts.ready">滚动到此处加载真实字体</p>
+  </article>`;
+  }).join("\n");
+}
+
+function loadVersions() {
+  try {
+    const out = execFileSync("git", ["log", "-12", "--date=iso-strict", "--pretty=format:%H%x09%h%x09%cI%x09%s"], {
+      cwd: root,
+      encoding: "utf8",
+    }).trim();
+    return out.split("\n").filter(Boolean).map((line) => {
+      const [hash, shortHash, date, ...messageParts] = line.split("\t");
+      return {
+        hash,
+        shortHash,
+        date,
+        message: messageParts.join("\t"),
+        url: `https://github.com/${repository.owner}/${repository.repo}/commit/${hash}`,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+async function loadPreviousJson(path, fallback) {
+  if (!existsSync(path)) return fallback;
+  try {
+    return JSON.parse(await readFile(path, "utf8"));
+  } catch {
+    return fallback;
+  }
+}
+
+function mergeVersionHistory(current = [], previous = [], limit = 20, options: { preferPreviousWhenShallow?: boolean } = {}) {
+  if (options.preferPreviousWhenShallow && current.length <= 1 && previous.length > 1) {
+    return previous.slice(0, limit);
+  }
+  const merged = [];
+  const seen = new Set();
+  for (const item of [...current, ...previous]) {
+    if (!item?.hash || seen.has(item.hash)) continue;
+    seen.add(item.hash);
+    merged.push(item);
+  }
+  return merged.slice(0, limit);
+}
+
+function loadBrandVersions(brand) {
+  const paths = uniqueValues([
+    "config/brands.json",
+    brand.folder,
+    brand.primaryGuide,
+  ]);
+  try {
+    const out = execFileSync("git", [
+      "log",
+      "-20",
+      "--date=iso-strict",
+      "--pretty=format:%H%x09%h%x09%cI%x09%s",
+      "--",
+      ...paths,
+    ], {
+      cwd: root,
+      encoding: "utf8",
+    }).trim();
+    return out.split("\n").filter(Boolean).map((line) => {
+      const [hash, shortHash, date, ...messageParts] = line.split("\t");
+      return {
+        hash,
+        shortHash,
+        date,
+        message: messageParts.join("\t"),
+        url: `https://github.com/${repository.owner}/${repository.repo}/commit/${hash}`,
+        sourcePaths: paths,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+function apiSchemaPayload() {
+  return {
+    name: "IPTrust IP System API Schema",
+    version: "2.0.0",
+    description: "IPTrust exposes brands, IP taxonomy, brand architecture, project applications, assets and history through REST and MCP.",
+    endpoints: {
+      agentEntry: "agent.json",
+      openapi: "api/openapi.json",
+      manifest: "api/manifest.json",
+      allBrands: "api/brands.json",
+      taxonomy: "api/v2/taxonomy",
+      ips: "api/v2/ips",
+      ip: "api/v2/ips/{slug}",
+      ipHistory: "api/v2/ips/{slug}/history",
+      ipGraph: "api/v2/ips/{slug}/graph",
+      ipRelations: "api/v2/ip-relations",
+      applications: "api/v2/applications",
+      application: "api/v2/applications/{slug}",
+      applicationHistory: "api/v2/applications/{slug}/history",
+      search: "api/v2/search",
+      organizations: "api/library/organizations",
+      cases: "api/library/cases",
+      reports: "api/library/reports",
+      protectedLibraryItem: "api/v2/library/{collection}/{id}",
+      protectedLibraryFile: "api/v2/library/{collection}/{id}/sign",
+      datasets: "api/library/datasets",
+      relations: "api/library/relations",
+      fonts: "api/fonts.json",
+      googleFonts: "api/google-fonts.json",
+      allVersions: "api/versions.json",
+      brand: "api/brands/{slug}.json",
+      brandHistory: "api/history/{slug}.json",
+      ipSystem: "ip_sys.md",
+      skill: "skills/iptrust-live-update/SKILL.md",
+      llms: "llms.txt",
+      remoteMcp: "mcp",
+      directory: "directory/",
+    },
+    agentConventions: {
+      identity: "Use slug or assetKey as the stable IP identifier.",
+      naming: "Always display mainName in mainLanguage; display alternate-language names only as secondary labels.",
+      colors: "Use theme token values exactly. Do not infer replacement colors from screenshots.",
+      logo: "Use logoUrl as the canonical logo. Use images[] when a specific format or colorway is required.",
+      provenance: "Prefer sources[] and version/history fields when citing or applying a standard.",
+      privateAccess: "Public brand metadata and public assets require no key. Private files require an authorized Bearer API key.",
+    },
+    brandFields: {
+      slug: "Stable IP ID / asset key used by URLs and agent calls.",
+      assetKey: "Human-readable alias for slug in asset and agent contexts.",
+      designSystemUrl: "Dedicated design-system GitHub repository URL.",
+      folder: "Local source folder.",
+      name: "Configured public/English name.",
+      nativeName: "Configured native/Chinese or alternate name.",
+      mainName: "Name chosen from mainLanguage.",
+      mainLanguage: "Main display language: zh or en.",
+      mainLocale: "Public label for mainLanguage: CN or EN.",
+      officialWebsite: "Official website URL, blank when unknown.",
+      description: "Short configured description.",
+      display: "Bilingual display names and secondary labels.",
+      profile: "Callable business profile fields: officialWebsite, mainLanguage, intro, business, notes, classification.",
+      intro: "Live bilingual intro generated from config or primary guideline.",
+      business: "Bilingual business/service scope.",
+      notes: "Bilingual notes for public context, agent hints, or operational remarks.",
+      classification: "Bilingual category arrays: tracks, audiences, and tags.",
+      theme: "Brand colors, surface, ink, line, mode, and keywords.",
+      url: "Public website brand page.",
+      apiUrl: "Per-IP JSON endpoint.",
+      historyUrl: "Per-IP Git-backed version endpoint.",
+      status: "documented or placeholder.",
+      guides: "Guideline metadata and text.",
+      tokens: "Token file metadata and text.",
+      images: "Image asset metadata and public site paths, including format, bytes, human-readable size, width, height, and dimensions.",
+      adobeAssets: "Adobe source files, preview images, page exports, formats, file sizes, and public URLs.",
+      logoUrl: "Canonical public URL path for the preferred IP logo, blank when no verified logo asset exists.",
+      assetKit: "Unified callable IP asset endpoints, colors, images, and moodboard source.",
+      agent: "Agent bootstrap metadata with MCP endpoint, recommended tool call and field conventions.",
+      moodboard: "Derived colors, keywords, and image assets for visual direction.",
+      editablePaths: "Source files editable from admin flow.",
+      source: "GitHub source folder and local folder.",
+      sources: "Public provenance records with publisher, URL, verification date, and confidence.",
+      version: "Latest build/global version object.",
+      history: "Latest per-IP history records.",
+      primaryIndustry: "Primary term from the controlled bilingual industry taxonomy.",
+      industries: "One or more controlled industry taxonomy terms.",
+      ipType: "Controlled single IP type; parent/child status is represented by relationships.",
+      recordClass: "owned or reference.",
+      lifecycleStatus: "Lifecycle state such as active, draft, archived or retired.",
+      guidelineMode: "independent or inherited guideline behavior.",
+      parentCapable: "Whether the IP is explicitly available as a mother IP even before children are linked.",
+      architectureRoles: "Computed roles; an IP can be parent, child, both, or standalone.",
+    },
+    architecture: {
+      primaryParent: "One optional brand_parent relationship; cycles are rejected.",
+      auxiliaryRelations: ["endorsed_by", "operated_by", "licensed_by", "member_of", "co_branded_with"],
+      applications: "Stores, properties, deployments, events, content series, digital products and collaborations remain applications rather than independent IPs.",
+      inheritance: "An application inherits its primary IP guideline and stores local changes in overrides.",
+    },
+    versioning: {
+      model: "Git-backed history. Source edits flow through repository commits, then build into website JSON.",
+      globalHistory: "api/versions.json",
+      perBrandHistory: "api/history/{slug}.json",
+      currentVersionField: "version",
+      trackedPaths: ["config/brands.json", "{brand.folder}", "{brand.primaryGuide}"],
+    },
+  };
+}
+
+function themeColorEntries(theme = {}) {
+  return ["primary", "accent", "secondary", "surface", "paper", "ink", "muted"].flatMap((key) => {
+    const value = theme?.[key];
+    return value ? [{ key, value }] : [];
+  });
+}
+
+const previousVersions = await loadPreviousJson(join(apiDir, "versions.json"), []);
+const previousHistoryBySlug = new Map<string, unknown[]>(await Promise.all(brands.map(async (brand) => {
+  const previous = await loadPreviousJson(join(historyApiDir, `${brand.slug}.json`), null);
+  return [brand.slug, Array.isArray(previous?.versions) ? previous.versions : []] as const;
+})));
+const versions = mergeVersionHistory(loadVersions(), previousVersions, 20);
+const buildFingerprint = createHash("sha256");
+for (const inputPath of ["scripts/build-site.ts", "frontend/site.ts", "frontend/admin.ts", "frontend/gateway.ts", "styles/editorial.css", "config/brands.json", "config/ip-system.json", "package.json", "IP-System/ip_sys.md", "data/fonts.json", "data/google-fonts-directory.json", "data/library/sync.json", "library/library.css", "frontend/library.ts"]) {
+  buildFingerprint.update(await readFile(join(root, inputPath)));
+}
+const buildVersion = `${versions[0]?.shortHash ?? "dev"}-${buildFingerprint.digest("hex").slice(0, 8)}`;
+const siteCssPath = `assets/site-${buildVersion}.css`;
+const siteJsPath = `assets/site-${buildVersion}.js`;
+
+async function emitBrowser(name: string, outputPath: string) {
+  let source = await readFile(join(root, "frontend", `${name}.ts`), "utf8");
+  source = source.replaceAll('"__IPTRUST_BUILD_VERSION__"', JSON.stringify(buildVersion))
+    .replaceAll('"__IPTRUST_MORE_IP_SLUGS__"', [...moreIpSlugs].map((slug) => JSON.stringify(slug)).join(", "))
+    .replaceAll('"__IPTRUST_FEATURED_IP_SLUGS__"', [...featuredIpSlugs].map((slug) => JSON.stringify(slug)).join(", "));
+  const result = await transform(source, { loader: "ts", format: "esm", target: "es2022", sourcefile: `frontend/${name}.ts`, legalComments: "none", charset: "utf8" });
+  await writeFile(outputPath, result.code);
+}
+
+const ipSystemMarkdown = await readFile(join(root, "IP-System/ip_sys.md"), "utf8");
+const ipSystemDocumentHtml = renderMarkdownDocument(ipSystemMarkdown, "ip-system");
+const ipSystemTocHtml = markdownToc(ipSystemMarkdown, "ip-system");
+
+const retainedVersionedAssets = [];
+const previousIndexPath = join(siteDir, "index.html");
+const previousIndexes = [];
+if (existsSync(assetsDir)) {
+  const existingVersioned = (await readdir(assetsDir)).filter((filename) => /^site-[a-z0-9-]+\.(?:css|js)$/.test(filename));
+  for (const filename of existingVersioned) {
+    retainedVersionedAssets.push({ filename, data: await readFile(join(assetsDir, filename)) });
+  }
+}
+if (existsSync(previousIndexPath)) previousIndexes.push(await readFile(previousIndexPath, "utf8"));
+for (const revision of ["HEAD", "HEAD^"]) {
+  try {
+    previousIndexes.push(execFileSync("git", ["show", `${revision}:site/index.html`], { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }));
+  } catch {
+    // The first commit or a source-only checkout may not have a previous site build.
+  }
+}
+for (const previousIndex of previousIndexes) {
+  const referenced = [...previousIndex.matchAll(/assets\/(site-[a-z0-9-]+\.(?:css|js))/g)].map((match) => match[1]);
+  for (const filename of new Set(referenced)) {
+    if (retainedVersionedAssets.some((asset) => asset.filename === filename)) continue;
+    const path = join(assetsDir, filename);
+    if (existsSync(path)) {
+      retainedVersionedAssets.push({ filename, data: await readFile(path) });
+      continue;
+    }
+    for (const revision of ["HEAD", "HEAD^"]) {
+      try {
+        retainedVersionedAssets.push({ filename, data: execFileSync("git", ["show", `${revision}:site/assets/${filename}`], { cwd: root, stdio: ["ignore", "pipe", "ignore"] }) });
+        break;
+      } catch {
+        // Try the next retained deployment.
+      }
+    }
+  }
+}
+
+await rm(siteDir, { recursive: true, force: true });
+await mkdir(brandApiDir, { recursive: true });
+await mkdir(historyApiDir, { recursive: true });
+await mkdir(libraryApiDir, { recursive: true });
+await mkdir(imageDir, { recursive: true });
+await mkdir(adobeDir, { recursive: true });
+await mkdir(contactDir, { recursive: true });
+await mkdir(librarySiteDir, { recursive: true });
+await mkdir(join(siteDir, "skills", "iptrust-live-update"), { recursive: true });
+for (const asset of retainedVersionedAssets) await writeFile(join(assetsDir, asset.filename), asset.data);
+await copyFile(join(root, "styles/editorial.css"), join(assetsDir, "editorial.css"));
+if (existsSync(join(root, "skills/iptrust-live-update/SKILL.md"))) {
+  await copyFile(join(root, "skills/iptrust-live-update/SKILL.md"), join(siteDir, "skills/iptrust-live-update/SKILL.md"));
+}
+if (existsSync(join(root, "IP-System/ip_sys.md"))) {
+  await copyFile(join(root, "IP-System/ip_sys.md"), join(siteDir, "ip_sys.md"));
+}
+if (existsSync(fontLicenseArchiveDir)) {
+  for (const source of await walk(fontLicenseArchiveDir)) {
+    const destination = join(siteDir, relative(root, source));
+    await mkdir(dirname(destination), { recursive: true });
+    await copyFile(source, destination);
+  }
+}
+if (!assetManifest && existsSync(join(root, "assets/contact/wecom-qr.png"))) {
+  await copyFile(join(root, "assets/contact/wecom-qr.png"), join(contactDir, "wecom-qr.png"));
+}
+for (const name of librarySnapshotNames) {
+  if (["cases", "reports", "datasets"].includes(name)) {
+    await writeFile(join(libraryApiDir, `${name}.json`), JSON.stringify(librarySnapshots[name].filter((item) => item.access !== "private"), null, 2));
+  } else if (name === "relations") {
+    await writeFile(join(libraryApiDir, `${name}.json`), JSON.stringify(librarySnapshots[name].filter((item) => !privateLibraryIds.has(item.fromId) && !privateLibraryIds.has(item.toId)), null, 2));
+  } else {
+    await copyFile(join(libraryDataDir, `${name}.json`), join(libraryApiDir, `${name}.json`));
+  }
+}
+await copyFile(join(root, "library/index.html"), join(librarySiteDir, "index.html"));
+await copyFile(join(root, "library/library.css"), join(librarySiteDir, "library.css"));
+await emitBrowser("library", join(librarySiteDir, "library.js"));
+
+const brandPayloads = [];
+
+for (const brand of brands) {
+  const folderAbs = join(root, brand.folder);
+  const files = await walk(folderAbs);
+  const guides = [];
+  const tokens = [];
+  const manifestAssets = assetManifest?.items?.filter((item) => item.ownerId === brand.slug) || [];
+  const adobeManifests = [];
+  const usedImageNames = new Set();
+  const images = [];
+  for (const item of manifestAssets.filter((entry) => entry.access === "public" && ["hero", "logo", "image"].includes(entry.role))) {
+    const localSource = item.sourcePath ? join(root, item.sourcePath) : "";
+    let sitePath = item.mediaUrl;
+    if (!sitePath && localSource && existsSync(localSource)) {
+      const outputName = brandImageOutputName(brand, item.sourcePath, usedImageNames);
+      await copyFile(localSource, join(imageDir, outputName));
+      sitePath = `assets/brand-images/${outputName}`;
+    }
+    images.push({
+      assetId: item.id,
+      path: item.sourcePath,
+      sitePath,
+      mediaUrl: item.mediaUrl,
+      title: item.title,
+      format: item.extension === "jpg" ? "JPG" : item.extension.toUpperCase(),
+      bytes: item.bytes,
+      size: item.size,
+      width: item.width,
+      height: item.height,
+      dimensions: item.dimensions,
+      sha256: item.sha256,
+      access: item.access,
+      colorway: item.metadata?.colorway || "",
+      primaryAsset: Boolean(item.metadata?.primary),
+      backgroundTransparent: Boolean(item.backgroundTransparent),
+      documentLogo: Boolean(item.documentLogo),
+    });
+  }
+
+  for (const full of files) {
+    const rel = relative(root, full).replaceAll("\\", "/");
+    if (isGuide(rel)) {
+      const text = await readFile(full, "utf8");
+      guides.push({
+        path: rel,
+        title: titleFromPath(rel),
+        format: extname(rel).toLowerCase().slice(1),
+        primary: rel === brand.primaryGuide,
+        excerpt: excerpt(text),
+        text,
+        html: ["md", "markdown"].includes(extname(rel).toLowerCase().slice(1))
+          ? renderMarkdownDocument(text, `${brand.slug}-guide-${guides.length + 1}`)
+          : `<p>${escapeBuildHtml(excerpt(text))}</p>`,
+      });
+    }
+    if (isToken(rel)) {
+      tokens.push({
+        path: rel,
+        title: titleFromPath(rel),
+        format: extname(rel).toLowerCase().slice(1),
+        text: await readFile(full, "utf8"),
+      });
+    }
+    if (!assetManifest && isBrandImage(rel)) {
+      const outputName = brandImageOutputName(brand, rel, usedImageNames);
+      const metadata = await imageFileMetadata(full, rel);
+      await copyFile(full, join(imageDir, outputName));
+      images.push({
+        path: rel,
+        sitePath: `assets/brand-images/${outputName}`,
+        title: titleFromPath(rel),
+        ...metadata,
+      });
+    }
+    if (isAdobeManifest(rel)) {
+      adobeManifests.push(JSON.parse(await readFile(full, "utf8")));
+    }
+  }
+
+  guides.sort((a, b) => Number(b.primary) - Number(a.primary) || a.path.localeCompare(b.path));
+  tokens.sort((a, b) => a.path.localeCompare(b.path));
+  images.sort((a, b) => Number(b.path.includes("brand-hero")) - Number(a.path.includes("brand-hero")) || a.path.localeCompare(b.path));
+  const adobeAssets = [];
+  for (const manifest of adobeManifests) {
+    const sourcePath = manifest.source?.path ? join(root, manifest.source.path) : "";
+    let source = { ...(manifest.source || {}) };
+    const sourceAsset = manifestAssets.find((item) => item.sourcePath === manifest.source?.path);
+    if (sourceAsset) {
+      source = { ...source, assetId: sourceAsset.id, apiUrl: `api/v2/assets/${sourceAsset.id}`, private: sourceAsset.access === "private", size: sourceAsset.size, bytes: sourceAsset.bytes, sha256: sourceAsset.sha256 };
+    } else if (sourcePath && existsSync(sourcePath)) {
+      const brandAdobeDir = join(adobeDir, brand.slug);
+      await mkdir(brandAdobeDir, { recursive: true });
+      const sourceName = sourcePath.split("/").at(-1);
+      await copyFile(sourcePath, join(brandAdobeDir, sourceName));
+      source = { ...source, sitePath: `assets/adobe/${brand.slug}/${sourceName}` };
+    }
+    const attachImage = (asset: Asset = {}) => {
+      const image = images.find((item) => item.path === asset.path);
+      return image ? { ...asset, sitePath: image.sitePath, title: image.title } : asset;
+    };
+    adobeAssets.push({
+      ...manifest,
+      source,
+      preview: attachImage(manifest.preview),
+      hero: attachImage(manifest.hero),
+      exports: (manifest.exports || []).map((entry) => ({
+        ...entry,
+        png: entry.png ? attachImage(entry.png) : null,
+        jpg: entry.jpg ? attachImage(entry.jpg) : null,
+      })),
+    });
+  }
+  const history = mergeVersionHistory(loadBrandVersions(brand), previousHistoryBySlug.get(brand.slug), 20, {
+    preferPreviousWhenShallow: true,
+  });
+
+  const display = {
+    default: { language: mainLanguage(brand), name: mainName(brand) },
+    zh: { name: zhName(brand), secondaryName: secondaryName(zhName(brand), enName(brand)) },
+    en: { name: enName(brand), secondaryName: secondaryName(enName(brand), zhName(brand)) },
+  };
+  const intro = {
+    zh: liveIntro(brand, guides, "zh"),
+    en: liveIntro(brand, guides, "en"),
+  };
+  const brandProfile = profile(brand);
+  const manifestHeroPath = adobeAssets[0]?.hero?.path;
+  const logoImage = images.find((image) => image.path === manifestHeroPath) || buildPreferredBrandImage(images);
+  const moodboard = {
+    colors: themeColorEntries(brand.theme),
+    keywords: brand.theme?.keywords ?? [],
+    images: images.map((image) => ({ ...image })),
+  };
+  const publicSlug = brand.publicSlug || brand.slug;
+  const assetKit = {
+    assetKey: brand.slug,
+    endpoints: {
+      brand: `api/brands/${publicSlug}.json`,
+      logo: logoImage?.sitePath ?? "",
+      images: `api/brands/${publicSlug}.json#images`,
+      adobe: adobeAssets.length ? `api/brands/${publicSlug}.json#adobeAssets` : "",
+      tokens: `api/brands/${publicSlug}.json#tokens`,
+      history: `api/history/${brand.slug}.json`,
+    },
+    moodboard,
+  };
+
+  const payload = {
+    ...brand,
+    assetKey: brand.slug,
+    mainName: mainName(brand),
+    mainLanguage: mainLanguage(brand),
+    mainLocale: publicLanguageLabel(mainLanguage(brand)),
+    profile: brandProfile,
+    display,
+    intro,
+    notes: brandProfile.notes,
+    recordClass: "owned",
+    primaryIndustry: ipSystem.owned[brand.slug]?.primaryIndustry || "business-professional-services",
+    industries: ipSystem.owned[brand.slug]?.industries || [],
+    ipType: ipSystem.owned[brand.slug]?.ipType || "corporate-brand",
+    lifecycleStatus: "active",
+    guidelineMode: ipSystem.owned[brand.slug]?.guidelineMode || "independent",
+    parentCapable: Boolean(ipSystem.owned[brand.slug]?.parentCapable),
+    architectureRoles: architectureRolesFor(brand.slug, ipSystem.owned[brand.slug]?.parentCapable),
+    version: versions[0] ?? null,
+    historyUrl: `api/history/${brand.slug}.json`,
+    history: history.slice(0, 6),
+    publicSlug,
+    url: `brand.html?brand=${publicSlug}`,
+    apiUrl: `api/brands/${publicSlug}.json`,
+    status: guides.length ? "documented" : "placeholder",
+    guides,
+    tokens,
+    images,
+    assetManifest: manifestAssets,
+    adobeAssets,
+    logoUrl: logoImage?.sitePath ?? "",
+    assetKit,
+    agent: {
+      entry: `${publicOrigin}/agent.json`,
+      mcp: `${publicOrigin}/mcp`,
+      recommendedTool: "get_guideline",
+      arguments: { assetKey: brand.slug },
+      conventions: {
+        primaryNameField: "mainName",
+        primaryLanguageField: "mainLanguage",
+        exactColorField: "theme",
+        canonicalLogoField: "logoUrl",
+        publicAssetField: "images",
+        provenanceField: "sources",
+      },
+    },
+    moodboard,
+    editablePaths: guides.map((g) => g.path),
+    source: {
+      github: `https://github.com/${repository.owner}/${repository.repo}/tree/${repository.branch}/${brand.folder}`,
+      folder: brand.folder,
+    },
+  };
+  payload.repository = repositorySnapshot.items[brand.slug] || null;
+  payload.lastUpdatedAt = payload.repository?.lastUpdatedAt || null;
+  payload.completeness = completeness(payload, payload.repository);
+  brandPayloads.push(payload);
+  await writeFile(join(historyApiDir, `${brand.slug}.json`), JSON.stringify({
+    slug: brand.slug,
+    name: payload.mainName,
+    mainLanguage: payload.mainLanguage,
+    apiUrl: payload.apiUrl,
+    source: payload.source,
+    trackedPaths: uniqueValues(["config/brands.json", brand.folder, brand.primaryGuide]),
+    latest: history[0] ?? null,
+    versions: history,
+  }, null, 2));
+  await writeFile(join(brandApiDir, `${brand.slug}.json`), JSON.stringify(payload, null, 2));
+  if (payload.publicSlug !== brand.slug) {
+    await writeFile(join(brandApiDir, `${payload.publicSlug}.json`), JSON.stringify(payload, null, 2));
+  }
+}
+
+brandPayloads.sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
+await writeFile(join(apiDir, "repository-status.json"), JSON.stringify({ ...repositorySnapshot, mode: "snapshot" }, null, 2));
+const indexPayload = brandPayloads.map(({ guides, tokens, images, adobeAssets, history, ...brand }) => ({
+  ...brand,
+  guideCount: guides.length,
+  tokenCount: tokens.length,
+  imageCount: images.length,
+  adobeAssetCount: adobeAssets.length,
+  heroImage: images[0]?.sitePath ?? "",
+  primaryGuide: guides.find((g) => g.primary)?.path ?? guides[0]?.path ?? "",
+  primaryExcerpt: guides.find((g) => g.primary)?.excerpt ?? guides[0]?.excerpt ?? brand.description,
+}));
+const brandSearchPayload = brandPayloads.flatMap((brand) => {
+  const base = [{
+    type: "ip",
+    slug: brand.slug,
+    title: brand.display?.default?.name ?? brand.name,
+    subtitle: uniqueValues([brand.display?.zh?.name, brand.display?.en?.name, brand.nativeName]).join(" · "),
+    text: [
+      brand.intro?.zh,
+      brand.intro?.en,
+      brand.profile?.business?.zh,
+      brand.profile?.business?.en,
+      brand.profile?.notes?.zh,
+      brand.profile?.notes?.en,
+      brand.profile?.classification?.tracks?.zh?.join(" "),
+      brand.profile?.classification?.tracks?.en?.join(" "),
+      brand.profile?.classification?.audiences?.zh?.join(" "),
+      brand.profile?.classification?.audiences?.en?.join(" "),
+      brand.profile?.classification?.tags?.zh?.join(" "),
+      brand.profile?.classification?.tags?.en?.join(" "),
+      brand.description,
+      brand.officialWebsite,
+      brand.theme?.keywords?.join(" "),
+    ].filter(Boolean).join(" "),
+    url: brand.url,
+  }];
+  const guides = brand.guides.map((guide) => ({
+    type: "guide",
+    slug: brand.slug,
+    title: guide.title,
+    subtitle: `${brand.display?.default?.name ?? brand.name} · ${guide.path}`,
+    text: guide.excerpt,
+    url: brand.url,
+  }));
+  return [...base, ...guides];
+});
+const librarySearchPayload = [
+  ...librarySnapshots.organizations.map((organization) => ({
+    type: "organization",
+    slug: organization.id,
+    title: organization.name,
+    subtitle: [organization.sourcePublisher, organization.rank ? `#${organization.rank}` : "", organization.industry].filter(Boolean).join(" · "),
+    text: [organization.description, organization.country, organization.headquarters, organization.officialWebsite, organization.sourceUrl].filter(Boolean).join(" "),
+    url: `library/?type=organizations&q=${encodeURIComponent(organization.name)}`,
+  })),
+  ...["cases", "reports", "datasets"].flatMap((collection) => librarySnapshots[collection].filter((item) => item.access !== "private").map((item) => ({
+    type: item.type || collection.slice(0, -1),
+    slug: item.slug || item.id,
+    title: item.title?.zh || item.title?.en || item.slug || item.id,
+    subtitle: [item.title?.en, item.sourcePublisher].filter(Boolean).join(" · "),
+    text: [item.summary?.zh, item.summary?.en, item.sourceUrl, item.externalUrl].filter(Boolean).join(" "),
+    url: `library/?type=${collection}&q=${encodeURIComponent(item.title?.zh || item.title?.en || item.slug || item.id)}`,
+  }))),
+];
+const fontSearchPayload = fontCatalog.fonts.map((font) => ({
+  type: "font",
+  slug: font.id,
+  title: font.name,
+  subtitle: [font.nameZh !== font.name ? font.nameZh : "", font.license.spdx, font.category.zh].filter(Boolean).join(" · "),
+  text: [font.category.zh, font.category.en, font.useCases.zh, font.useCases.en, font.scripts.join(" "), font.cssStack, font.source.publisher].filter(Boolean).join(" "),
+  url: `fonts?q=${encodeURIComponent(font.name)}#font-${font.id}`,
+}));
+const googleFontSearchPayload = googleFontDirectory.families.map((font) => ({
+  type: "font-reference",
+  slug: `google-fonts-${font.id}`,
+  title: font.family,
+  subtitle: [font.category, font.license.spdx, font.source.publisher].filter(Boolean).join(" · "),
+  text: [font.displayName, font.groups.join(" "), font.subsets.join(" "), font.designers.join(" ")].filter(Boolean).join(" "),
+  url: `fonts?q=${encodeURIComponent(font.family)}#official-font-directory`,
+}));
+const searchPayload = [...brandSearchPayload, ...librarySearchPayload, ...fontSearchPayload, ...googleFontSearchPayload];
+const agentEntryPayload = {
+  schemaVersion: "1.0",
+  name: hubName,
+  canonicalUrl: `${publicOrigin}/`,
+  purpose: "Retrieve current IP names, brand guidelines, exact color tokens, canonical logos, public assets, provenance and version history.",
+  publicAccess: true,
+  authentication: {
+    public: "No API key is required for public brand records, public assets, search and MCP reads.",
+    private: "Use an authorized Bearer API key for private assets, protected notes and write operations.",
+  },
+  recommendedWorkflow: [
+    "Read this entry document once.",
+    "Resolve an IP slug with the brand index, directory or MCP list_ips.",
+    "Read the current IP through MCP get_brand/get_guideline or GET /api/brands/{slug}.json.",
+    "Use mainName in mainLanguage. Treat alternate names as secondary labels.",
+    "Use theme values exactly and use logoUrl as the canonical logo.",
+    "Use images[] or MCP list_assets for format, size, dimensions, access and copyable asset URLs.",
+    "Check sources[] and history before citing or applying a standard.",
+  ],
+  mcp: {
+    endpoint: `${publicOrigin}/mcp`,
+    transport: "Streamable HTTP",
+    protocolVersion: "2025-11-25",
+    config: {
+      mcpServers: {
+        iptrust: {
+          type: "http",
+          url: `${publicOrigin}/mcp`,
+        },
+      },
+    },
+    coreTools: [
+      "list_ips",
+      "get_brand",
+      "get_guideline",
+      "list_tokens",
+      "list_assets",
+      "get_asset",
+      "search_library",
+    ],
+  },
+  rest: {
+    openapi: `${publicOrigin}/api/openapi.json`,
+    manifest: `${publicOrigin}/api/manifest.json`,
+    index: `${publicOrigin}/api/brands.json`,
+    brand: `${publicOrigin}/api/brands/{slug}.json`,
+    assets: `${publicOrigin}/api/v2/assets?ownerType=owned-ip&ownerId={slug}`,
+    search: `${publicOrigin}/api/v2/search?q={query}`,
+    fonts: `${publicOrigin}/api/fonts.json`,
+    googleFonts: `${publicOrigin}/api/google-fonts.json`,
+    history: `${publicOrigin}/api/history/{slug}.json`,
+  },
+  fieldGuide: {
+    mainName: "Primary public IP name selected by mainLanguage.",
+    mainLanguage: "The language that controls the primary displayed name.",
+    theme: "Exact callable brand color tokens and visual keywords.",
+    logoUrl: "Canonical public logo URL.",
+    images: "Public image assets with format, byte size, dimensions, SHA-256 and URL.",
+    guides: "Rendered and source brand guideline content.",
+    sources: "Provenance and verification records.",
+    completeness: "Ten equal inventory checks; score is content presence, not legal or design approval.",
+    lastUpdatedAt: "Latest dedicated repository default-branch commit timestamp; null if unknown.",
+    repository: "Canonical repository name, two-digit suffix audit, availability and checkedAt.",
+    history: "Version records for change-aware use.",
+    fonts: "Open-source commercial-use font references with official provenance, licenses, CSS stacks and R2-hosted web specimens.",
+  },
+  examples: {
+    getBrand: { tool: "get_brand", arguments: { assetKey: "opcglobal" } },
+    getGuideline: { tool: "get_guideline", arguments: { assetKey: "opcglobal" } },
+    listAssets: { tool: "list_assets", arguments: { ip: "opcglobal", limit: 50 } },
+  },
+  generatedAt: new Date().toISOString(),
+  version: versions[0] ?? null,
+};
+const openApiPayload = {
+  openapi: "3.1.0",
+  info: {
+    title: "IPTrust Public Brand API",
+    version: "2.0.0",
+    description: "Read current IP identity, guidelines, color tokens, canonical logos, public assets and history.",
+  },
+  servers: [{ url: publicOrigin }],
+  paths: {
+    "/agent.json": {
+      get: {
+        operationId: "getAgentEntry",
+        summary: "Get the recommended Agent bootstrap document",
+        responses: { 200: { description: "Agent entry document", content: { "application/json": { schema: { type: "object" } } } } },
+      },
+    },
+    "/api/v2/repository-status": { get: { summary: "Repository naming audit and latest default-branch commits; falls back to dated snapshot", responses: { "200": { description: "Repository status keyed by IP slug, with checkedAt and live/snapshot mode" } } } },
+    "/api/brands.json": {
+      get: {
+        operationId: "listBrands",
+        summary: "List all current IP records",
+        responses: { 200: { description: "Brand index", content: { "application/json": { schema: { type: "array", items: { $ref: "#/components/schemas/BrandSummary" } } } } } },
+      },
+    },
+    "/api/brands/{slug}.json": {
+      get: {
+        operationId: "getBrand",
+        summary: "Get one complete IP record, including colors, logo, assets and guidelines",
+        parameters: [{ name: "slug", in: "path", required: true, schema: { type: "string" } }],
+        responses: {
+          200: { description: "Complete brand record", content: { "application/json": { schema: { $ref: "#/components/schemas/Brand" } } } },
+          404: { description: "IP not found" },
+        },
+      },
+    },
+    "/api/fonts.json": {
+      get: {
+        operationId: "listOpenSourceFonts",
+        summary: "List verified open-source commercial-use fonts and specimen assets",
+        responses: { 200: { description: "Font reference catalog", content: { "application/json": { schema: { type: "object" } } } } },
+      },
+    },
+    "/api/google-fonts.json": {
+      get: {
+        operationId: "listOfficialGoogleFonts",
+        summary: "List Google Fonts families matched to official metadata and per-family license paths",
+        responses: { 200: { description: "Official Google Fonts reference directory", content: { "application/json": { schema: { type: "object" } } } } },
+      },
+    },
+    "/api/v2/assets": {
+      get: {
+        operationId: "listAssets",
+        summary: "List public assets and authorized private assets",
+        parameters: [
+          { name: "ownerType", in: "query", schema: { type: "string", default: "owned-ip" } },
+          { name: "ownerId", in: "query", schema: { type: "string" } },
+          { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 200 } },
+        ],
+        responses: { 200: { description: "Asset list", content: { "application/json": { schema: { type: "object" } } } } },
+      },
+    },
+    "/api/history/{slug}.json": {
+      get: {
+        operationId: "getBrandHistory",
+        summary: "Get Git-backed version history for one IP",
+        parameters: [{ name: "slug", in: "path", required: true, schema: { type: "string" } }],
+        responses: { 200: { description: "Version history", content: { "application/json": { schema: { type: "object" } } } } },
+      },
+    },
+  },
+  components: {
+    schemas: {
+      BrandSummary: {
+        type: "object",
+        required: ["slug", "mainName", "mainLanguage", "apiUrl"],
+        properties: {
+          slug: { type: "string" },
+          mainName: { type: "string" },
+          mainLanguage: { enum: ["zh", "en"] },
+          logoUrl: { type: "string" },
+          apiUrl: { type: "string" },
+        },
+      },
+      Brand: {
+        allOf: [
+          { $ref: "#/components/schemas/BrandSummary" },
+          {
+            type: "object",
+            properties: {
+              intro: { type: "object" },
+              business: { type: "object" },
+              theme: { type: "object" },
+              images: { type: "array", items: { type: "object" } },
+              guides: { type: "array", items: { type: "object" } },
+              sources: { type: "array", items: { type: "object" } },
+              history: { type: "array", items: { type: "object" } },
+            },
+          },
+        ],
+      },
+    },
+  },
+};
+await writeFile(join(apiDir, "brands.json"), JSON.stringify(indexPayload, null, 2));
+const staticIps = [
+  ...indexPayload.map((brand) => ({ slug: brand.slug, recordClass: "owned", ipType: brand.ipType, primaryIndustry: brand.primaryIndustry, industries: brand.industries, names: { zh: brand.display?.zh?.name || brand.name, en: brand.display?.en?.name || brand.name }, mainLanguage: brand.mainLanguage, lifecycleStatus: brand.lifecycleStatus, guidelineMode: brand.guidelineMode, parentCapable: brand.parentCapable, architectureRoles: brand.architectureRoles, sourceUrl: brand.sources?.[0]?.url || brand.officialWebsite || "", sourcePublisher: brand.sources?.[0]?.publisher || "", verificationStatus: brand.sources?.length ? "source-documented" : "provisional", logoUrl: brand.logoUrl || brand.heroImage || "", url: brand.url, designSystemUrl: brand.designSystemUrl, repository: brand.repository, lastUpdatedAt: brand.lastUpdatedAt, completeness: brand.completeness })),
+  ...ipSystem.references.map((item) => ({ ...item, recordClass: "reference", lifecycleStatus: "active", guidelineMode: "independent", parentCapable: Boolean(item.parentCapable), architectureRoles: architectureRolesFor(item.slug, item.parentCapable), url: `ip?ip=${item.slug}` })),
+];
+await writeFile(join(apiDir, "taxonomy.json"), JSON.stringify(ipSystem.taxonomy, null, 2));
+await writeFile(join(apiDir, "ips.json"), JSON.stringify({ items: staticIps, relationships: ipSystem.relationships, applications: ipSystem.applications }, null, 2));
+await writeFile(join(apiDir, "fonts.json"), JSON.stringify(fontCatalog, null, 2));
+await writeFile(join(apiDir, "google-fonts.json"), JSON.stringify(googleFontDirectory, null, 2));
+await writeFile(join(apiDir, "search.json"), JSON.stringify(searchPayload, null, 2));
+await writeFile(join(apiDir, "versions.json"), JSON.stringify(versions, null, 2));
+await writeFile(join(apiDir, "schema.json"), JSON.stringify(apiSchemaPayload(), null, 2));
+await writeFile(join(apiDir, "agent.json"), JSON.stringify(agentEntryPayload, null, 2));
+await writeFile(join(apiDir, "openapi.json"), JSON.stringify(openApiPayload, null, 2));
+await writeFile(join(siteDir, "agent.json"), JSON.stringify(agentEntryPayload, null, 2));
+await mkdir(join(siteDir, ".well-known"), { recursive: true });
+await writeFile(join(siteDir, ".well-known", "iptrust.json"), JSON.stringify(agentEntryPayload, null, 2));
+await writeFile(join(siteDir, ".well-known", "mcp.json"), JSON.stringify(agentEntryPayload.mcp, null, 2));
+await writeFile(join(apiDir, "manifest.json"), JSON.stringify({
+  name: hubName,
+  description: hubDescription,
+  display: {
+    cn: { name: hubNameCn, description: hubDescription },
+    en: { name: hubNameEn, description: hubDescriptionEn },
+  },
+  generatedAt: new Date().toISOString(),
+  version: versions[0] ?? null,
+  brands: indexPayload.map((brand) => ({
+    slug: brand.publicSlug || brand.slug,
+    assetKey: brand.slug,
+    name: brand.mainName,
+    mainLanguage: brand.mainLanguage,
+    mainLocale: brand.mainLocale,
+    apiUrl: brand.apiUrl,
+    historyUrl: `api/history/${brand.slug}.json`,
+    guideUrl: brand.url,
+  })),
+  mcp: {
+    local: "mcp/src/index.ts",
+    remote: `${publicOrigin}/mcp`,
+    transport: "Streamable HTTP",
+    protocolVersion: "2025-11-25",
+    resources: "api/brands/{slug}.json",
+    tools: ["list_brands", "get_brand", "get_guideline", "list_tokens", "validate_color", "list_ips", "get_ip_graph", "list_ip_children", "list_ip_applications", "get_application", "search_library", "get_library_item", "list_assets", "get_asset", "request_asset_url"],
+  },
+  agent: {
+    entry: "agent.json",
+    wellKnown: ".well-known/iptrust.json",
+    llms: "llms.txt",
+    openapi: "api/openapi.json",
+    recommendedTransport: "MCP",
+  },
+  schema: {
+    apiUrl: "api/schema.json",
+    allFieldsCallable: true,
+    perBrandHistory: "api/history/{slug}.json",
+  },
+  ipSystem: {
+    name: "Brand IP System v2",
+    path: "ip_sys.md",
+    description: "Universal closed-loop framework for defining and governing any organization or brand IP.",
+    directory: "directory/",
+    taxonomy: "api/v2/taxonomy",
+    ips: "api/v2/ips",
+    relations: "api/v2/ip-relations",
+    applications: "api/v2/applications",
+  },
+  fontLibrary: {
+    page: "fonts",
+    api: "api/fonts.json",
+    directoryApi: "api/google-fonts.json",
+    licensePolicy: "Open-source licenses that permit commercial use and web embedding; each record carries its official source and license.",
+    delivery: "Official font sources are subset to WOFF2, stored as immutable R2 objects and loaded only when specimens enter the viewport.",
+    count: fontCatalog.fonts.length,
+    officialDirectoryCount: googleFontDirectory.stats.verifiedFamilies,
+    verifiedAt: fontCatalog.verifiedAt,
+  },
+  library: {
+    page: "library/",
+    storage: "Cloudflare D1 with Git snapshots and R2 file objects",
+    publicMetadata: true,
+    counts: {
+      organizations: librarySnapshots.organizations.length,
+      cases: librarySnapshots.cases.filter((item) => item.access !== "private").length,
+      reports: librarySnapshots.reports.filter((item) => item.access !== "private").length,
+      datasets: librarySnapshots.datasets.filter((item) => item.access !== "private").length,
+    },
+    endpoints: {
+      organizations: "api/library/organizations",
+      cases: "api/library/cases",
+      reports: "api/library/reports",
+      datasets: "api/library/datasets",
+      relations: "api/library/relations",
+    },
+    sources: librarySnapshots.sources,
+  },
+  skills: [{
+    name: "iptrust-live-update",
+    path: "skills/iptrust-live-update/SKILL.md",
+    description: "Agent workflow for refreshing IP introductions from the latest brand source files.",
+  }],
+  history: {
+    apiUrl: "api/versions.json",
+    perBrandApiUrl: "api/history/{slug}.json",
+    latest: versions[0] ?? null,
+  },
+  sync: {
+    sourceOfTruth: `https://github.com/${repository.owner}/${repository.repo}`,
+    githubToWebsite: "GitHub Pages rebuilds site/ on push to main.",
+    websiteToGithub: "admin.html commits edits through the GitHub Contents API.",
+  },
+  locales: {
+    default: "CN",
+    available: ["CN", "EN"],
+    storageKey: "iptrust-locale",
+  },
+}, null, 2));
+
+await writeFile(join(siteDir, "_headers"), [
+  "/*",
+  "  X-Content-Type-Options: nosniff",
+  "  Referrer-Policy: strict-origin-when-cross-origin",
+  "  Permissions-Policy: camera=(), microphone=(), geolocation=()",
+  "",
+  "/",
+  "  Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+  "",
+  "/brand",
+  "  Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+  "",
+  "/directory/*",
+  "  Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+  "",
+  "/ip/*",
+  "  Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+  "",
+  "/application/*",
+  "  Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+  "",
+  "/*.html",
+  "  Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+  "",
+  "/admin",
+  "  Cache-Control: private, no-store",
+  "",
+  "/admin.html",
+  "  Cache-Control: private, no-store",
+  "",
+  "/ip-evolution",
+  "  Content-Type: text/html; charset=utf-8",
+  "  Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+  "",
+  "/fonts",
+  "  Content-Type: text/html; charset=utf-8",
+  "  Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+  "",
+  "/ip-evolution-repair",
+  "  Content-Type: text/html; charset=utf-8",
+  "  Cache-Control: private, no-store",
+  '  Clear-Site-Data: "cache"',
+  "",
+  "/library/*",
+  "  Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+  "",
+  "/assets/site-*.css",
+  "  Cache-Control: public, max-age=31536000, immutable",
+  "",
+  "/assets/site-*.js",
+  "  Cache-Control: public, max-age=31536000, immutable",
+  "",
+  "/assets/site.css",
+  "  Cache-Control: public, max-age=0, must-revalidate",
+  "",
+  "/assets/site.js",
+  "  Cache-Control: public, max-age=0, must-revalidate",
+  "",
+  "/assets/editorial.css",
+  "  Cache-Control: public, max-age=0, must-revalidate",
+  "",
+  "/assets/brand-images/*",
+  "  Cache-Control: public, max-age=86400, stale-while-revalidate=604800",
+  "",
+  "/assets/adobe/*",
+  "  Cache-Control: public, max-age=86400, stale-while-revalidate=604800",
+  "",
+  "/api/private/*",
+  "  Cache-Control: no-store",
+  "",
+  "/api/*",
+  "  Cache-Control: public, max-age=300, stale-while-revalidate=86400",
+  "",
+  "/llms.txt",
+  "  Cache-Control: public, max-age=300, stale-while-revalidate=86400",
+  "",
+  "/agent.json",
+  "  Cache-Control: public, max-age=300, stale-while-revalidate=86400",
+  "",
+  "/.well-known/*",
+  "  Cache-Control: public, max-age=300, stale-while-revalidate=86400",
+  "",
+  "/site.webmanifest",
+  "  Cache-Control: public, max-age=3600, stale-while-revalidate=86400",
+  "",
+  "/favicon.svg",
+  "  Cache-Control: public, max-age=86400, stale-while-revalidate=604800",
+  "",
+  "/skills/*",
+  "  Cache-Control: public, max-age=300, stale-while-revalidate=86400",
+  "",
+].join("\n"));
+
+await writeFile(join(siteDir, "_redirects"), [
+  "/ip-evolution/  /ip-evolution  302",
+  "/ip-evolution%EF%BC%9F  /ip-evolution  302",
+  "/llms  /llms.txt  200",
+  "/manifest  /api/manifest.json  200",
+  "/schema  /api/schema.json  200",
+  "/agent  /agent.json  200",
+  "/openapi  /api/openapi.json  200",
+  "/brands  /api/brands.json  200",
+  "/knowledge  /library/index.html  200",
+  "/library  /library/index.html  200",
+  "/fonts/  /fonts  302",
+  "/type  /fonts  302",
+  "/ip-system  /ip_sys.md  200",
+  "",
+].join("\n"));
+
+await writeFile(join(siteDir, "_routes.json"), JSON.stringify({
+  version: 1,
+  include: [
+    "/api/v2/*",
+    "/mcp",
+    "/assets/brand-images/*",
+    "/assets/adobe/*",
+    "/assets/contact/*",
+  ],
+  exclude: [],
+}, null, 2));
+
+await emitBrowser("gateway", join(siteDir, "_worker.js"));
+
+await writeFile(join(siteDir, "llms.txt"), [
+  `# ${hubName}`,
+  "",
+  hubDescription,
+  `English name: ${hubNameEn}`,
+  `English: ${hubDescriptionEn}`,
+  "",
+  "Recommended Agent workflow:",
+  "1. Read https://apuch.art/agent.json for the current capability map and examples.",
+  "2. Resolve the stable IP slug through https://apuch.art/api/brands.json or MCP list_ips.",
+  "3. Prefer MCP get_brand and get_guideline for live use; fall back to GET /api/brands/{slug}.json.",
+  "4. Keep mainName in mainLanguage. Alternate-language names remain secondary labels.",
+  "5. Use theme values exactly. Do not infer replacement colors from screenshots.",
+  "6. Use logoUrl as the canonical logo and images[] for a requested format or colorway.",
+  "7. Check sources[] and history before citing or applying a standard.",
+  "",
+  "Public access:",
+  "- Public brand records, public assets, search and MCP reads require no API key.",
+  "- Private assets, protected notes and writes require an authorized Bearer API key.",
+  "",
+  "Machine-readable entry points:",
+  "- https://apuch.art/agent.json",
+  "- https://apuch.art/.well-known/iptrust.json",
+  "- https://apuch.art/api/openapi.json",
+  "- https://apuch.art/api/manifest.json",
+  "- https://apuch.art/api/schema.json",
+  "- https://apuch.art/api/brands.json",
+  "- https://apuch.art/api/brands/{slug}.json",
+  "- https://apuch.art/api/history/{slug}.json",
+  "- https://apuch.art/api/fonts.json",
+  "- https://apuch.art/api/google-fonts.json",
+  "- https://apuch.art/api/v2/assets?ownerType=owned-ip&ownerId={slug}",
+  "- https://apuch.art/mcp (MCP Streamable HTTP, protocol 2025-11-25)",
+  "- https://apuch.art/skills/iptrust-live-update/SKILL.md",
+  "",
+  "MCP configuration:",
+  '{"mcpServers":{"iptrust":{"type":"http","url":"https://apuch.art/mcp"}}}',
+  "",
+  "Open-source type library:",
+  `- Page: https://apuch.art/fonts`,
+  `- API: https://apuch.art/api/fonts.json`,
+  `- Official directory API: https://apuch.art/api/google-fonts.json (${googleFontDirectory.stats.verifiedFamilies} license-matched families)`,
+  `- Policy: ${fontCatalog.licenseNotice.en}`,
+  ...fontCatalog.fonts.map((font) => `- ${font.name}${font.nameZh && font.nameZh !== font.name ? ` / ${font.nameZh}` : ""}: ${font.license.spdx} · ${font.source.projectUrl}`),
+  "",
+  "Brands:",
+  ...indexPayload.map((brand) => `- ${brand.mainName} (${brand.publicSlug || brand.slug}; assetKey ${brand.slug}): /${brand.apiUrl} · design system ${brand.designSystemUrl} · mainLocale ${brand.mainLocale} · palette ${brand.theme?.primary ?? "n/a"} / ${brand.theme?.accent ?? "n/a"}`),
+].join("\n"));
+
+await writeFile(join(siteDir, "site.webmanifest"), JSON.stringify({
+  name: hubName,
+  short_name: hubNameCn,
+  description: hubDescription,
+  start_url: "/",
+  display: "standalone",
+  background_color: "#FFFEFA",
+  theme_color: "#10263D",
+  icons: [{
+    src: hubTouchIconUrl,
+    sizes: "915x915",
+    type: "image/png",
+    purpose: "any",
+  }],
+}, null, 2));
+await writeFile(join(siteDir, "robots.txt"), [
+  "User-agent: *",
+  "Allow: /",
+  "Sitemap: https://apuch.art/sitemap.xml",
+  "",
+  "AI-Agent: https://apuch.art/agent.json",
+  "LLMs-Txt: https://apuch.art/llms.txt",
+].join("\n"));
+await writeFile(join(siteDir, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${publicOrigin}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>${publicOrigin}/directory</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>${publicOrigin}/about/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>${publicOrigin}/ip-evolution</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>${publicOrigin}/fonts</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>${publicOrigin}/library/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+${indexPayload.map((brand) => `  <url><loc>${publicOrigin}/brand?brand=${encodeURIComponent(brand.publicSlug || brand.slug)}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`).join("\n")}
+</urlset>`);
+
+await writeFile(join(siteDir, "favicon.svg"), html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 609.45 609.45">
+  <rect width="609.45" height="609.45" rx="72" fill="#FFFEFA"/>
+  <g fill="#10263D">
+    <path d="m232.86,240.62c6.38-.33,12.9-.97,19.42-.95,9.76.03,19.53.43,29.29.91,1.8.09,4.07.89,5.19,2.18,1.52,1.76,3.23,4.52,2.82,6.42-.33,1.58-3.49,3.37-5.59,3.65-17.46,2.33-34.97,4.32-54.38,6.65,2.38,12.82,3.82,24.15,6.65,35.13,11.95,46.36,24.43,92.59,36.4,138.95,1.63,6.32,1.64,13.09,2.03,19.67.14,2.32-.85,4.71-1.32,7.07-.76.3-1.51.59-2.27.89-2.5-3.37-5.83-6.4-7.37-10.17-6.84-16.73-13.74-33.48-19.53-50.59-7.57-22.36-14.1-45.07-21.1-67.62-.68-2.2-1.57-4.34-3.53-6.57-2.15,9.69-4.02,19.46-6.51,29.07-5.66,21.81-11.47,43.58-17.61,65.26-1.31,4.61-3.98,8.96-6.67,13-1.18,1.77-3.99,2.45-6.05,3.62-.77-2.08-2.35-4.24-2.18-6.24,1.03-11.68,2.14-23.36,3.84-34.96,3.94-26.75,8.05-53.47,12.5-80.14,1.68-10.05,4.88-19.85,6.63-29.9,1.41-8.11,1.68-16.41,2.49-25.08-11.42-1.04-22-1.7-32.5-3.05-12.78-1.65-26.27-.51-37.72-8.1-3.34-2.21-6.07-5.34-9.08-8.06.32-.59.64-1.18.96-1.77h78.9c-1.02-26.32-2.01-52.19-3.07-79.74-5.65,4.33-9.9,7.41-13.96,10.72-14.36,11.71-30.43,20.39-47.78,26.68-3.91,1.42-8.21,1.76-12.34,2.6-.37-.84-.74-1.67-1.11-2.51,3.53-3.18,6.95-6.5,10.62-9.51,11.37-9.3,23.67-17.65,34.04-27.94,10.38-10.3,19.98-21.8,27.73-34.15,3.79-6.04,3.21-15.17,3.55-22.95.47-10.86-.08-21.77-.15-32.65-.05-8.05,2.23-9.55,9.57-5.87,3.79,1.9,7.93,3.81,10.7,6.83,2.64,2.88,4.48,7.03,5.3,10.92,1.14,5.37,1.13,11.01,1.37,16.55.36,8.4,4.15,14.78,10.07,20.64,5.1,5.06,8.65,11.66,13.67,16.83,13.45,13.87,27.36,27.28,40.98,40.99,2.64,2.66,4.76,5.82,6.23,9.81-27.56-2.58-49.37-15.83-69.17-34.42v87.88Z"/>
+    <path d="m410.21,322.93c-2.34,9.78-4.02,18.15-6.38,26.31-4.23,14.61-1.28,27.92,6.95,40.16,9.41,14,15.93,29.05,18.95,45.67,4.01,22.06-.34,43.06-9.39,62.89-19.78,43.3-53.91,70.38-98.86,84.51-1.73.55-3.62.62-5.43.91-.38-.53-.75-1.06-1.13-1.6,2.07-2.1,4.01-4.34,6.23-6.27,14.01-12.12,28.8-23.44,41.96-36.42,18.9-18.63,30.77-41.87,37.7-67.29,5.68-20.83,2.41-41.04-8.38-59.8-4.88-8.49-10.28-16.69-15.53-24.96-4.13-6.51-4.18-13.02-2.9-20.69,2.22-13.34,2.55-27.02,3.18-40.58.07-1.41-3.01-3.88-4.96-4.31-8.52-1.87-17.2-2.97-25.75-4.74-3.9-.81-7.73-2.28-11.37-3.93-1.25-.56-1.84-2.57-2.73-3.92,1.33-.86,2.6-2.36,3.99-2.48,10.19-.86,20.41-1.39,30.61-2.12,17.2-1.22,34.38-2.66,51.59-3.66,4.83-.28,9.73.71,14.61,1.03,12.96.86,25.92,1.65,38.88,2.52,1.26.08,2.81.14,3.68.87,2.48,2.07,4.68,4.49,6.99,6.76-2.26,1.93-4.34,5.25-6.82,5.58-14.34,1.9-28.76,3.24-43.18,4.49-7.58.66-15.21.74-22.51,1.07Z"/>
+    <path d="m471.01,196.41c-19.54-6.09-38.44-.8-57.46.96-5.49.51-11.09-.22-16.62.04-11.21.54-22.43,1.08-33.6,2.19-7.27.72-23.33-6.77-26.09-13.25-.68-1.59-.85-3.96-.14-5.45,2.81-5.95,5.63-11.97,9.22-17.46,16.69-25.51,33.6-50.88,50.5-76.25,5.1-7.65,9.13-15.42,6.2-25.05-.42-1.37-.2-2.97-.13-4.46.21-4.66,3.4-6.21,6.17-3.21,4.34,4.68,9.26,10.09,10.7,15.98,6.88,28.07,19.77,53.85,29.88,80.65,4.38,11.6,13.67,21.35,20.81,31.89,1.31,1.93,3.3,3.43,4.44,5.43.96,1.68,2.12,4.34,1.42,5.59-.76,1.39-3.53,1.68-5.3,2.39Zm-42.46-23.21c-7.91-20.83-15.31-40.34-23.17-61.04-11.89,21.58-23.17,42.06-35.05,63.62,20.28-.9,39.12-1.73,58.22-2.58Z"/>
+    <path d="m329.41,240.7c3.59-.68,5.6-1.36,7.62-1.41,25.76-.62,51.53-1.36,77.3-1.61,12.95-.12,25.98.03,38.84,1.38,6.07.64,11.96,4.1,17.65,6.85,4.14,2,4.28,5.84.37,7.87-4.8,2.49-10.17,4.73-15.48,5.24-33.64,3.25-67.29,2.52-100.67-2.7-7.05-1.1-13.72-5.25-20.27-8.57-2.04-1.03-3.11-3.98-5.36-7.06Z"/>
+  </g>
+</svg>`);
+
+const topbarIcon = {
+  agent: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.75v2.5"/><rect x="5" y="7" width="14" height="10" rx="4"/><path d="M8.5 17.5 7 20"/><path d="M15.5 17.5 17 20"/><path d="M9 11.25h.01"/><path d="M15 11.25h.01"/><path d="M10 14h4"/></svg>`,
+  partner: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 7.5a4 4 0 1 1-2.2 5.78L4 22l-2-2 8.72-9.3A4 4 0 0 1 15.5 7.5Z"/><path d="m14 14 2 2"/><path d="m17 11 2 2"/></svg>`,
+  collab: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v11H4z"/><path d="m4 7 8 6 8-6"/></svg>`,
+  api: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7V3"/><path d="M15 7V3"/><path d="M7 7h10v5a5 5 0 0 1-10 0V7Z"/><path d="M12 17v4"/><path d="M8.5 21h7"/></svg>`,
+  globe: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.25 2.4 3.38 5.4 3.38 9S14.25 18.6 12 21"/><path d="M12 3C9.75 5.4 8.62 8.4 8.62 12S9.75 18.6 12 21"/></svg>`,
+};
+
+function initialThemeStyle(theme: Theme = {}) {
+  return Object.entries({
+    "--brand-primary": theme.primary,
+    "--brand-accent": theme.accent,
+    "--brand-secondary": theme.secondary,
+    "--brand-surface": theme.surface,
+    "--brand-paper": theme.paper,
+    "--brand-ink": theme.ink,
+  })
+    .filter(([, value]) => value)
+    .map(([key, value]) => `${key}:${value}`)
+    .join(";");
+}
+
+const initialCopyIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="10" height="10" rx="2"></rect><path d="M5 15V7a2 2 0 0 1 2-2h8"></path></svg>`;
+const initialGithubIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.55 9.55 0 0 1 12 6.82c.85 0 1.71.11 2.51.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85V21c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"></path></svg>`;
+const initialHeroRowHtml = (brand, idx) => {
+  const primaryName = brand.mainName || brand.name;
+  const localized = brand.mainLanguage === "zh" ? brand.display?.zh : brand.display?.en;
+  const secondary = localized?.secondaryName || (hasCjk(primaryName) ? "English name pending" : "中文名待补充");
+  const colors = [brand.theme?.primary, brand.theme?.accent, brand.theme?.secondary].filter(Boolean).slice(0, 3);
+  return `<div class="hero-index-row${featuredIpSlugs.has(brand.slug) ? " is-featured" : ""}" data-brand="${escapeBuildHtml(brand.slug)}" style="${initialThemeStyle(brand.theme)};--row-index:${idx}">
+    <a class="hero-index-link" href="${escapeBuildHtml(brand.url)}">
+      <span class="hero-index-title">${escapeBuildHtml(primaryName)}${secondary ? ` <span class="hero-index-secondary">· ${escapeBuildHtml(secondary)}</span>` : ""}</span>
+    </a>
+    <span class="hero-index-colors" aria-hidden="true">${colors.map((value) => `<span class="color-dot" style="--dot:${escapeBuildHtml(value)}"></span>`).join("")}</span>
+    <a class="icon-copy hero-index-github" href="${escapeBuildHtml(brand.designSystemUrl || brand.source.github)}" target="_blank" rel="noreferrer" title="Design system / 设计系统" aria-label="Design system: ${escapeBuildHtml(primaryName)}">${initialGithubIcon}</a>
+    <span class="icon-copy" aria-hidden="true">${initialCopyIcon}</span>
+  </div>`;
+ };
+const initialHeroIndexHtml = indexPayload.filter((brand) => !moreIpSlugs.has(brand.slug)).map(initialHeroRowHtml).join("")
+  + `<details class="more-ips"><summary>更多 IP / More IPs · ${moreIpSlugs.size}</summary><div class="more-ip-items">${indexPayload.filter((brand) => moreIpSlugs.has(brand.slug)).map(initialHeroRowHtml).join("")}</div></details>`;
+const homepageListSnapshot = indexPayload.map(({ assetManifest, assetKit, moodboard, ...brand }) => brand);
+const publicOrganizationCount = librarySnapshots.organizations.length;
+const fortuneCount = librarySnapshots.organizations.filter((item) => item.sourceId === "fortune-global-500-2025").length;
+const sasacCount = librarySnapshots.organizations.filter((item) => item.sourceId === "sasac-central-enterprises-2026").length;
+
+await writeFile(join(siteDir, "index.html"), html`<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${hubName}</title>
+  <meta name="description" content="${hubDescription}">
+  <link rel="canonical" href="${publicOrigin}/">
+  <link rel="preconnect" href="https://media.apuch.art" crossorigin>
+${commonDiscoveryHead()}
+  <link rel="stylesheet" href="/${siteCssPath}">
+  <link rel="modulepreload" href="/${siteJsPath}">
+  <script type="application/ld+json">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: hubName,
+    alternateName: hubNameEn,
+    url: `${publicOrigin}/`,
+    logo: hubTouchIconUrl,
+    description: hubDescription,
+    sameAs: [`https://github.com/${repository.owner}/${repository.repo}`],
+    subjectOf: [
+      { "@type": "DataCatalog", name: "IPTrust Brand Directory", url: `${publicOrigin}/api/brands.json` },
+      { "@type": "WebAPI", name: "IPTrust MCP", url: `${publicOrigin}/mcp`, documentation: `${publicOrigin}/agent.json` },
+    ],
+  })}</script>
+</head>
+<body class="hub-home">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
+    <div class="topbar-search" role="search">
+      <input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP">
+      <div class="global-results" id="globalResults" aria-live="polite"></div>
+    </div>
+    <nav class="top-actions" aria-label="Primary actions">
+      <a href="directory" data-i18n="nav.directory">目录</a>
+      <a href="ip-evolution" data-i18n="evolution.label">IP进化论</a>
+      <a href="about" data-i18n="nav.about">关于</a>
+      <button class="api-link" type="button" id="apiConnectButton" aria-label="API connect"><span class="api-dot"></span>API</button>
+      <button class="lang-toggle" type="button" id="langToggle" aria-label="Switch language"><span class="is-active">CN</span><span class="lang-divider">/</span><span>EN</span></button>
+    </nav>
+  </header>
+  <section class="api-connect-panel hidden" id="apiConnectPanel" aria-live="polite">
+    <div class="api-connect-head">
+      <div>
+        <p class="eyebrow">API</p>
+        <h2 data-i18n="api.title">连接 System API</h2>
+      </div>
+      <button class="icon-copy" type="button" id="apiConnectClose" data-icon-only="true" aria-label="Close">×</button>
+    </div>
+    <form class="api-connect-form" id="apiConnectForm" autocomplete="on">
+      <label><span data-i18n="api.key">System API Key</span><input id="apiAdminKey" name="admin_api_key" type="password" autocomplete="current-password" placeholder="System API Key" spellcheck="false"></label>
+      <label class="hidden" id="apiTotpField"><span>Google Authenticator</span><input id="apiTotpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000"></label>
+      <button class="portal-action" type="submit" id="apiConnectSubmit" data-i18n="api.connect">Connect</button>
+    </form>
+    <p class="portal-status" id="apiConnectStatus"></p>
+    <div class="api-ops hidden" id="apiConnectedOps">
+      <strong class="connected-pill" data-i18n="api.connected">Connected</strong>
+      <p class="muted" id="apiScopeText"></p>
+      <div class="portal-links">
+        <a href="admin.html" data-i18n="api.openAdmin">Admin</a>
+        <a href="api/manifest.json">Manifest</a>
+        <a href="api/brands.json">Brands</a>
+        <a href="api/search.json">Search</a>
+        <a href="api/media/">Media</a>
+        <button class="api-copy" type="button" id="apiResourcesButton" data-i18n="api.resources">Resources</button>
+        <button class="api-copy" type="button" data-api-copy="manifest" data-i18n="api.copyCurl">Copy cURL</button>
+      </div>
+      <pre class="api-resource-summary hidden" id="apiResourceSummary"></pre>
+    </div>
+  </section>
+  <main>
+    <section class="hub-hero">
+      <div class="hero-copy">
+        <h1 data-i18n="hub.name">${hubNameCn}</h1>
+        <p data-i18n="home.lead">高楼宾客似曾识，日光底下无新事。</p>
+      </div>
+      <div class="hero-index" id="heroIndex" role="region" tabindex="0" aria-label="可滚动 IP 名录 / Scrollable IP directory" aria-live="polite">${initialHeroIndexHtml}</div>
+    </section>
+    <section class="home-entries" aria-label="IPTrust entries">
+      <a class="home-entry" href="directory"><small data-i18n="home.directoryLabel">全部 IP</small><strong data-i18n="home.directoryTitle">IP 目录</strong><span>${indexPayload.length}</span></a>
+      <a class="home-entry" href="ip-evolution"><small data-i18n="home.systemLabel">品牌系统</small><strong data-i18n="evolution.label">IP进化论</strong><span aria-hidden="true">&#8599;</span></a>
+      <a class="home-entry" href="library/"><small data-i18n="home.libraryLabel">参考资料</small><strong data-i18n="library.label">知名品牌资产</strong><span aria-hidden="true">&#8599;</span></a>
+      <button class="home-entry home-entry-agent" type="button" data-portal-action="agent"><small>Agent</small><strong data-i18n="portal.agentAction">复制 Agent Pack</strong><span aria-hidden="true">+</span></button>
+      <p class="home-entry-status" data-portal-status="agent" aria-live="polite"></p>
+    </section>
+  </main>
+  <footer class="home-footer">
+    <span>${hubNameCn} · ${hubNameEn}</span>
+    <nav aria-label="Secondary actions"><a href="about" data-i18n="nav.about">关于</a><a href="admin" data-i18n="nav.admin">管理</a><a href="mailto:hi@tableai.ai" data-i18n="portal.collabNav">合作</a></nav>
+  </footer>
+  <script id="brandListSnapshot" type="application/json">${JSON.stringify(homepageListSnapshot).replaceAll("<", "\\u003c")}</script>
+  <script src="/${siteJsPath}" type="module"></script>
+</body>
+</html>`);
+
+await mkdir(join(siteDir, "about"), { recursive: true });
+await writeFile(join(siteDir, "about", "index.html"), html`<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="../">
+  <title>关于 | ${hubName}</title>
+  <meta name="description" content="${hubName} 的产品入口、Agent 调用方式与合作说明。">
+  <link rel="canonical" href="${publicOrigin}/about/">
+${commonDiscoveryHead()}
+  <link rel="stylesheet" href="/${siteCssPath}">
+  <link rel="modulepreload" href="/${siteJsPath}">
+</head>
+<body class="about-page">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
+    <div class="topbar-search" role="search"><input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP"><div class="global-results" id="globalResults" aria-live="polite"></div></div>
+    <nav class="top-actions" aria-label="Primary actions">
+      <a href="directory" data-i18n="nav.directory">目录</a>
+      <a href="ip-evolution" data-i18n="evolution.label">IP进化论</a>
+      <a href="about" data-i18n="nav.about">关于</a>
+      <a href="./" class="api-link"><span class="api-dot"></span>API</a>
+      <button class="lang-toggle" type="button" id="langToggle" aria-label="Switch language"><span class="is-active">CN</span><span class="lang-divider">/</span><span>EN</span></button>
+    </nav>
+  </header>
+  <main class="about-main">
+    <header class="about-hero"><p class="eyebrow">IPTrust</p><h1 data-i18n="about.title">关于岁知社。</h1><p data-i18n="about.lead">品牌标准、资产与出处，供人和 Agent 清晰调用。</p></header>
+    <nav class="about-index" aria-label="Product entries">
+      <a href="directory"><strong data-i18n="home.directoryTitle">IP 目录</strong><span data-i18n="about.directoryBody">浏览、搜索与筛选全部 IP。</span><b>${indexPayload.length}</b></a>
+      <a href="ip-evolution"><strong data-i18n="evolution.label">IP进化论</strong><span data-i18n="about.systemBody">架构、内核、表达、资产与治理。</span><b>&#8599;</b></a>
+      <a href="library/"><strong data-i18n="library.label">知名品牌资产</strong><span data-i18n="about.libraryBody">有出处的品牌、案例、报告与数据。</span><b>${publicOrganizationCount}</b></a>
+      <a href="fonts"><strong data-i18n="fonts.label">字体参考</strong><span data-i18n="about.fontsBody">开源可商用字体与授权原文。</span><b>${fontCatalog.fonts.length}</b></a>
+    </nav>
+    <section class="about-section" id="agent">
+      <header><p class="eyebrow">Agent</p><h2 data-i18n="portal.agentTitle">调用品牌标准。</h2></header>
+      <div class="about-section-body"><p data-i18n="portal.agentBody">通过 MCP 或 JSON 获取主名称、品牌色、Logo、素材与出处。</p><div class="about-endpoints"><a href="mcp"><code>/mcp</code></a><a href="agent.json"><code>/agent.json</code></a><a href="api/brands.json"><code>/api/brands.json</code></a></div><div class="about-actions"><button class="portal-action" type="button" data-portal-action="agent" data-i18n="portal.agentAction">复制 Agent Pack</button><button class="portal-secondary" type="button" data-copy-mcp-config data-i18n="portal.copyMcp">复制 MCP 配置</button></div><p class="portal-status" data-portal-status="agent" aria-live="polite"></p></div>
+    </section>
+    <section class="about-section">
+      <header><p class="eyebrow" data-i18n="about.accessLabel">访问</p><h2 data-i18n="about.accessTitle">管理与合作。</h2></header>
+      <div class="about-access"><a href="admin"><small data-i18n="portal.partnerNav">合伙人</small><strong data-i18n="portal.partnerAction">Key first</strong><span>&#8599;</span></a><a href="mailto:hi@tableai.ai"><small data-i18n="portal.collabNav">合作</small><strong>hi@tableai.ai</strong><span>&#8599;</span></a></div>
+    </section>
+  </main>
+  <script src="/${siteJsPath}" type="module"></script>
+</body>
+</html>`);
+
+await writeFile(join(siteDir, "ip-evolution"), html`<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="./">
+  <title>IP进化论 | ${hubName}</title>
+  <meta name="description" content="IP进化论把品牌架构、内核、表达、资产与治理连接成可持续更新的系统。">
+  <link rel="canonical" href="${publicOrigin}/ip-evolution">
+  <link rel="preconnect" href="https://media.apuch.art" crossorigin>
+${commonDiscoveryHead()}
+  <link rel="stylesheet" href="${siteCssPath}">
+  <link rel="modulepreload" href="${siteJsPath}">
+</head>
+<body class="ip-system-page">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
+    <div class="topbar-search" role="search">
+      <input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP">
+      <div class="global-results" id="globalResults" aria-live="polite"></div>
+    </div>
+    <nav class="top-actions" aria-label="Primary actions">
+      <a href="directory" data-i18n="nav.directory">目录</a>
+      <a href="ip-evolution" data-i18n="evolution.label">IP进化论</a>
+      <a href="about" data-i18n="nav.about">关于</a>
+      <button class="api-link" type="button" id="apiConnectButton" aria-label="API connect"><span class="api-dot"></span>API</button>
+      <button class="lang-toggle" type="button" id="langToggle" aria-label="Switch language"><span class="is-active">CN</span><span class="lang-divider">/</span><span>EN</span></button>
+    </nav>
+  </header>
+  <section class="api-connect-panel hidden" id="apiConnectPanel" aria-live="polite">
+    <div class="api-connect-head">
+      <div><p class="eyebrow">API</p><h2 data-i18n="api.title">连接 System API</h2></div>
+      <button class="icon-copy" type="button" id="apiConnectClose" data-icon-only="true" aria-label="Close">×</button>
+    </div>
+    <form class="api-connect-form" id="apiConnectForm" autocomplete="on">
+      <label><span data-i18n="api.key">System API Key</span><input id="apiAdminKey" name="admin_api_key" type="password" autocomplete="current-password" placeholder="System API Key" spellcheck="false"></label>
+      <label class="hidden" id="apiTotpField"><span>Google Authenticator</span><input id="apiTotpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000"></label>
+      <button class="portal-action" type="submit" id="apiConnectSubmit" data-i18n="api.connect">Connect</button>
+    </form>
+    <p class="portal-status" id="apiConnectStatus"></p>
+    <div class="api-ops hidden" id="apiConnectedOps">
+      <strong class="connected-pill" data-i18n="api.connected">Connected</strong>
+      <p class="muted" id="apiScopeText"></p>
+      <div class="portal-links">
+        <a href="admin.html" data-i18n="api.openAdmin">Admin</a>
+        <a href="api/manifest.json">Manifest</a>
+        <a href="api/brands.json">Brands</a>
+        <a href="api/search.json">Search</a>
+        <a href="api/media/">Media</a>
+        <button class="api-copy" type="button" id="apiResourcesButton" data-i18n="api.resources">Resources</button>
+        <button class="api-copy" type="button" data-api-copy="manifest" data-i18n="api.copyCurl">Copy cURL</button>
+      </div>
+      <pre class="api-resource-summary hidden" id="apiResourceSummary"></pre>
+    </div>
+  </section>
+  <main class="ip-system-main">
+    <section class="ip-system-hero">
+      <p class="eyebrow" data-i18n="evolution.label">IP进化论</p>
+      <h1 data-i18n="evolution.pageTitle">让品牌持续进化。</h1>
+      <p data-i18n="evolution.pageLead">架构、内核、表达、资产与治理，构成可管理、可调用、可持续更新的闭环。</p>
+      <div class="ip-system-actions">
+        <a class="button" href="#system-map" data-i18n="evolution.exploreMap">探索系统图谱</a>
+        <a class="button ghost" href="#framework" data-i18n="evolution.readFramework">查看完整正文</a>
+      </div>
+    </section>
+    <section class="evolution-map" id="system-map" data-evolution-map>
+      <header class="evolution-map-head">
+        <div><p class="eyebrow" data-i18n="evolution.mapLabel">交互图谱</p><h2 data-i18n="evolution.mapTitle">看见系统，进入细节。</h2></div>
+        <p data-i18n="evolution.mapLead">沿主路径理解方法论；选择任一节点，读取对应章节的全部内容。</p>
+        <p class="evolution-map-count"><strong data-map-count>0</strong><span data-i18n="evolution.mapModules">模块</span></p>
+      </header>
+      <div class="evolution-map-toolbar">
+        <label><span data-i18n="evolution.mapSearch">搜索图谱</span><input id="evolutionMapSearch" type="search" autocomplete="off" data-i18n-placeholder="evolution.mapSearchPlaceholder" placeholder="使命、定位、资产、治理…"></label>
+        <button id="evolutionMapReset" type="button" data-i18n="evolution.mapReset">全部</button>
+        <output id="evolutionMapStatus" aria-live="polite"></output>
+      </div>
+      <div class="evolution-map-workspace">
+        <div class="evolution-map-canvas" id="evolutionMapCanvas">
+          <svg id="evolutionMapLinks" aria-hidden="true"></svg>
+          <div class="evolution-map-nodes" id="evolutionMapNodes"></div>
+        </div>
+        <aside class="evolution-map-detail" aria-live="polite">
+          <header><span data-map-detail-index>00</span><a data-map-detail-source href="#framework" data-i18n="evolution.mapSource">完整正文 ↓</a></header>
+          <div class="rendered-document" id="evolutionMapDetail"></div>
+        </aside>
+      </div>
+    </section>
+    <section class="ip-system-content-shell" id="framework">
+      <aside class="ip-system-toc" aria-label="IP System contents">
+        <strong data-i18n="evolution.frameworkTitle">完整系统</strong>
+        <nav>${ipSystemTocHtml}</nav>
+      </aside>
+      <article class="rendered-document ip-system-document">
+        ${ipSystemDocumentHtml}
+      </article>
+    </section>
+    <section class="ip-system-loop">
+      <p data-i18n="evolution.loop">识别品牌，建立系统，生成资产，回收反馈，再次进化。</p>
+    </section>
+    <noscript><p class="ip-system-noscript">页面内容可正常阅读；开启 JavaScript 后可使用交互图谱。</p></noscript>
+  </main>
+  <script>
+    const repairUrl = new URL(location.href);
+    if (repairUrl.searchParams.has("repaired")) {
+      repairUrl.searchParams.delete("repaired");
+      history.replaceState(null, "", repairUrl.pathname + repairUrl.search + repairUrl.hash);
+    }
+  </script>
+  <script src="${siteJsPath}" type="module"></script>
+</body>
+</html>`);
+
+await writeFile(join(siteDir, "fonts"), html`<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="./">
+  <title>开源可商用字体 | ${hubName}</title>
+  <meta name="description" content="经过许可证核验的中英文字体目录、网页样张、官方出处与 Agent 可读数据。">
+  <link rel="canonical" href="${publicOrigin}/fonts">
+  <link rel="preconnect" href="https://media.apuch.art" crossorigin>
+${commonDiscoveryHead()}
+  <link rel="stylesheet" href="${siteCssPath}">
+  <link rel="modulepreload" href="${siteJsPath}">
+</head>
+<body class="font-directory-page">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
+    <div class="topbar-search" role="search">
+      <input id="brandSearch" type="search" autocomplete="off" aria-label="Global search">
+      <div class="global-results" id="globalResults" aria-live="polite"></div>
+    </div>
+    <nav class="top-actions" aria-label="Primary actions">
+      <a href="directory" data-i18n="nav.directory">目录</a>
+      <a href="ip-evolution" data-i18n="evolution.label">IP进化论</a>
+      <a href="about" data-i18n="nav.about">关于</a>
+      <button class="api-link" type="button" id="apiConnectButton" aria-label="API connect"><span class="api-dot"></span>API</button>
+      <button class="lang-toggle" type="button" id="langToggle" aria-label="Switch language"><span class="is-active">CN</span><span class="lang-divider">/</span><span>EN</span></button>
+    </nav>
+  </header>
+  <section class="api-connect-panel hidden" id="apiConnectPanel" aria-live="polite">
+    <div class="api-connect-head"><div><p class="eyebrow">API</p><h2 data-i18n="api.title">连接 System API</h2></div><button class="icon-copy" type="button" id="apiConnectClose" data-icon-only="true" aria-label="Close">×</button></div>
+    <form class="api-connect-form" id="apiConnectForm" autocomplete="on">
+      <label><span data-i18n="api.key">System API Key</span><input id="apiAdminKey" name="admin_api_key" type="password" autocomplete="current-password" placeholder="System API Key" spellcheck="false"></label>
+      <label class="hidden" id="apiTotpField"><span>Google Authenticator</span><input id="apiTotpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000"></label>
+      <button class="portal-action" type="submit" id="apiConnectSubmit" data-i18n="api.connect">Connect</button>
+    </form>
+    <p class="portal-status" id="apiConnectStatus"></p>
+    <div class="api-ops hidden" id="apiConnectedOps"><strong class="connected-pill" data-i18n="api.connected">Connected</strong><p class="muted" id="apiScopeText"></p><div class="portal-links"><a href="admin.html" data-i18n="api.openAdmin">Admin</a><a href="api/fonts.json">Fonts API</a></div></div>
+  </section>
+  <main class="font-directory-main">
+    <section class="font-directory-hero">
+      <div><p class="eyebrow" data-i18n="fonts.label">字体参考</p><h1 data-i18n="fonts.directoryTitle">开源可商用字体。</h1></div>
+      <div class="font-directory-summary">
+        <p class="font-directory-count"><strong data-font-result-count>${fontCatalog.fonts.length}</strong><span data-i18n="fonts.selfHosted">自托管</span><strong>${googleFontDirectory.stats.verifiedFamilies.toLocaleString("en-US")}</strong><span data-i18n="fonts.officialIndexed">官方索引</span></p>
+        <a class="font-directory-reference" href="#fontSourcesTitle" data-i18n="fonts.referenceDocs">参考文档</a>
+      </div>
+    </section>
+    <section class="font-directory-toolbar" aria-label="Font directory controls">
+      <label class="font-directory-search"><span data-i18n="fonts.searchLabel">搜索字体</span><input type="search" data-font-search autocomplete="off" placeholder="字体名称 / 用途 / Publisher"></label>
+      <div class="font-filter" role="tablist" aria-label="Font languages">
+        <button type="button" role="tab" aria-selected="true" data-font-filter="all" data-i18n="fonts.all">全部</button>
+        <button type="button" role="tab" aria-selected="false" data-font-filter="popular" data-i18n="fonts.popular">热门</button>
+        <button type="button" role="tab" aria-selected="false" data-font-filter="zh" data-i18n="fonts.chinese">中文</button>
+        <button type="button" role="tab" aria-selected="false" data-font-filter="en">English</button>
+        <button type="button" role="tab" aria-selected="false" data-font-filter="mono">Mono</button>
+      </div>
+      <label class="font-control-size"><span data-i18n="fonts.size">字号</span><input type="range" min="24" max="72" value="46" step="2" data-font-size><output data-font-size-output>46</output></label>
+      <label><span data-i18n="fonts.weight">字重</span><select data-font-weight><option value="400">400</option><option value="600">600</option></select></label>
+    </section>
+    <section class="font-directory-layout font-library" id="open-source-type">
+      <aside class="font-category-list" aria-label="Font categories">
+        <strong data-i18n="fonts.categories">分类</strong>
+        <button type="button" aria-pressed="true" data-font-category="all" data-i18n="fonts.all">全部</button>
+        <button type="button" aria-pressed="false" data-font-category="sans" data-i18n="fonts.sans">无衬线</button>
+        <button type="button" aria-pressed="false" data-font-category="serif" data-i18n="fonts.serif">衬线</button>
+        <button type="button" aria-pressed="false" data-font-category="display" data-i18n="fonts.display">展示</button>
+        <button type="button" aria-pressed="false" data-font-category="handwriting" data-i18n="fonts.handwriting">书写</button>
+        <button type="button" aria-pressed="false" data-font-category="mono" data-i18n="fonts.mono">等宽</button>
+      </aside>
+      <div>
+        <div class="font-specimen-list">${fontLibraryRows(fontCatalog)}</div>
+        <p class="font-empty" data-font-empty hidden data-i18n="fonts.empty">没有匹配字体。</p>
+      </div>
+    </section>
+    <section class="font-reference-directory" id="official-font-directory">
+      <header>
+        <div><p class="eyebrow" data-i18n="fonts.officialDirectory">官方完整目录</p><h2><span>${googleFontDirectory.stats.verifiedFamilies.toLocaleString("en-US")}</span> Google Fonts</h2></div>
+        <p data-i18n="fonts.officialDirectoryLead">逐款匹配 Google Fonts 官方元数据与源码仓库许可证；按需载入，不拖慢首屏。</p>
+        <a href="api/google-fonts.json" data-i18n="fonts.openDirectoryApi">打开目录 API</a>
+      </header>
+      <div class="font-reference-status" data-google-font-status data-i18n="fonts.directoryReady">滚动到此处载入官方目录。</div>
+      <div class="font-reference-list" data-google-font-results></div>
+      <button class="font-reference-more" type="button" data-google-font-more hidden data-i18n="fonts.loadMore">载入更多</button>
+    </section>
+    <section class="font-sources" aria-labelledby="fontSourcesTitle">
+      <header><p class="eyebrow" data-i18n="fonts.moreSources">更多官方字体来源</p><h2 id="fontSourcesTitle" data-i18n="fonts.findMore">去哪里找更多字体。</h2></header>
+      <div>${(fontCatalog.directories || []).map((directory) => `<a href="${escapeBuildHtml(directory.url)}" target="_blank" rel="noreferrer"><strong>${escapeBuildHtml(directory.name)}</strong><span data-font-zh="${escapeBuildHtml(directory.note.zh)}" data-font-en="${escapeBuildHtml(directory.note.en)}">${escapeBuildHtml(directory.note.zh)}</span><i aria-hidden="true">↗</i></a>`).join("")}</div>
+    </section>
+    <section class="font-license-types" aria-labelledby="fontLicenseTypesTitle">
+      <header><p class="eyebrow" data-i18n="fonts.licenseTypes">许可证商用类型</p><h2 id="fontLicenseTypesTitle" data-i18n="fonts.readLicense">先看类型，再看原文。</h2></header>
+      <div>${(fontCatalog.licenseTypes || []).map((license) => `<article><div><strong>${escapeBuildHtml(license.spdx)}</strong><span>${escapeBuildHtml(license.name)}</span></div><p data-font-zh="${escapeBuildHtml(license.note.zh)}" data-font-en="${escapeBuildHtml(license.note.en)}">${escapeBuildHtml(license.note.zh)}</p><a href="${escapeBuildHtml(license.url)}" target="_blank" rel="noreferrer"><span data-i18n="fonts.originalLicense">许可证原文</span> ↗</a></article>`).join("")}</div>
+      <p class="font-license-disclaimer" data-i18n="fonts.licenseDisclaimer">这里是选型摘要，不替代许可证原文。正式发布前仍需核对具体字体版本及其随附许可证。</p>
+    </section>
+    <footer class="font-library-license">
+      <strong data-i18n="fonts.licenseNote">授权说明</strong>
+      <p data-font-zh="${escapeBuildHtml(fontCatalog.licenseNotice.zh)}" data-font-en="${escapeBuildHtml(fontCatalog.licenseNotice.en)}">${escapeBuildHtml(fontCatalog.licenseNotice.zh)}</p>
+      <a href="api/fonts.json" data-i18n="fonts.openApi">打开字体 JSON</a>
+    </footer>
+    <script type="application/json" id="fontCatalogData">${fontCatalogEmbeddedJson}</script>
+  </main>
+  <script src="${siteJsPath}" type="module"></script>
+</body>
+</html>`);
+
+await writeFile(join(siteDir, "ip-evolution-repair"), html`<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Repairing IP Evolution | ${hubName}</title>
+  <link rel="canonical" href="${publicOrigin}/ip-evolution">
+</head>
+<body>
+  <p>正在恢复 IP进化论 / Repairing IP Evolution...</p>
+  <p><a href="/ip-evolution?repaired=1">继续 / Continue</a></p>
+  <script>setTimeout(() => location.replace("/ip-evolution?repaired=1"), 80);</script>
+</body>
+</html>`);
+
+await writeFile(join(siteDir, "brand.html"), html`<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brand Guidelines</title>
+  <meta name="description" content="IPTrust current IP guideline, exact brand colors, canonical logo, public assets and Agent-readable source.">
+  <link rel="canonical" href="${publicOrigin}/brand">
+  <link rel="preconnect" href="https://media.apuch.art" crossorigin>
+  <script>try{const slug=new URLSearchParams(location.search).get("brand");if(slug){const link=document.createElement("link");link.rel="preload";link.as="fetch";link.href="api/brands/"+encodeURIComponent(slug)+".json?v=${buildVersion}";link.fetchPriority="high";document.head.append(link)}}catch{}</script>
+${commonDiscoveryHead()}
+  <link rel="stylesheet" href="${siteCssPath}">
+  <link rel="modulepreload" href="${siteJsPath}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
+    <div class="topbar-search" role="search">
+      <input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP">
+      <div class="global-results" id="globalResults" aria-live="polite"></div>
+    </div>
+    <nav class="top-actions" aria-label="Primary actions">
+      <a href="directory" data-i18n="nav.directory">目录</a>
+      <a href="ip-evolution" data-i18n="evolution.label">IP进化论</a>
+      <a href="about" data-i18n="nav.about">关于</a>
+      <button class="api-link" type="button" id="apiConnectButton" aria-label="API connect"><span class="api-dot"></span>API</button>
+      <button class="lang-toggle" type="button" id="langToggle" aria-label="Switch language"><span class="is-active">CN</span><span class="lang-divider">/</span><span>EN</span></button>
+    </nav>
+  </header>
+  <section class="api-connect-panel hidden" id="apiConnectPanel" aria-live="polite">
+    <div class="api-connect-head">
+      <div>
+        <p class="eyebrow">API</p>
+        <h2 data-i18n="api.title">连接 System API</h2>
+      </div>
+      <button class="icon-copy" type="button" id="apiConnectClose" data-icon-only="true" aria-label="Close">×</button>
+    </div>
+    <form class="api-connect-form" id="apiConnectForm" autocomplete="on">
+      <label><span data-i18n="api.key">System API Key</span><input id="apiAdminKey" name="admin_api_key" type="password" autocomplete="current-password" placeholder="System API Key" spellcheck="false"></label>
+      <label class="hidden" id="apiTotpField"><span>Google Authenticator</span><input id="apiTotpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000"></label>
+      <button class="portal-action" type="submit" id="apiConnectSubmit" data-i18n="api.connect">Connect</button>
+    </form>
+    <p class="portal-status" id="apiConnectStatus"></p>
+    <div class="api-ops hidden" id="apiConnectedOps">
+      <strong class="connected-pill" data-i18n="api.connected">Connected</strong>
+      <p class="muted" id="apiScopeText"></p>
+      <div class="portal-links">
+        <a href="admin.html" data-i18n="api.openAdmin">Admin</a>
+        <a href="api/manifest.json">Manifest</a>
+        <a href="api/brands.json">Brands</a>
+        <a href="api/search.json">Search</a>
+        <a href="api/media/">Media</a>
+        <button class="api-copy" type="button" id="apiResourcesButton" data-i18n="api.resources">Resources</button>
+        <button class="api-copy" type="button" data-api-copy="manifest" data-i18n="api.copyCurl">Copy cURL</button>
+      </div>
+      <pre class="api-resource-summary hidden" id="apiResourceSummary"></pre>
+    </div>
+  </section>
+  <main id="brandPage" class="brand-page" aria-live="polite" aria-busy="true">
+    <section class="brand-loading" role="status">
+      <p>IPTrust</p>
+      <strong>正在载入 · Loading</strong>
+      <span aria-hidden="true"></span>
+    </section>
+  </main>
+  <script src="${siteJsPath}" type="module"></script>
+</body>
+</html>`);
+
+function directoryPage({ kind, title, mountId }) {
+  return html`<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <base href="../">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${title} · ${hubName}</title>
+  <link rel="preconnect" href="https://media.apuch.art" crossorigin>
+${commonDiscoveryHead()}
+  <link rel="stylesheet" href="${siteCssPath}">
+  <link rel="modulepreload" href="${siteJsPath}">
+</head>
+<body data-page="${kind}">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
+    <div class="topbar-search" role="search"><input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP"><div class="global-results" id="globalResults" aria-live="polite"></div></div>
+    <nav class="top-actions" aria-label="Primary actions">
+      <a href="directory" data-i18n="nav.directory" aria-current="${kind === "directory" ? "page" : "false"}">目录</a>
+      <a href="ip-evolution" data-i18n="evolution.label">IP进化论</a>
+      <a href="about" data-i18n="nav.about">关于</a>
+      <button class="api-link" type="button" id="apiConnectButton" aria-label="API connect"><span class="api-dot"></span>API</button>
+      <button class="lang-toggle" type="button" id="langToggle" aria-label="Switch language"><span class="is-active">CN</span><span class="lang-divider">/</span><span>EN</span></button>
+    </nav>
+  </header>
+  <main id="${mountId}" class="directory-main" aria-live="polite">${kind === "directory" ? '<p role="status">正在载入 IP 目录… / Loading IP directory…</p>' : ""}</main>
+${kind === "directory" ? `<script id="directorySnapshot" type="application/json">${JSON.stringify({ ips: staticIps, taxonomy: ipSystem.taxonomy, applications: ipSystem.applications, relationships: ipSystem.relationships }).replaceAll("<", "\\u003c")}</script>` : ""}
+  <script src="${siteJsPath}" type="module"></script>
+</body>
+</html>`;
+}
+
+await mkdir(join(siteDir, "directory"), { recursive: true });
+await mkdir(join(siteDir, "ip"), { recursive: true });
+await mkdir(join(siteDir, "application"), { recursive: true });
+await writeFile(join(siteDir, "directory", "index.html"), directoryPage({ kind: "directory", title: "IP Directory", mountId: "directoryPage" }));
+await writeFile(join(siteDir, "ip", "index.html"), directoryPage({ kind: "ip", title: "IP", mountId: "ipRecordPage" }));
+await writeFile(join(siteDir, "application", "index.html"), directoryPage({ kind: "application", title: "Application", mountId: "applicationPage" }));
+
+await writeFile(join(siteDir, "admin.html"), html`<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <base href="../">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · ${hubName}</title>
+  <link rel="preconnect" href="https://media.apuch.art" crossorigin>
+${commonDiscoveryHead()}
+  <link rel="stylesheet" href="${siteCssPath}">
+  <link rel="modulepreload" href="${siteJsPath}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
+    <div class="topbar-search" role="search">
+      <input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP">
+      <div class="global-results" id="globalResults" aria-live="polite"></div>
+    </div>
+    <nav class="top-actions" aria-label="Primary actions">
+      <a href="directory" data-i18n="nav.directory">目录</a>
+      <a href="ip-evolution" data-i18n="evolution.label">IP进化论</a>
+      <a href="about" data-i18n="nav.about">关于</a>
+      <button class="api-link" type="button" id="apiConnectButton" aria-label="API connect"><span class="api-dot"></span>API</button>
+      <button class="lang-toggle" type="button" id="langToggle" aria-label="Switch language"><span class="is-active">CN</span><span class="lang-divider">/</span><span>EN</span></button>
+    </nav>
+  </header>
+  <section class="api-connect-panel hidden" id="apiConnectPanel" aria-live="polite">
+    <div class="api-connect-head">
+      <div>
+        <p class="eyebrow">API</p>
+        <h2 data-i18n="api.title">连接 System API</h2>
+      </div>
+      <button class="icon-copy" type="button" id="apiConnectClose" data-icon-only="true" aria-label="Close">×</button>
+    </div>
+    <form class="api-connect-form" id="apiConnectForm" autocomplete="on">
+      <label><span data-i18n="api.key">System API Key</span><input id="apiAdminKey" name="admin_api_key" type="password" autocomplete="current-password" placeholder="System API Key" spellcheck="false"></label>
+      <label class="hidden" id="apiTotpField"><span>Google Authenticator</span><input id="apiTotpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000"></label>
+      <button class="portal-action" type="submit" id="apiConnectSubmit" data-i18n="api.connect">Connect</button>
+    </form>
+    <p class="portal-status" id="apiConnectStatus"></p>
+    <div class="api-ops hidden" id="apiConnectedOps">
+      <strong class="connected-pill" data-i18n="api.connected">Connected</strong>
+      <p class="muted" id="apiScopeText"></p>
+      <div class="portal-links">
+        <a href="admin.html" data-i18n="api.openAdmin">Admin</a>
+        <a href="api/manifest.json">Manifest</a>
+        <a href="api/brands.json">Brands</a>
+        <a href="api/search.json">Search</a>
+        <a href="api/media/">Media</a>
+        <button class="api-copy" type="button" id="apiResourcesButton" data-i18n="api.resources">Resources</button>
+        <button class="api-copy" type="button" data-api-copy="manifest" data-i18n="api.copyCurl">Copy cURL</button>
+      </div>
+      <pre class="api-resource-summary hidden" id="apiResourceSummary"></pre>
+    </div>
+  </section>
+  <main class="admin">
+    <section class="panel" id="unlockPanel">
+      <p class="eyebrow" data-i18n="nav.admin">管理</p>
+      <h1 data-i18n="admin.unlockTitle">AI 原生管理</h1>
+      <p class="muted admin-lead" data-i18n="admin.unlockBody">通过 AI 原生的方式，一站式管理你的品牌和 IP。</p>
+      <label><span data-i18n="admin.keyLabel">Key</span><input id="adminKey" type="password" autocomplete="current-password"></label>
+      <label><span data-i18n="admin.totpLabel">Google Authenticator</span><input id="totpCode" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" maxlength="8" placeholder="000000"></label>
+      <button id="unlockButton" data-i18n="admin.unlockButton">继续</button>
+      <p class="notice" id="unlockStatus"></p>
+    </section>
+    <section class="panel hidden" id="editorPanel">
+      <div class="admin-heading"><div><p class="eyebrow">IPTrust OS</p><h1>管理中枢</h1></div><span class="connected-pill">Connected</span></div>
+      <nav class="admin-tabs" aria-label="Admin sections">
+        <button class="is-active" data-admin-tab="overview">概览</button><button data-admin-tab="ips">IP</button><button data-admin-tab="architecture">品牌架构</button><button data-admin-tab="applications">项目应用</button><button data-admin-tab="assets">资产</button><button data-admin-tab="library">资料库</button><button data-admin-tab="jobs">任务</button><button data-admin-tab="audit">审计</button><button data-admin-tab="keys">API Keys</button>
+      </nav>
+      <section class="admin-view" data-admin-view="overview"><div class="admin-stats" id="adminStats"></div><div class="service-health" id="serviceHealth"></div></section>
+      <section class="admin-view hidden" data-admin-view="ips">
+        <div class="admin-toolbar"><label><span>IP</span><select id="brandSelect"></select></label><button id="loadBrand">载入</button></div>
+        <div class="form-grid">
+          <label><span>中文名称</span><input id="ipNameZh"></label><label><span>English name</span><input id="ipNameEn"></label>
+          <label><span>主语言</span><select id="ipMainLanguage"><option value="zh">中文</option><option value="en">English</option></select></label><label><span>IP 类型</span><select id="ipType"></select></label>
+          <label><span>主行业</span><select id="ipPrimaryIndustry"></select></label><label><span>其他行业</span><select id="ipIndustries" multiple></select></label>
+          <label><span>生命周期</span><select id="ipLifecycle"><option value="active">Active</option><option value="draft">Draft</option><option value="archived">Archived</option></select></label><label><span>规范模式</span><select id="ipGuideline"><option value="independent">Independent</option><option value="inherit">Inherit</option><option value="extend">Extend</option></select></label>
+          <label><span>品牌架构</span><span class="checkbox-line"><input id="ipParentCapable" type="checkbox"> 可作为母 IP</span></label>
+        </div>
+        <div class="actions"><button id="saveIp">保存字段</button><button class="ghost" id="saveBrand">保存品牌内容</button></div>
+        <details class="advanced-editor"><summary>高级 · Raw JSON</summary><textarea id="editor" spellcheck="false" placeholder="Brand JSON"></textarea></details>
+        <p class="muted" id="recordVersion"></p>
+      </section>
+      <section class="admin-view hidden" data-admin-view="architecture"><div class="admin-split"><form id="relationForm"><h2>连接 IP</h2><label>母 IP<select id="relationParent"></select></label><label>子 IP<select id="relationChild"></select></label><label>关系<select id="relationType"><option value="brand_parent">主母 IP</option><option value="endorsed_by">背书</option><option value="operated_by">运营</option><option value="licensed_by">授权</option><option value="member_of">成员</option><option value="co_branded_with">联合品牌</option></select></label><button>建立关系</button></form><div id="relationList"></div></div></section>
+      <section class="admin-view hidden" data-admin-view="applications"><div class="admin-split"><form id="applicationForm"><div class="admin-form-heading"><h2 id="applicationFormTitle">新增项目应用</h2><button class="ghost" type="button" id="newApplication">新建</button></div><label>Slug<input id="applicationSlug"></label><label>中文名称<input id="applicationNameZh"></label><label>English name<input id="applicationNameEn"></label><label>类型<select id="applicationType"></select></label><label>主 IP<select id="applicationPrimary"></select></label><label>规范模式<select id="applicationGuideline"><option value="inherit">Inherit</option><option value="extend">Extend</option><option value="independent">Independent</option></select></label><label>中文简介<textarea id="applicationDescriptionZh"></textarea></label><label>English intro<textarea id="applicationDescriptionEn"></textarea></label><label>中文业务<textarea id="applicationBusinessZh"></textarea></label><label>English business<textarea id="applicationBusinessEn"></textarea></label><div class="form-grid"><label>省份<input id="applicationProvince"></label><label>城市<input id="applicationCity"></label></div><button id="saveApplication">保存应用</button></form><div id="applicationList"></div></div></section>
+      <section class="admin-view hidden" data-admin-view="assets"><div id="assetList"></div></section>
+      <section class="admin-view hidden" data-admin-view="library"><p>案例、报告、数据与公共品牌库通过资料库 API 管理。</p><a class="button" href="library/">打开资料库</a></section>
+      <section class="admin-view hidden" data-admin-view="jobs"><div id="jobList"></div></section>
+      <section class="admin-view hidden" data-admin-view="audit"><div id="auditList"></div></section>
+      <section class="admin-view hidden" data-admin-view="keys"><div class="step-up"><label>Google Authenticator<input id="stepUpTotp" inputmode="numeric" maxlength="6" placeholder="000000"></label><button id="stepUpButton">验证 10 分钟</button></div><div class="admin-split"><form id="keyForm"><h2>创建 API Key</h2><label>名称<input id="keyLabel" required></label><label>类型<select id="keyKind"><option value="service">Service</option><option value="partner">Partner</option><option value="agent">Agent</option></select></label><label>Scopes<input id="keyScopes" value="brands:read,ips:read,assets:read"></label><label>IP 范围<input id="keyIpScopes" value="*"></label><button>创建 Key</button><pre class="new-key-token hidden" id="newKeyToken"></pre></form><div id="keyList"></div></div></section>
+      <p class="notice" id="editorStatus"></p>
+    </section>
+  </main>
+  <script src="${siteJsPath}" type="module"></script>
+  <script src="assets/admin.js" type="module"></script>
+</body>
+</html>`);
+
+await mkdir(join(siteDir, "admin"), { recursive: true });
+await copyFile(join(siteDir, "admin.html"), join(siteDir, "admin", "index.html"));
+
+await writeFile(join(assetsDir, "site.css"), html`:root {
+  color-scheme: light;
+  --bg: #f2f0eb;
+  --paper: #fffefa;
+  --ink: #161412;
+  --muted: #66635d;
+  --line: rgba(22, 20, 18, .13);
+  --accent: #9a7a3f;
+  --blue: #0a1626;
+  --green: #0e8c7b;
+}
+* { box-sizing: border-box; }
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--ink);
+  background: var(--bg);
+}
+img { display: block; max-width: 100%; }
+.hub-home {
+  background:
+    linear-gradient(180deg, rgba(255, 254, 250, .92), rgba(242, 240, 235, .98) 42%),
+    var(--bg);
+}
+a { color: inherit; }
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 18px clamp(18px, 4vw, 48px);
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 254, 250, .82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.brand { font-weight: 750; text-decoration: none; letter-spacing: 0; }
+.topbar-search {
+  flex: 1 1 420px;
+  max-width: 520px;
+  position: relative;
+}
+.topbar-search input {
+  width: 100%;
+  min-height: 38px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(255, 254, 250, .92), rgba(255, 254, 250, .72)),
+    var(--paper);
+  border-color: color-mix(in srgb, var(--line) 82%, var(--blue));
+  padding: 0 16px;
+  font-size: 14px;
+}
+.topbar-search input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(10, 22, 38, .08);
+}
+nav { display: flex; align-items: center; gap: 18px; color: var(--muted); font-size: 14px; }
+nav a { text-decoration: none; }
+nav a:hover { color: var(--ink); }
+.top-actions {
+  gap: 16px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.top-actions a,
+.top-actions button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 0;
+  font: inherit;
+  font-weight: 640;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color .16s ease;
+}
+.top-actions a:hover,
+.top-actions a:focus-visible,
+.top-actions button:hover,
+.top-actions button:focus-visible { color: var(--ink); }
+.api-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.api-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--muted);
+  opacity: .56;
+  box-shadow: 0 0 0 3px transparent;
+  transition: background .16s ease, opacity .16s ease, box-shadow .16s ease;
+}
+.api-link:hover .api-dot,
+.api-link:focus-visible .api-dot,
+.api-link.api-connected .api-dot {
+  background: #0E8C7B;
+  opacity: 1;
+  box-shadow: 0 0 0 3px rgba(14, 140, 123, .12);
+}
+.api-link.api-connected { color: #0E8C7B; }
+.lang-toggle {
+  min-height: 0;
+  font: inherit;
+  font-weight: 750;
+}
+.lang-toggle .lang-code {
+  position: absolute;
+  right: 4px;
+  bottom: 3px;
+  color: inherit;
+  font-size: 8px;
+  font-weight: 860;
+  letter-spacing: 0;
+  opacity: 0;
+}
+.lang-toggle .lang-code.is-active { opacity: 1; }
+.api-connect-panel {
+  position: fixed;
+  right: clamp(14px, 4vw, 48px);
+  top: 74px;
+  z-index: 30;
+  width: min(330px, calc(100vw - 28px));
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--green) 18%, var(--line));
+  border-radius: 18px;
+  background: rgba(255, 254, 250, .92);
+  box-shadow: 0 18px 56px rgba(22, 20, 18, .12);
+  backdrop-filter: blur(22px);
+}
+.api-connect-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.api-connect-head .eyebrow { display: none; }
+.api-connect-head h2 {
+  font-size: 13px;
+  line-height: 1;
+  margin: 0;
+  letter-spacing: 0;
+}
+.api-connect-panel.is-connected #apiConnectStatus { display: none; }
+.api-connect-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+  margin-top: 10px;
+}
+.api-connect-form label {
+  margin: 0;
+  gap: 5px;
+}
+.api-connect-form label span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 760;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.api-connect-form input {
+  min-height: 34px;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 13px;
+  background: rgba(255, 255, 255, .72);
+}
+.api-connect-form .portal-action {
+  min-height: 34px;
+  margin: 0;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+}
+.api-ops {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+.connected-pill {
+  justify-self: start;
+  border: 1px solid rgba(14, 140, 123, .24);
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: #0E8C7B;
+  background: rgba(14, 140, 123, .08);
+  font-size: 11px;
+}
+.api-ops .muted {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.3;
+}
+.api-ops .portal-links {
+  gap: 6px;
+  margin-top: 2px;
+}
+.api-ops .portal-links a,
+.api-ops .api-copy {
+  padding: 5px 8px;
+  font-size: 11px;
+}
+.api-copy {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 760;
+  padding: 7px 10px;
+  background: rgba(255, 254, 250, .7);
+}
+.api-copy:hover { border-color: var(--green); color: var(--green); }
+.api-resource-summary {
+  max-height: 260px;
+  overflow: auto;
+  margin: 12px 0 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255,255,255,.74);
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+main { width: min(1180px, calc(100vw - 36px)); margin: 0 auto; }
+.hub-hero {
+  min-height: 54vh;
+  display: grid;
+  grid-template-columns: minmax(0, .92fr) minmax(340px, .78fr);
+  gap: clamp(24px, 4vw, 42px);
+  align-items: center;
+  padding: clamp(34px, 6vw, 72px) 0 24px;
+}
+.hero-copy { max-width: 760px; }
+.eyebrow { color: var(--accent); font-size: 12px; font-weight: 760; text-transform: uppercase; letter-spacing: .18em; }
+h1 { font-size: clamp(54px, 7.2vw, 74px); line-height: .96; margin: 8px 0 16px; letter-spacing: 0; max-width: 980px; }
+h2 { font-size: clamp(26px, 3.5vw, 34px); line-height: 1.08; margin: 0 0 8px; letter-spacing: 0; }
+h3 { margin: 0 0 8px; }
+p { line-height: 1.65; }
+.hub-hero p:not(.eyebrow), .muted { color: var(--muted); font-size: 16px; max-width: 640px; }
+.hero-index {
+  display: grid;
+  gap: 8px;
+  align-self: center;
+  max-height: min(520px, 58vh);
+  overflow: auto;
+  padding: 2px 10px 2px 0;
+  border-top: 0;
+  perspective: 1200px;
+  mask-image: linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  scrollbar-width: none;
+}
+.hero-index::-webkit-scrollbar { display: none; }
+.hero-index-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content max-content max-content;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid color-mix(in srgb, var(--brand-primary, var(--blue)) 16%, transparent);
+  border-radius: 999px;
+  color: var(--brand-primary);
+  padding: 8px 8px 8px 14px;
+  font-size: 14px;
+  font-weight: 760;
+  text-decoration: none;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand-primary, var(--blue)) 7%, transparent), rgba(255, 254, 250, .42) 54%, transparent),
+    rgba(255, 254, 250, .32);
+  box-shadow: 0 10px 34px rgba(22, 20, 18, .045);
+  opacity: 1;
+  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.hero-index-link {
+  display: block;
+  color: inherit;
+  min-width: 0;
+  overflow: hidden;
+  text-decoration: none;
+}
+.hero-index-row:hover {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand-primary, var(--blue)) 14%, transparent), rgba(255, 254, 250, .68) 62%, transparent),
+    rgba(255, 254, 250, .56);
+  box-shadow: 0 14px 42px rgba(22, 20, 18, .08);
+  transform: translate3d(6px, -1px, 0);
+}
+.hero-index-title {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hero-index-secondary {
+  color: color-mix(in srgb, currentColor 68%, var(--muted));
+  font-size: 12px;
+  font-weight: 690;
+}
+.hero-index-colors {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 5px;
+}
+.hero-index-row .icon-copy { flex: 0 0 auto; }
+.hero-index-github svg { fill: currentColor; stroke: none; }
+.hero-index-row[data-brand="sidera"] { color: var(--brand-ink); }
+.hero-index-row[data-brand="sidera"] .icon-copy { color: var(--brand-ink); }
+.color-dot {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, .14);
+  border-radius: 999px;
+  background: var(--dot);
+  cursor: pointer;
+  position: relative;
+}
+.color-dot.copied { outline: 2px solid var(--brand-primary, var(--blue)); outline-offset: 2px; }
+.color-dot::after {
+  content: attr(data-color-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 220px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 11px;
+  line-height: 1.3;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity .14s ease;
+  z-index: 20;
+}
+.color-dot:hover::after,
+.color-dot:focus-visible::after { opacity: 1; }
+.icon-copy {
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+  border-radius: 999px;
+  border-color: var(--brand-line, var(--line));
+  background: color-mix(in srgb, var(--brand-paper, white) 88%, var(--brand-primary, var(--blue)));
+  color: var(--brand-primary, var(--blue));
+  display: grid;
+  place-items: center;
+}
+.icon-copy svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; }
+.icon-copy:hover,
+.icon-copy.copied { background: var(--brand-primary, var(--blue)); color: var(--brand-button-text, white); }
+.icon-copy.copied {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-primary, var(--blue)) 16%, transparent);
+}
+@keyframes row-rise {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 28px;
+  align-items: end;
+  padding: 10px 0 18px;
+  border-top: 1px solid var(--line);
+}
+.evolution-entry {
+  padding: 6px 0 34px;
+}
+.evolution-link {
+  display: grid;
+  grid-template-columns: minmax(220px, .9fr) minmax(360px, 1.1fr) auto;
+  align-items: center;
+  gap: clamp(22px, 4vw, 58px);
+  min-height: 124px;
+  padding: 22px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+  transition: color .2s ease, padding .28s cubic-bezier(.2,.8,.2,1);
+}
+.evolution-link:hover,
+.evolution-link:focus-visible {
+  color: var(--blue);
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.evolution-copy h2 {
+  max-width: 440px;
+  margin: 7px 0 0;
+  font-size: clamp(26px, 3vw, 38px);
+  text-wrap: balance;
+}
+.evolution-copy .eyebrow { margin: 0; }
+.evolution-path {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  gap: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 720;
+}
+.evolution-path span {
+  position: relative;
+  padding-right: 18px;
+  white-space: nowrap;
+}
+.evolution-path span:not(:last-child)::after {
+  content: "/";
+  position: absolute;
+  right: 7px;
+  color: var(--line);
+}
+.evolution-open {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 20px;
+  transition: transform .2s ease, background .2s ease, color .2s ease;
+}
+.evolution-link:hover .evolution-open,
+.evolution-link:focus-visible .evolution-open {
+  transform: translate(2px, -2px);
+  background: var(--blue);
+  color: var(--paper);
+}
+.library-entry { padding: 0 0 34px; }
+.library-entry-link {
+  display: grid;
+  grid-template-columns: minmax(260px, .8fr) minmax(440px, 1.2fr) auto;
+  align-items: stretch;
+  min-height: 150px;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+}
+.library-entry-copy { display: grid; align-content: center; padding: 22px 28px 22px 0; }
+.library-entry-copy h2 { max-width: 480px; margin: 8px 0 0; font-size: clamp(24px, 2.5vw, 34px); line-height: 1.04; text-wrap: balance; }
+.library-entry-copy .eyebrow { margin: 0; }
+.library-entry-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-left: 1px solid var(--line); }
+.library-entry-stats span { display: grid; align-content: center; gap: 7px; padding: 18px; border-right: 1px solid var(--line); }
+.library-entry-stats strong { font: 800 clamp(24px, 3vw, 42px)/.9 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.library-entry-stats small { color: var(--muted); font-size: 11px; font-weight: 720; }
+.library-entry-open { display: grid; width: 54px; place-items: center; font-size: 22px; transition: background .2s ease, color .2s ease; }
+.library-entry-link:hover .library-entry-open,
+.library-entry-link:focus-visible .library-entry-open { background: var(--ink); color: var(--paper); }
+.library-entry-link:hover .library-entry-copy h2,
+.library-entry-link:focus-visible .library-entry-copy h2 { color: var(--blue); }
+.entry-portals {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) repeat(2, minmax(0, .72fr));
+  gap: clamp(12px, 2vw, 20px);
+  padding: 8px 0 34px;
+}
+.portal {
+  border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  padding: 14px 0 0;
+  min-height: 136px;
+  display: grid;
+  align-content: start;
+}
+.portal-agent {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px 24px;
+  min-height: 164px;
+  border-top-color: var(--ink);
+}
+.portal-agent-copy { min-width: 0; }
+.agent-access-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.agent-access-label .eyebrow { margin: 0; }
+.agent-health {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 720;
+}
+.agent-health i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.agent-health.is-online { color: #0B7567; }
+.agent-health.is-online i {
+  background: #0E8C7B;
+  box-shadow: 0 0 0 3px rgba(14, 140, 123, .12);
+}
+.agent-protocols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 14px;
+}
+.agent-protocols code {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 8px;
+  color: var(--blue);
+  background: rgba(255, 254, 250, .64);
+  font-size: 11px;
+}
+.agent-actions {
+  display: grid;
+  align-content: start;
+  justify-items: stretch;
+  gap: 8px;
+  min-width: 156px;
+}
+.agent-actions .portal-action { width: 100%; margin-top: 0; }
+.portal-secondary {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: var(--ink);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 720;
+  text-decoration: none;
+}
+.portal-secondary:hover,
+.portal-secondary:focus-visible {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.portal-agent .portal-status { grid-column: 1 / -1; margin-top: -8px !important; }
+.portal h3 {
+  font-size: 21px;
+  line-height: 1.1;
+  margin: 8px 0 6px;
+}
+.portal p:not(.eyebrow) {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+  margin: 0;
+}
+.portal-action {
+  justify-self: start;
+  margin-top: 16px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  min-height: 38px;
+  padding: 9px 14px;
+}
+.portal-action:hover,
+.portal-action.copied {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+.portal-status {
+  min-height: 18px;
+  margin-top: 8px !important;
+  color: var(--ink) !important;
+  font-size: 12px !important;
+  font-weight: 720;
+}
+.portal-points {
+  display: grid;
+  gap: 5px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.portal-points li::before {
+  content: "+";
+  margin-right: 6px;
+  color: var(--blue);
+  font-weight: 900;
+}
+.collab-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 108px;
+  gap: 14px;
+  align-items: end;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 254, 250, .72);
+}
+.collab-mail {
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 860;
+  text-decoration: none;
+}
+.collab-mail:hover { color: var(--blue); }
+.collab-card img {
+  width: 108px;
+  height: 108px;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: white;
+}
+.portal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.portal-links a {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 760;
+  padding: 7px 10px;
+  text-decoration: none;
+  background: rgba(255, 254, 250, .7);
+}
+.portal-links a:hover { border-color: var(--blue); }
+.ip-system-main { padding-bottom: 90px; }
+.ip-system-hero {
+  min-height: 58vh;
+  display: grid;
+  align-content: end;
+  padding: clamp(64px, 10vw, 128px) 0 clamp(36px, 6vw, 72px);
+  border-bottom: 1px solid var(--ink);
+}
+.ip-system-hero h1 {
+  max-width: 1050px;
+  margin: 12px 0 18px;
+  font-size: clamp(48px, 6.2vw, 78px);
+}
+.ip-system-hero > p:not(.eyebrow) {
+  max-width: 620px;
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(18px, 2vw, 24px);
+}
+.ip-system-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.font-library {
+  --font-demo-size: 48px;
+  --font-demo-weight: 400;
+  padding: 92px 0 76px;
+  border-bottom: 1px solid var(--ink);
+}
+.font-library-entry {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto 52px;
+  gap: 28px;
+  align-items: center;
+  padding: 42px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+}
+.font-library-entry h2 { margin: 7px 0 0; font-size: clamp(34px, 5vw, 64px); line-height: 1; }
+.font-library-entry > p { display: flex; align-items: baseline; gap: 9px; margin: 0; color: var(--muted); }
+.font-library-entry > p strong { color: var(--ink); font-size: 28px; }
+.font-library-entry > span { font-size: 30px; transition: transform 180ms ease; }
+.font-library-entry:hover > span { transform: translate(4px, -4px); }
+.font-directory-main { width: min(1420px, calc(100% - 64px)); margin: 0 auto; padding: 98px 0 70px; }
+.font-directory-hero { display: grid; grid-template-columns: minmax(320px, 1.2fr) minmax(300px, .8fr); gap: clamp(48px, 9vw, 150px); align-items: end; padding: 46px 0 62px; border-bottom: 1px solid var(--ink); }
+.font-directory-hero h1 { max-width: 760px; margin: 10px 0 0; font-size: clamp(58px, 8vw, 112px); line-height: .95; letter-spacing: 0; text-wrap: balance; }
+.font-directory-summary { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 18px 30px; }
+.font-directory-count { display: flex; gap: 10px; align-items: baseline; margin: 0; }
+.font-directory-count strong { font-size: 32px; }
+.font-directory-count span { color: var(--muted); font-size: 12px; }
+.font-directory-reference { color: var(--ink); font-size: 12px; font-weight: 760; text-decoration: none; border-bottom: 1px solid var(--line); }
+.font-directory-toolbar { position: sticky; top: 67px; z-index: 16; display: grid; grid-template-columns: minmax(220px, 1fr) auto minmax(190px, .42fr) auto; gap: 20px; align-items: end; padding: 14px 0; border-bottom: 1px solid var(--ink); background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(14px); }
+.font-directory-toolbar label { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--muted); font-size: 11px; font-weight: 720; }
+.font-directory-toolbar label > span { flex: 0 0 auto; white-space: nowrap; }
+.font-directory-toolbar input[type="search"] { width: 100%; min-height: 38px; padding: 7px 2px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--ink); }
+.font-directory-toolbar input[type="range"] { flex: 1; padding: 0; accent-color: var(--ink); }
+.font-directory-toolbar select { width: 72px; min-height: 36px; padding: 5px; background: transparent; }
+.font-directory-layout { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: clamp(34px, 6vw, 92px); padding: 0; border-bottom: 1px solid var(--ink); }
+.font-directory-layout > *,
+.font-specimen-list,
+.font-specimen,
+.font-specimen-head,
+.font-specimen-head > *,
+.font-specimen-samples { min-width: 0; }
+.font-category-list { position: sticky; top: 142px; align-self: start; display: flex; flex-direction: column; padding-top: 26px; }
+.font-category-list strong { margin-bottom: 12px; font-size: 11px; text-transform: uppercase; }
+.font-category-list button { display: flex; justify-content: space-between; min-height: 38px; padding: 8px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--muted); text-align: left; }
+.font-category-list button[aria-pressed="true"] { color: var(--ink); font-weight: 800; }
+.font-empty { padding: 80px 0; color: var(--muted); }
+.font-reference-directory { padding: 88px 0 76px; border-bottom: 1px solid var(--ink); }
+.font-reference-directory > header { display: grid; grid-template-columns: minmax(280px, .9fr) minmax(320px, 1fr) auto; gap: clamp(28px, 6vw, 92px); align-items: end; padding-bottom: 30px; }
+.font-reference-directory h2 { margin: 7px 0 0; font-size: clamp(38px, 5vw, 68px); line-height: 1; }
+.font-reference-directory h2 span { font-variant-numeric: tabular-nums; }
+.font-reference-directory > header p { max-width: 620px; margin: 0; color: var(--muted); line-height: 1.65; }
+.font-reference-directory > header > a { color: var(--ink); font-size: 12px; font-weight: 760; text-decoration: none; border-bottom: 1px solid var(--line); }
+.font-reference-status { min-height: 52px; padding: 17px 0; border-top: 1px solid var(--ink); color: var(--muted); font-size: 12px; }
+.font-reference-list { border-top: 1px solid var(--ink); }
+.font-reference-row { display: grid; grid-template-columns: minmax(240px, 1.1fr) minmax(130px, .45fr) minmax(210px, .75fr) auto; gap: 24px; align-items: center; min-height: 62px; padding: 13px 0; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+.font-reference-row strong { font-size: 17px; }
+.font-reference-row span { min-width: 0; overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.font-reference-row .font-reference-license { color: var(--ink); font-weight: 750; text-align: right; }
+.font-reference-badge { display: inline-flex; width: max-content; margin-left: 8px; padding: 2px 5px; border: 1px solid var(--line); font-size: 9px; font-weight: 760; vertical-align: middle; }
+.font-reference-more { display: block; width: 100%; min-height: 52px; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; background: transparent; color: var(--ink); font-weight: 760; }
+.font-reference-more:hover { background: var(--ink); color: var(--paper); }
+.font-sources { display: grid; grid-template-columns: minmax(260px, .75fr) minmax(0, 1.25fr); gap: clamp(48px, 9vw, 148px); padding: 92px 0 70px; border-bottom: 1px solid var(--ink); }
+.font-sources h2 { margin: 8px 0 0; font-size: clamp(38px, 5vw, 68px); line-height: 1.02; text-wrap: balance; }
+.font-sources > div { border-top: 1px solid var(--ink); }
+.font-sources a { display: grid; grid-template-columns: minmax(150px, .38fr) minmax(0, 1fr) auto; gap: 22px; padding: 18px 0; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+.font-sources a span { color: var(--muted); font-size: 12px; line-height: 1.6; }
+.font-sources a i { font-style: normal; }
+.font-library-head {
+  display: grid;
+  grid-template-columns: minmax(260px, .8fr) minmax(320px, 1fr);
+  gap: 64px;
+  align-items: end;
+  padding-bottom: 34px;
+}
+.font-library-head h2 {
+  max-width: 640px;
+  margin: 8px 0 0;
+  font-size: 48px;
+  line-height: 1.05;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+.font-library-head > p {
+  max-width: 620px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+.font-library-controls {
+  display: grid;
+  grid-template-columns: auto minmax(240px, 1fr) minmax(112px, auto);
+  gap: 24px;
+  align-items: center;
+  padding: 14px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+.font-library-controls label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 720;
+}
+.font-library-controls input[type="range"] { min-width: 150px; padding: 0; accent-color: var(--ink); }
+.font-library-controls select { width: 78px; min-height: 34px; padding: 6px 8px; background: transparent; }
+.font-library-controls output { min-width: 2.5ch; color: var(--ink); font: 700 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.font-filter {
+  display: inline-flex;
+  width: max-content;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.font-filter button {
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 760;
+}
+.font-filter button:last-child { border-right: 0; }
+.font-filter button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+.font-specimen[hidden] { display: none; }
+.font-specimen {
+  min-height: 248px;
+  padding: 24px 0 28px;
+  border-bottom: 1px solid var(--line);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 248px;
+}
+.font-specimen-head {
+  display: grid;
+  grid-template-columns: minmax(220px, .75fr) minmax(260px, 1fr) auto;
+  gap: 28px;
+  align-items: start;
+}
+.font-specimen-name { margin: 0; font-size: 18px; font-weight: 820; line-height: 1.25; }
+.font-specimen-name span { color: var(--muted); font-size: 13px; font-weight: 600; }
+.font-specimen-meta,
+.font-specimen-use,
+.font-load-state {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.font-specimen-use { margin: 0; font-size: 13px; }
+.font-specimen-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px 12px; }
+.font-specimen-actions a,
+.font-specimen-actions button {
+  min-height: 28px;
+  padding: 4px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 760;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.font-specimen-actions a:hover,
+.font-specimen-actions button:hover { border-bottom-color: var(--ink); }
+.font-specimen-sample {
+  min-height: 2.7em;
+  margin: 0;
+  font-family: var(--demo-font, ui-sans-serif, system-ui, sans-serif);
+  font-size: var(--font-demo-size);
+  font-weight: var(--font-demo-weight);
+  font-synthesis: none;
+  line-height: 1.32;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+.font-specimen-samples { display: grid; gap: 5px; margin-top: 30px; }
+.font-specimen-samples .font-specimen-sample + .font-specimen-sample {
+  min-height: 1.5em;
+  color: color-mix(in srgb, var(--ink) 78%, var(--paper));
+}
+.font-library[data-active-font-group="zh"] .font-specimen-sample[lang="en"],
+.font-library[data-active-font-group="en"] .font-specimen-sample[lang="zh-CN"] { display: none; }
+.font-load-state { min-height: 17px; margin-top: 14px; }
+.font-specimen.is-loaded .font-load-state { color: var(--green); }
+.font-specimen.is-fallback .font-load-state { color: #9b5b2f; }
+.font-library-license {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) auto;
+  gap: 28px;
+  align-items: start;
+  padding-top: 24px;
+}
+.font-license-types { padding: clamp(54px, 7vw, 88px) 0 18px; border-bottom: 1px solid var(--line); }
+.font-license-types > header { display: grid; grid-template-columns: minmax(180px, .35fr) 1fr; gap: 28px; align-items: end; margin-bottom: 24px; }
+.font-license-types h2 { margin: 0; font-size: clamp(26px, 3.4vw, 44px); line-height: 1.05; }
+.font-license-types > div { border-top: 1px solid var(--ink); }
+.font-license-types article { display: grid; grid-template-columns: minmax(210px, .6fr) minmax(0, 1fr) auto; gap: 28px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.font-license-types article div { display: grid; gap: 4px; }
+.font-license-types article span,
+.font-license-types article p,
+.font-license-types article a,
+.font-license-disclaimer { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.font-license-types article a { color: var(--ink); font-weight: 760; text-decoration: none; white-space: nowrap; }
+.font-license-disclaimer { max-width: 760px; padding-top: 18px; }
+.font-library-license strong { font-size: 13px; }
+.font-library-license p { max-width: 700px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.font-library-license a { color: var(--ink); font-size: 12px; font-weight: 760; text-decoration: none; border-bottom: 1px solid var(--line); }
+.ip-system-noscript { padding: 18px 0; color: var(--muted); font-size: 13px; }
+.ip-system-content-shell {
+  display: grid;
+  grid-template-columns: minmax(170px, .28fr) minmax(0, 1fr);
+  gap: clamp(36px, 7vw, 92px);
+  align-items: start;
+  padding: clamp(70px, 10vw, 132px) 0 20px;
+}
+.ip-system-toc {
+  position: sticky;
+  top: 96px;
+  display: grid;
+  gap: 18px;
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  padding-right: 12px;
+}
+.ip-system-toc > strong {
+  font-size: 13px;
+  letter-spacing: .06em;
+}
+.ip-system-toc nav {
+  display: grid;
+  align-items: start;
+  gap: 10px;
+  width: 100%;
+}
+.ip-system-toc a {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+  text-decoration: none;
+}
+.ip-system-toc a:hover,
+.ip-system-toc a:focus-visible { color: var(--ink); }
+.rendered-document {
+  min-width: 0;
+  max-width: 860px;
+  color: var(--ink);
+}
+.rendered-document > :first-child { margin-top: 0; }
+.rendered-document h1 {
+  max-width: 820px;
+  margin: 0 0 30px;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1.04;
+}
+.rendered-document h2 {
+  margin: clamp(64px, 9vw, 108px) 0 22px;
+  padding-top: 22px;
+  border-top: 1px solid var(--ink);
+  font-size: clamp(28px, 4vw, 42px);
+}
+.rendered-document h3 {
+  margin: 42px 0 16px;
+  font-size: clamp(21px, 2.4vw, 28px);
+}
+.rendered-document h4 {
+  margin: 28px 0 12px;
+  font-size: 18px;
+}
+.rendered-document p,
+.rendered-document li {
+  color: color-mix(in srgb, var(--ink) 82%, var(--muted));
+  font-size: 16px;
+  line-height: 1.85;
+}
+.rendered-document ul,
+.rendered-document ol { padding-left: 1.35em; }
+.rendered-document li + li { margin-top: 7px; }
+.rendered-document blockquote {
+  margin: 28px 0;
+  padding: 4px 0 4px 20px;
+  border-left: 2px solid var(--accent);
+}
+.rendered-document blockquote p { color: var(--muted); }
+.rendered-document table {
+  display: block;
+  width: 100%;
+  margin: 24px 0 36px;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.rendered-document th,
+.rendered-document td {
+  min-width: 132px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.55;
+}
+.rendered-document th {
+  color: var(--ink);
+  font-weight: 800;
+  border-bottom-color: var(--ink);
+}
+.rendered-document code {
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .9em;
+}
+.rendered-document pre code { color: inherit; }
+.brand-guide-document {
+  max-width: 920px;
+}
+.guide-rendered {
+  padding: clamp(24px, 4vw, 48px);
+}
+.guide-rendered > .eyebrow { margin: 0 0 22px; }
+.ip-system-loop {
+  padding: clamp(54px, 8vw, 100px) 0 0 clamp(0px, 14vw, 170px);
+}
+.ip-system-loop p {
+  max-width: 760px;
+  margin: 0;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 760;
+  line-height: 1.15;
+}
+.history-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, .44fr) minmax(0, 1fr);
+  gap: 28px;
+  padding: 4px 0 42px;
+}
+.version-list {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+}
+.version-item {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding: 10px 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: none;
+}
+.version-item strong { color: var(--ink); }
+.version-item span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.section-head h2 { max-width: 560px; }
+.count-pill {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 9px 11px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 760;
+  background: rgba(255, 254, 250, .72);
+}
+.global-results {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(560px, calc(100vw - 36px));
+  max-height: 420px;
+  overflow: auto;
+  display: none;
+  z-index: 8;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 254, 250, .96);
+  box-shadow: 0 18px 60px rgba(22, 20, 18, .14);
+}
+.global-results.is-open { display: grid; }
+.global-result {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+}
+.global-result:last-child { border-bottom: 0; }
+.global-result strong { color: var(--ink); }
+.global-result small { color: var(--accent); font-weight: 760; }
+.global-result span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.button, button {
+  appearance: none;
+  border: 1px solid var(--blue);
+  background: var(--blue);
+  color: white;
+  text-decoration: none;
+  padding: 11px 15px;
+  min-height: 42px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.button.ghost { background: transparent; color: var(--blue); }
+.lang-toggle {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 750;
+}
+.ip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding: 14px 0 88px;
+}
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 34px 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+.card, .panel, .guide, .resource {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.ip-card {
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 330px;
+  background: var(--brand-paper, var(--paper));
+  border-color: var(--brand-line, var(--line));
+  color: var(--brand-ink, var(--ink));
+  position: relative;
+  border: 1px solid var(--brand-line, var(--line));
+  border-radius: 8px;
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+.ip-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--brand-primary, var(--accent));
+  z-index: 2;
+}
+.ip-card:hover { transform: translateY(-5px); border-color: var(--brand-primary, var(--line)); box-shadow: 0 22px 60px rgba(22, 20, 18, .12); }
+.ip-card.theme-dark { background: var(--brand-paper); color: var(--brand-ink); }
+.ip-card-link {
+  color: inherit;
+  display: flex;
+  flex: 1;
+  min-height: 100%;
+  text-decoration: none;
+}
+.ip-card[data-brand="sidera"],
+.ip-card[data-brand="manaendless"] { background: var(--brand-paper); }
+.ip-card[data-brand="fengzhi"] { border-radius: 0; }
+.ip-card[data-brand="kind"] { border-radius: 18px; }
+.ip-card[data-brand="vanahom"]::before { width: 3px; }
+.brand-sigil {
+  align-self: flex-end;
+  min-width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--brand-line);
+  background: color-mix(in srgb, var(--brand-paper) 88%, transparent);
+  color: var(--brand-primary);
+  font-weight: 800;
+}
+.ip-card[data-brand="sidera"] .brand-sigil { background: var(--brand-secondary); color: var(--brand-ink); }
+.ip-card[data-brand="kind"] .brand-sigil { border-radius: 999px; }
+.ip-card[data-brand="fengzhi"] .brand-sigil { border-radius: 0; }
+.card-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; min-height: 100%; }
+.card-art {
+  min-height: 150px;
+  border: 1px solid var(--brand-line, var(--line));
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 22%, color-mix(in srgb, var(--brand-accent) 78%, transparent) 0 10%, transparent 28%),
+    linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 24%, var(--brand-paper)) 0%, var(--brand-paper) 48%, color-mix(in srgb, var(--brand-secondary) 25%, var(--brand-paper)) 100%);
+}
+.card-art::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 38%, transparent);
+  border-radius: 999px 999px 6px 6px;
+  transform: rotate(-8deg);
+}
+.card-art::after {
+  content: "";
+  position: absolute;
+  inset: auto 14px 14px auto;
+  width: 44%;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--brand-accent) 50%, transparent);
+  background:
+    linear-gradient(90deg, transparent 49%, color-mix(in srgb, var(--brand-primary) 30%, transparent) 50%, transparent 51%),
+    linear-gradient(0deg, transparent 49%, color-mix(in srgb, var(--brand-primary) 30%, transparent) 50%, transparent 51%);
+  opacity: .72;
+}
+.ip-card[data-brand="tableai"] .card-art {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand-primary) 18%, transparent) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in srgb, var(--brand-primary) 12%, transparent) 1px, transparent 1px),
+    linear-gradient(135deg, var(--brand-paper), color-mix(in srgb, var(--brand-accent) 24%, var(--brand-paper)));
+  background-size: 26px 26px, 26px 26px, auto;
+}
+.ip-card[data-brand="vanahom"] .card-art::before { border-radius: 6px; transform: rotate(0); inset: 20px 42px; }
+.ip-card[data-brand="kind"] .card-art::before { border-radius: 999px; inset: 18px 44px 16px 18px; }
+.ip-card[data-brand="apha"] .card-art::before { border-radius: 60% 40% 50% 50%; transform: rotate(14deg); }
+.ip-card[data-brand="manaendless"] .card-art,
+.ip-card[data-brand="sidera"] .card-art,
+.ip-card[data-brand="rgd"] .card-art {
+  background:
+    radial-gradient(circle at 70% 18%, color-mix(in srgb, var(--brand-accent) 62%, transparent) 0 9%, transparent 24%),
+    linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 26%, var(--brand-paper)), var(--brand-paper));
+}
+.ip-card[data-brand="fengzhi"] .card-art::before { border-radius: 0; transform: rotate(0); inset: 22px; }
+.ip-card[data-brand="axisee"] .card-art::after { width: 34%; border-radius: 999px; }
+.ip-card[data-brand="boya"] .card-art::before { border-radius: 6px 999px 999px 6px; transform: rotate(-16deg); }
+.art-code {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  color: var(--brand-primary);
+  font-weight: 840;
+  font-size: 13px;
+}
+.art-metric {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  color: var(--brand-ink);
+  font-size: 12px;
+  font-weight: 760;
+}
+.mini-palette { display: flex; gap: 6px; margin-top: 2px; }
+.mini-swatch {
+  width: 24px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--dot);
+  border: 1px solid rgba(0, 0, 0, .1);
+}
+.card-body .eyebrow { color: var(--brand-primary, var(--accent)); }
+.card-body .muted, .card-body p { color: var(--brand-muted, var(--muted)); }
+.card-body h2 { color: var(--brand-ink, var(--ink)); font-size: 30px; line-height: 1.02; margin: 2px 0 0; padding-right: 48px; }
+.alt-name {
+  min-height: 20px;
+  font-size: 13px;
+  letter-spacing: .02em;
+}
+.card-intro {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--brand-muted, var(--muted));
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 38px;
+}
+.card-profile {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--brand-muted, var(--muted));
+}
+.card-profile span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 14px 0 4px;
+}
+.profile-tags span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  border: 1px solid var(--brand-line, var(--line));
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: var(--brand-primary, var(--blue));
+  background: color-mix(in srgb, var(--brand-paper, white) 78%, transparent);
+  font-size: 12px;
+  font-weight: 720;
+}
+.copy-reference {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  z-index: 3;
+  min-height: 32px;
+  max-width: 72px;
+  padding: 7px 9px;
+  border-radius: 999px;
+  border-color: var(--brand-line, var(--line));
+  background: color-mix(in srgb, var(--brand-paper, white) 86%, var(--brand-primary, var(--blue)));
+  color: var(--brand-ink, var(--ink));
+  font-size: 12px;
+  line-height: 1;
+}
+.copy-reference:hover,
+.copy-reference.copied {
+  background: var(--brand-primary, var(--blue));
+  border-color: var(--brand-primary, var(--blue));
+  color: var(--brand-button-text, white);
+}
+.copy-manual {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 40;
+  width: min(420px, calc(100vw - 36px));
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 18px 60px rgba(22, 20, 18, .18);
+}
+.copy-manual textarea {
+  min-height: 120px;
+  margin: 0;
+  font-size: 12px;
+}
+.copy-manual button {
+  width: 34px;
+  min-height: 34px;
+  padding: 0;
+}
+.toast-stack {
+  position: fixed;
+  right: clamp(16px, 3vw, 32px);
+  bottom: clamp(16px, 3vw, 32px);
+  display: grid;
+  gap: 10px;
+  z-index: 50;
+  pointer-events: none;
+}
+.toast {
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 11px 13px;
+  border: 1px solid rgba(255, 255, 255, .34);
+  border-radius: 8px;
+  background: rgba(10, 22, 38, .92);
+  color: white;
+  box-shadow: 0 16px 42px rgba(10, 22, 38, .22);
+  backdrop-filter: blur(14px);
+  font-size: 13px;
+  font-weight: 760;
+  line-height: 1.35;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: toast-in .18s ease forwards;
+}
+.toast.is-leaving { animation: toast-out .18s ease forwards; }
+@keyframes toast-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes toast-out {
+  to { opacity: 0; transform: translateY(8px); }
+}
+.meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; color: var(--muted); font-size: 13px; }
+.pill {
+  border: 1px solid var(--brand-line, var(--line));
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: color-mix(in srgb, var(--brand-primary, var(--blue)) 7%, var(--brand-paper, white));
+  color: var(--brand-ink, var(--ink));
+}
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, .16);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2);
+}
+.swatch-label { font-size: 12px; color: var(--brand-muted, var(--muted)); }
+.brand-page { padding: 36px 0 90px; }
+.brand-shell {
+  margin: -36px calc((100vw - min(1180px, calc(100vw - 36px))) / -2) -90px;
+  padding: 42px max(18px, calc((100vw - 1180px) / 2)) 90px;
+  background: var(--brand-surface, var(--bg));
+  color: var(--brand-ink, var(--ink));
+  min-height: calc(100vh - 76px);
+}
+.brand-shell.theme-dark .top-note,
+.brand-shell.theme-dark p,
+.brand-shell.theme-dark .muted { color: var(--brand-muted); }
+.brand-shell .eyebrow { color: var(--brand-primary, var(--accent)); }
+.brand-shell h1, .brand-shell h2, .brand-shell h3 { color: var(--brand-ink, var(--ink)); }
+.brand-shell .button {
+  background: var(--brand-primary, var(--blue));
+  border-color: var(--brand-primary, var(--blue));
+  color: var(--brand-button-text, white);
+}
+.brand-shell .button.ghost {
+  background: transparent;
+  color: var(--brand-primary, var(--blue));
+  border-color: var(--brand-primary, var(--blue));
+}
+.brand-shell.theme-dark .button.ghost { color: var(--brand-ink); border-color: var(--brand-line); }
+.brand-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr); gap: clamp(22px, 4vw, 48px); align-items: center; margin-bottom: 28px; }
+.brand-visual {
+  min-height: clamp(240px, 32vw, 420px);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--brand-line, var(--line));
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--brand-paper, white) 86%, transparent), color-mix(in srgb, var(--brand-surface, #f7f5ef) 82%, transparent)),
+    var(--brand-paper, white);
+  overflow: hidden;
+}
+.brand-visual img {
+  width: 100%;
+  height: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  padding: clamp(18px, 4vw, 54px);
+  box-sizing: border-box;
+}
+.brand-sidera {
+  font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, serif;
+  background: var(--brand-surface);
+  color: var(--brand-ink);
+}
+.brand-sidera p,
+.brand-sidera .muted { color: var(--brand-muted); }
+.brand-sidera .button {
+  border-color: var(--brand-accent);
+  background: var(--brand-primary);
+  color: var(--brand-button-text);
+}
+.brand-sidera .button.ghost {
+  border-color: var(--brand-ink);
+  background: transparent;
+  color: var(--brand-ink);
+}
+.brand-sidera .brand-hero {
+  min-height: auto;
+  padding: clamp(24px, 4vw, 42px) 0;
+  border-bottom: 1px solid var(--brand-line);
+  grid-template-columns: minmax(0, .86fr) minmax(320px, 1.14fr);
+}
+.brand-sidera .brand-hero > div:first-child { max-width: 620px; }
+.brand-sidera .brand-hero h1 {
+  max-width: 7ch;
+  margin: 10px 0 18px;
+  font-size: clamp(64px, 8vw, 108px);
+  font-weight: 600;
+  line-height: .96;
+  letter-spacing: 0;
+}
+.brand-sidera .brand-hero .eyebrow {
+  color: var(--brand-accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0;
+}
+.brand-sidera .brand-hero .alt-name {
+  color: var(--brand-ink);
+  font-size: clamp(18px, 2vw, 26px);
+}
+.brand-sidera .profile-tags span,
+.brand-sidera .pill {
+  border-radius: 2px;
+  background: transparent;
+  color: var(--brand-ink);
+}
+.brand-sidera .brand-visual,
+.brand-sidera .asset-hub,
+.brand-sidera .mood-board,
+.brand-sidera .profile-editor,
+.brand-sidera .ip-system-panel {
+  border-radius: 2px;
+}
+.brand-sidera .brand-visual {
+  min-height: 0;
+  max-height: 520px;
+  aspect-ratio: 4 / 3;
+  background: var(--brand-primary);
+}
+.brand-sidera .brand-visual img {
+  height: 100%;
+  max-height: 520px;
+  padding: clamp(22px, 3vw, 42px);
+  padding-bottom: clamp(68px, 6vw, 84px);
+  object-fit: contain;
+}
+.sidera-compass-visual {
+  position: relative;
+  min-height: clamp(360px, 42vw, 520px);
+  background: var(--brand-paper);
+  isolation: isolate;
+}
+.sidera-compass-ring {
+  position: relative;
+  display: grid;
+  width: min(66%, 340px);
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid var(--brand-primary);
+  border-radius: 50%;
+}
+.sidera-compass-ring::before,
+.sidera-compass-ring::after {
+  position: absolute;
+  z-index: -1;
+  content: "";
+  background: var(--brand-line);
+}
+.sidera-compass-ring::before { width: 146%; height: 1px; }
+.sidera-compass-ring::after { width: 1px; height: 146%; }
+.sidera-compass-core {
+  display: grid;
+  width: 64%;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid var(--brand-accent);
+  border-radius: 50%;
+}
+.sidera-compass-mark {
+  color: var(--brand-ink);
+  font-size: clamp(74px, 10vw, 126px);
+  font-weight: 600;
+  line-height: 1;
+}
+.sidera-compass-caption {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  margin: 0;
+  color: var(--brand-muted);
+  font: 650 11px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0;
+}
+.sidera-seal {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: grid;
+  width: 52px;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--brand-secondary) 72%, white);
+  background: var(--brand-secondary);
+  color: var(--brand-paper);
+  font-size: 13px;
+  font-weight: 700;
+}
+.sidera-principles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 0 30px;
+  border-bottom: 1px solid var(--brand-line);
+}
+.sidera-principles span {
+  padding: 18px 0;
+  color: var(--brand-ink);
+  font-size: clamp(18px, 2vw, 27px);
+  font-weight: 600;
+}
+.sidera-principles span + span {
+  padding-left: 22px;
+  border-left: 1px solid var(--brand-line);
+}
+.brand-kaoyu-shenhua {
+  background: var(--brand-paper);
+  color: var(--brand-ink);
+}
+.brand-kaoyu-shenhua p,
+.brand-kaoyu-shenhua .muted { color: var(--brand-muted); }
+.brand-kaoyu-shenhua .button {
+  border-color: var(--brand-accent);
+  background: var(--brand-accent);
+  color: #fffdfc;
+}
+.brand-kaoyu-shenhua .button.ghost {
+  border-color: var(--brand-primary);
+  background: transparent;
+  color: var(--brand-ink);
+}
+.brand-kaoyu-shenhua .brand-hero {
+  min-height: min(640px, calc(100dvh - 150px));
+  padding: clamp(30px, 5vw, 72px) 0;
+  border-bottom: 1px solid var(--brand-line);
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr);
+}
+.brand-kaoyu-shenhua .brand-hero h1 {
+  max-width: 6ch;
+  margin: 10px 0 16px;
+  font-size: clamp(56px, 9vw, 112px);
+  font-weight: 700;
+  line-height: .98;
+  letter-spacing: -.02em;
+  color: var(--brand-primary);
+}
+.brand-kaoyu-shenhua .brand-hero .eyebrow {
+  color: var(--brand-accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: .04em;
+}
+.brand-kaoyu-shenhua .brand-hero .alt-name {
+  color: var(--brand-ink);
+  font-size: clamp(16px, 1.8vw, 22px);
+}
+.brand-kaoyu-shenhua .brand-visual { background: var(--brand-primary); }
+.kaoyu-fire-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: clamp(320px, 38vw, 480px);
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 78%, color-mix(in srgb, var(--brand-accent) 55%, transparent) 0%, transparent 52%),
+    radial-gradient(ellipse at 42% 60%, color-mix(in srgb, var(--brand-secondary) 28%, transparent) 0%, transparent 40%),
+    linear-gradient(180deg, #2a1a16 0%, var(--brand-primary) 100%);
+  isolation: isolate;
+}
+.kaoyu-fire-visual::before {
+  position: absolute;
+  inset: 18% 28% auto;
+  height: 52%;
+  content: "";
+  background: radial-gradient(ellipse at 50% 100%, #e85a3a 0%, #b33a2b 42%, transparent 70%);
+  filter: blur(2px);
+  opacity: .9;
+  animation: kaoyu-ember 4.8s ease-in-out infinite alternate;
+}
+.kaoyu-fire-mark {
+  position: relative;
+  z-index: 1;
+  color: #fffdfc;
+  font-size: clamp(88px, 14vw, 148px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.04em;
+}
+.kaoyu-fire-caption {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  margin: 0;
+  color: color-mix(in srgb, #fffdfc 72%, var(--brand-secondary));
+  font: 650 11px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@keyframes kaoyu-ember {
+  from { transform: translateY(6px) scale(.96); opacity: .78; }
+  to { transform: translateY(-4px) scale(1.04); opacity: 1; }
+}
+.kaoyu-principles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 0 28px;
+  border-bottom: 1px solid var(--brand-line);
+}
+.kaoyu-principles span {
+  padding: 18px 0;
+  color: var(--brand-ink);
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-weight: 600;
+}
+.kaoyu-principles span + span {
+  padding-left: 22px;
+  border-left: 1px solid var(--brand-line);
+}
+.kaoyu-story {
+  margin: 0 0 30px;
+  padding: 28px 0 32px;
+  border-bottom: 1px solid var(--brand-line);
+}
+.kaoyu-story h2 {
+  margin: 0 0 14px;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.15;
+  color: var(--brand-primary);
+}
+.kaoyu-story .lead {
+  max-width: 46rem;
+  margin: 0 0 18px;
+  color: var(--brand-ink);
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.7;
+}
+.kaoyu-story .slogan {
+  margin: 0 0 20px;
+  color: var(--brand-accent);
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 700;
+  line-height: 1.45;
+}
+.kaoyu-story-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.brand-assets {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 30px;
+}
+.brand-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 28px;
+  border-top: 1px solid var(--brand-line, var(--line));
+}
+.brand-facts > div { min-width: 0; padding: 17px 26px 17px 0; border-bottom: 1px solid var(--brand-line, var(--line)); }
+.brand-facts > div:nth-child(even) { padding-left: 26px; border-left: 1px solid var(--brand-line, var(--line)); }
+.brand-facts strong { display: block; margin-bottom: 5px; color: var(--brand-muted, var(--muted)); font-size: 11px; font-weight: 750; }
+.brand-facts p { margin: 0; line-height: 1.55; }
+.brand-facts a { color: inherit; overflow-wrap: anywhere; }
+.brand-advanced { margin-top: 36px; border-top: 1px solid var(--brand-ink, var(--ink)); border-bottom: 1px solid var(--brand-line, var(--line)); }
+.brand-advanced > summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 0; cursor: pointer; list-style: none; font-weight: 750; }
+.brand-advanced > summary::-webkit-details-marker { display: none; }
+.brand-advanced > summary::after { content: "+"; font-size: 20px; font-weight: 400; }
+.brand-advanced[open] > summary::after { content: "−"; }
+.brand-advanced > summary small { margin-left: auto; color: var(--brand-muted, var(--muted)); font-weight: 500; }
+.brand-advanced-body { padding: 8px 0 28px; }
+.brand-shell > .brand-assets { margin-top: 34px; }
+.adobe-assets { margin: 0 0 28px; border-top: 1px solid var(--brand-ink, var(--ink)); }
+.adobe-assets-head { display: flex; align-items: end; justify-content: space-between; gap: 18px; padding: 18px 0; }
+.adobe-assets-head h2 { margin: 5px 0 0; }
+.adobe-source-file { display: grid; grid-template-columns: minmax(280px, .95fr) minmax(0, 1.05fr); border-top: 1px solid var(--brand-line, var(--line)); border-bottom: 1px solid var(--brand-line, var(--line)); background: var(--brand-paper, white); }
+.adobe-source-preview { position: relative; min-height: 260px; border-right: 1px solid var(--brand-line, var(--line)); background: color-mix(in srgb, var(--brand-surface, #f5f3ee) 80%, white); }
+.adobe-source-preview img { width: 100%; height: 100%; max-height: 390px; object-fit: contain; padding: 24px; box-sizing: border-box; }
+.adobe-source-preview .asset-copy-button { position: absolute; top: 12px; right: 12px; }
+.adobe-source-body { display: grid; align-content: center; padding: clamp(22px, 4vw, 48px); }
+.adobe-source-body h3 { margin: 7px 0 8px; font-size: clamp(25px, 3vw, 38px); }
+.adobe-source-meta { margin: 0; color: var(--brand-muted, var(--muted)); font: 650 11px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.adobe-downloads { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 24px; }
+.adobe-downloads a { padding: 8px 10px; border: 1px solid var(--brand-line, var(--line)); color: var(--brand-ink, var(--ink)); font-size: 12px; font-weight: 750; text-decoration: none; }
+.adobe-downloads a:hover { background: var(--brand-primary, var(--ink)); color: var(--brand-button-text, white); }
+.asset-hub,
+.mood-board,
+.profile-editor,
+.ip-system-panel {
+  margin: 0 0 28px;
+  padding: 18px;
+  border: 1px solid var(--brand-line, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-paper, white) 82%, transparent);
+}
+.asset-hub-head,
+.mood-head,
+.profile-editor-head,
+.ip-system-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.ip-system-panel p {
+  margin: 0;
+  color: var(--brand-muted, var(--muted));
+}
+.profile-editor[data-locked="true"] {
+  opacity: .78;
+}
+.profile-editor[data-locked="true"] #profileEditButton {
+  cursor: not-allowed;
+}
+.profile-edit-form {
+  display: grid;
+  gap: 14px;
+}
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.profile-form-grid .span-2 { grid-column: 1 / -1; }
+.profile-form-grid label {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+.profile-form-grid label span {
+  color: var(--brand-muted, var(--muted));
+  font-size: 11px;
+  font-weight: 780;
+  text-transform: uppercase;
+}
+.profile-form-grid input,
+.profile-form-grid select,
+.profile-form-grid textarea {
+  width: 100%;
+  border: 1px solid var(--brand-line, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-paper, white) 86%, transparent);
+  color: var(--brand-ink, var(--ink));
+  padding: 10px 11px;
+  font: inherit;
+  font-size: 13px;
+}
+.profile-form-grid textarea {
+  resize: vertical;
+  line-height: 1.55;
+}
+.asset-key {
+  font-size: 12px;
+  color: var(--brand-muted, var(--muted));
+}
+.asset-key code,
+.endpoint-card code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.endpoint-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+.endpoint-card {
+  min-height: 86px;
+  display: grid;
+  align-content: space-between;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--brand-line, var(--line));
+  border-radius: 8px;
+  background: var(--brand-paper, white);
+  color: var(--brand-ink, var(--ink));
+  text-decoration: none;
+}
+.endpoint-card span,
+.mood-keywords span {
+  color: var(--brand-muted, var(--muted));
+  font-size: 12px;
+}
+.endpoint-card strong { font-size: 13px; }
+.endpoint-card code {
+  color: var(--brand-primary, var(--blue));
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.mood-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, .9fr) minmax(0, 1.1fr);
+  gap: 18px;
+}
+.mood-colors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.mood-color {
+  min-height: 72px;
+  display: grid;
+  align-content: end;
+  gap: 3px;
+  padding: 10px;
+  border: 1px solid var(--brand-line, var(--line));
+  border-radius: 8px;
+  background: var(--mood-color);
+  color: var(--mood-ink, var(--brand-ink, var(--ink)));
+}
+.mood-color strong,
+.mood-color code {
+  font-size: 11px;
+  line-height: 1;
+}
+.mood-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.mood-keywords span {
+  border: 1px solid var(--brand-line, var(--line));
+  border-radius: 999px;
+  padding: 6px 9px;
+  background: var(--brand-paper, white);
+}
+.brand-asset-strip {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 2px 0 12px;
+}
+.brand-asset {
+  flex: 0 0 176px;
+  min-width: 0;
+  border: 1px solid var(--brand-line, var(--line));
+  border-radius: 8px;
+  background: var(--brand-paper, white);
+  color: var(--brand-muted, var(--muted));
+  overflow: hidden;
+}
+.brand-asset-link {
+  height: 116px;
+  border-bottom: 1px solid var(--brand-line, var(--line));
+}
+.brand-asset-link.asset-colorway-white {
+  background: #162130;
+}
+.brand-asset img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+  box-sizing: border-box;
+}
+.brand-asset-info {
+  display: grid;
+  gap: 4px;
+  padding: 10px 11px 11px;
+}
+.brand-asset-name {
+  overflow: hidden;
+  color: var(--brand-ink, var(--ink));
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.brand-asset-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 6px;
+  color: var(--brand-muted, var(--muted));
+  font: 600 10px/1.25 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0;
+}
+.brand-asset-meta span + span::before {
+  margin-right: 6px;
+  content: "·";
+}
+.brand-asset-dimensions {
+  display: block;
+  flex-basis: 100%;
+}
+.brand-asset-dimensions::before { display: none; }
+.resource-list { display: grid; gap: 14px; margin: 24px 0; }
+.resource-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 24px 0; }
+.resource, .guide {
+  background: var(--brand-paper, var(--paper));
+  color: var(--brand-ink, var(--ink));
+  border-color: var(--brand-line, var(--line));
+}
+.resource { padding: 18px; }
+.guide { margin: 18px 0; padding: 22px; }
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--brand-ink, #262626);
+  background: color-mix(in srgb, var(--brand-surface, #f5f3ee) 82%, var(--brand-paper, white));
+  padding: 18px;
+  border-radius: 6px;
+  border: 1px solid var(--brand-line, var(--line));
+  max-height: 560px;
+  overflow: auto;
+}
+.admin { max-width: 980px; padding: 42px 0 90px; }
+.admin #unlockPanel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+  max-width: 760px;
+  margin: clamp(24px, 7vw, 72px) auto 18px;
+  padding: clamp(22px, 4vw, 38px);
+}
+.admin #unlockPanel .eyebrow,
+.admin #unlockPanel h1,
+.admin #unlockPanel .admin-lead,
+.admin #unlockPanel label:nth-of-type(3),
+.admin #unlockPanel button,
+.admin #unlockPanel .notice {
+  grid-column: 1 / -1;
+}
+.admin #unlockPanel h1 {
+  font-size: clamp(36px, 5vw, 54px);
+  margin: 4px 0 8px;
+  line-height: 1;
+  max-width: 680px;
+}
+.admin-lead {
+  font-size: clamp(16px, 1.7vw, 18px);
+  line-height: 1.5;
+  max-width: 520px;
+  margin: 0 0 14px;
+}
+.admin #unlockPanel label {
+  max-width: none;
+  margin: 8px 0;
+}
+.admin #unlockPanel select {
+  min-height: 78px;
+}
+.admin #unlockPanel button {
+  justify-self: start;
+  margin-top: 2px;
+}
+.panel { padding: 24px; margin-bottom: 18px; }
+.admin #editorPanel { max-width: 1180px; margin-inline: auto; background: transparent; border: 0; padding: 0; }
+.admin-heading { display: flex; align-items: end; justify-content: space-between; border-bottom: 1px solid var(--ink); padding: 0 0 22px; }
+.admin-heading h1 { margin: 3px 0 0; font-size: clamp(38px, 5vw, 68px); }
+.admin-tabs { display: flex; gap: 0; overflow-x: auto; border-bottom: 1px solid var(--line); margin-bottom: 28px; }
+.admin-tabs button { flex: 0 0 auto; padding: 14px 12px; color: var(--muted); background: transparent; border: 0; border-bottom: 2px solid transparent; border-radius: 0; }
+.admin-tabs button.is-active { color: var(--ink); border-bottom-color: var(--ink); }
+.admin-view { min-height: 400px; }
+.admin-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+.admin-stats article { min-height: 132px; display: flex; flex-direction: column; justify-content: space-between; padding: 18px 12px 18px 0; border-right: 1px solid var(--line); }
+.admin-stats strong { font-size: clamp(28px, 4vw, 54px); line-height: 1; }
+.admin-stats span { color: var(--muted); font-size: 12px; }
+.service-health { display: flex; flex-wrap: wrap; gap: 8px; padding: 22px 0; }
+.service-health span { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); padding: 7px 10px; font: 700 11px/1 ui-monospace, monospace; }
+.service-health i { width: 7px; height: 7px; border-radius: 50%; background: #b12137; }
+.service-health .is-ok i { background: var(--green); }
+.admin-toolbar { display: flex; align-items: end; gap: 12px; margin-bottom: 20px; }
+.admin-toolbar label { min-width: 280px; margin: 0; }
+.admin-toolbar button { min-height: 42px; }
+.admin-split { display: grid; grid-template-columns: minmax(260px, .8fr) minmax(0, 1.5fr); gap: 48px; }
+.admin-split form { border-top: 1px solid var(--ink); padding-top: 18px; }
+.admin-form-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.admin-list-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; padding: 14px 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; color: inherit; text-align: left; text-decoration: none; }
+.admin-list-row[data-edit-application] { cursor: pointer; }
+.admin-list-row span { color: var(--muted); font-size: 12px; }
+.admin-list-row span strong { display: block; color: var(--ink); font-size: 14px; }
+.admin-list-row small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+.admin-split textarea { min-height: 88px; resize: vertical; }
+.new-key-token { overflow-wrap: anywhere; white-space: pre-wrap; border: 1px solid var(--line); padding: 12px; background: var(--paper); }
+.advanced-editor { margin-top: 28px; border-top: 1px solid var(--line); }
+.advanced-editor summary { cursor: pointer; padding: 14px 0; color: var(--muted); font-size: 12px; font-weight: 750; }
+.step-up { display: flex; align-items: end; gap: 10px; margin-bottom: 24px; }
+.step-up label { margin: 0; max-width: 240px; }
+.hidden { display: none; }
+label { display: grid; gap: 8px; font-size: 14px; font-weight: 700; margin: 12px 0; }
+input, select, textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 11px 12px;
+  font: inherit;
+  background: white;
+  color: var(--ink);
+}
+textarea { min-height: 520px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.55; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; }
+.notice { color: var(--green); font-weight: 700; }
+.section-actions { display: flex; align-items: center; gap: 10px; }
+.directory-shortcut { color: var(--muted); font-size: 12px; font-weight: 750; text-decoration: none; border-bottom: 1px solid var(--line); padding: 6px 0; }
+.directory-main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: clamp(28px, 4vw, 56px) 0 70px; }
+.directory-hero { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; border-bottom: 1px solid var(--ink); padding-bottom: 28px; margin-bottom: 20px; }
+.directory-hero .eyebrow { grid-column: 1 / -1; }
+.directory-hero h1 { max-width: 760px; margin: 0; font-size: clamp(36px, 4vw, 60px); line-height: 1.12; }
+.directory-hero > p:last-child { color: var(--muted); font: 700 12px/1 ui-monospace, monospace; }
+.directory-filters { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(140px, 220px) auto; gap: 8px; position: sticky; top: 74px; z-index: 4; padding: 12px 0; background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(14px); }
+.directory-filters input, .directory-filters select, .directory-filters button { min-height: 42px; margin: 0; border-radius: 2px; }
+.directory-list { border-top: 1px solid var(--line); }
+
+.ip-health { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 5px 14px; color: var(--muted); font: 11px/1.6 var(--font-body, sans-serif); white-space: normal; }
+.ip-readiness { display: inline-flex; align-items: center; gap: 6px; }
+.ip-readiness meter { width: 48px; height: 5px; accent-color: var(--accent, #526c61); }
+.ip-health-panel { padding: 4px 0 12px; border-bottom: 1px solid var(--line); }
+.repo-audit { display: block; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.ip-health-panel details { font-size: 12px; }
+.ip-health-more { padding: 12px 0 0; }
+.ip-health-panel summary { cursor: pointer; }
+.ip-health-panel ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 5px 20px; list-style: none; padding: 0; }
+.ip-health-panel p { color: var(--muted); max-width: 70ch; }
+
+.directory-row { display: grid; grid-template-columns: minmax(220px, 2fr) 1.15fr 1.15fr 1fr 24px; gap: 16px; align-items: center; min-height: 68px; border-bottom: 1px solid var(--line); text-decoration: none; transition: padding .2s ease, background .2s ease; }
+.directory-design-system { display: inline-block; padding: 8px 0; font-size: 12px; }
+.directory-row:hover { padding: 0 12px; background: var(--paper); }
+.directory-row > span:not(.directory-name) { color: var(--muted); font-size: 12px; }
+.directory-name { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; }
+.directory-name strong { font-size: 17px; }
+.directory-name small { color: var(--muted); font-size: 12px; line-height: 1.5; white-space: normal; overflow-wrap: anywhere; }
+.application-directory { margin-top: 88px; border-top: 1px solid var(--ink); }
+.application-directory header { padding: 28px 0 18px; }
+.application-directory h2 { margin: 4px 0 0; }
+.application-directory > a { display: grid; grid-template-columns: 1fr auto 24px; gap: 20px; padding: 18px 0; border-top: 1px solid var(--line); text-decoration: none; }
+.record-detail { min-height: 58vh; display: flex; flex-direction: column; justify-content: flex-end; border-bottom: 1px solid var(--ink); padding-bottom: 38px; }
+.record-detail h1 { max-width: 930px; margin: 10px 0; font-size: clamp(54px, 10vw, 128px); line-height: .9; overflow-wrap: anywhere; }
+.record-secondary { color: var(--muted); font-size: clamp(18px, 2vw, 28px); }
+.record-facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0; }
+.record-facts > * { border: 1px solid var(--line); padding: 8px 11px; color: inherit; text-decoration: none; font-size: 12px; }
+.application-details { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 42px; border-top: 1px solid var(--line); }
+.application-details > div { min-height: 170px; padding: 18px 14px 18px 0; border-right: 1px solid var(--line); }
+.application-details h2 { margin: 18px 0 8px; font-size: 19px; }
+.application-details a { display: block; color: inherit; padding: 5px 0; font-size: 12px; }
+.lineage-block, .brand-architecture { padding: 32px 0; border-bottom: 1px solid var(--brand-line, var(--line)); }
+.lineage-block a { display: block; padding: 16px 0; border-top: 1px solid var(--line); font-size: 22px; text-decoration: none; }
+.brand-architecture header { display: flex; justify-content: space-between; align-items: end; }
+.brand-architecture h2 { margin: 0; font-size: clamp(28px, 4vw, 48px); }
+.lineage-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 20px; border-top: 1px solid var(--brand-line, var(--line)); }
+.lineage-grid a { display: grid; gap: 6px; padding: 18px 14px 18px 0; border-right: 1px solid var(--brand-line, var(--line)); color: inherit; text-decoration: none; }
+.lineage-grid small { color: var(--brand-muted, var(--muted)); text-transform: uppercase; }
+.lineage-grid strong { font-size: 17px; }
+@media (max-width: 760px) {
+  .topbar { align-items: flex-start; flex-direction: column; }
+  .topbar-search { flex: 1 1 auto; width: 100%; max-width: none; order: 3; }
+  nav { width: 100%; justify-content: space-between; gap: 10px; }
+  .admin #unlockPanel { grid-template-columns: 1fr; }
+  .admin-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-split { grid-template-columns: 1fr; gap: 36px; }
+  .admin-toolbar { align-items: stretch; flex-direction: column; }
+  .admin-toolbar label { min-width: 0; width: 100%; }
+  .hub-hero, .brand-hero, .form-grid { grid-template-columns: 1fr; }
+  .brand-sidera .brand-hero { min-height: auto; padding-top: 26px; grid-template-columns: minmax(0, 1fr); }
+  .brand-sidera .brand-hero h1 { max-width: none; font-size: clamp(64px, 24vw, 94px); }
+  .sidera-compass-visual { min-height: 340px; }
+  .sidera-principles { grid-template-columns: 1fr; }
+  .sidera-principles span + span { padding-left: 0; border-top: 1px solid var(--brand-line); border-left: 0; }
+  .brand-kaoyu-shenhua .brand-hero { min-height: auto; padding-top: 26px; grid-template-columns: 1fr; }
+  .brand-kaoyu-shenhua .brand-hero h1 { max-width: none; font-size: clamp(52px, 18vw, 88px); }
+  .kaoyu-fire-visual { min-height: 300px; }
+  .kaoyu-principles { grid-template-columns: 1fr; }
+  .kaoyu-principles span + span { padding-left: 0; border-top: 1px solid var(--brand-line); border-left: 0; }
+  .resource-grid { grid-template-columns: 1fr; }
+  .endpoint-grid, .mood-grid { grid-template-columns: 1fr; }
+  .profile-form-grid { grid-template-columns: 1fr; }
+  .brand-facts { grid-template-columns: 1fr; }
+  .brand-facts > div:nth-child(even) { padding-left: 0; border-left: 0; }
+  .brand-advanced > summary small { display: none; }
+  .adobe-source-file { grid-template-columns: 1fr; }
+  .adobe-source-preview { min-height: 220px; border-right: 0; border-bottom: 1px solid var(--brand-line, var(--line)); }
+  .hub-hero { min-height: auto; padding-top: 36px; }
+  .hero-index { align-self: stretch; }
+  .hero-index-row { grid-template-columns: minmax(0, 1fr) auto auto; }
+  .hero-index-colors { display: none; }
+  .entry-portals { grid-template-columns: 1fr; }
+  .portal-agent { grid-template-columns: 1fr; }
+  .agent-actions { grid-template-columns: 1fr 1fr; min-width: 0; }
+  .agent-actions .portal-action { grid-column: 1 / -1; }
+  .evolution-link { grid-template-columns: 1fr auto; gap: 18px; }
+  .evolution-path { grid-column: 1 / -1; grid-row: 2; grid-template-columns: repeat(5, auto); justify-content: space-between; }
+  .evolution-open { grid-column: 2; grid-row: 1; }
+  .library-entry-link { grid-template-columns: 1fr auto; }
+  .library-entry-copy { padding-right: 16px; }
+  .library-entry-stats { grid-column: 1 / -1; grid-row: 2; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 0; }
+  .library-entry-stats span { min-height: 82px; padding: 14px 0; }
+  .library-entry-stats span:nth-child(2n) { padding-left: 14px; }
+  .library-entry-open { grid-column: 2; grid-row: 1; }
+  .ip-system-hero { min-height: auto; }
+  .font-library { --font-demo-size: 38px; padding: 64px 0 54px; }
+  .font-library-entry { grid-template-columns: 1fr auto; padding: 30px 0; }
+  .font-library-entry > p { display: none; }
+  .font-directory-main { width: min(100% - 32px, 1420px); padding-top: 70px; }
+  .font-directory-hero { grid-template-columns: 1fr; gap: 30px; padding: 28px 0 42px; }
+  .font-directory-hero h1 { font-size: clamp(48px, 15vw, 72px); }
+  .font-directory-toolbar { position: relative; top: auto; grid-template-columns: 1fr; gap: 12px; padding: 18px 0; backdrop-filter: none; }
+  .font-directory-layout { grid-template-columns: 1fr; gap: 0; padding: 0; }
+  .font-category-list { position: relative; top: auto; flex-direction: row; gap: 0; overflow-x: auto; padding: 18px 0 0; }
+  .font-category-list strong { display: none; }
+  .font-category-list button { flex: 0 0 auto; padding: 8px 14px; border: 1px solid var(--line); border-right: 0; }
+  .font-category-list button:last-child { border-right: 1px solid var(--line); }
+  .font-sources { grid-template-columns: 1fr; gap: 36px; padding: 64px 0 50px; }
+  .font-reference-directory { padding: 64px 0 52px; }
+  .font-reference-directory > header { grid-template-columns: 1fr; gap: 16px; }
+  .font-reference-directory > header > a { justify-self: start; }
+  .font-reference-row { grid-template-columns: minmax(0, 1fr) auto; gap: 7px 14px; }
+  .font-reference-row span { grid-column: 1 / -1; }
+  .font-reference-row .font-reference-license { grid-column: 2; grid-row: 1; }
+  .font-sources a { grid-template-columns: 1fr auto; }
+  .font-sources a span { grid-column: 1 / -1; grid-row: 2; }
+  .font-library-head { grid-template-columns: 1fr; gap: 14px; }
+  .font-library-head h2 { font-size: 36px; }
+  .font-library-controls { grid-template-columns: 1fr; gap: 12px; }
+  .font-library-controls label { width: 100%; justify-content: space-between; }
+  .font-library-controls input[type="range"] { flex: 1; }
+  .font-specimen { min-height: 300px; }
+  .font-specimen-head { grid-template-columns: 1fr; gap: 12px; }
+  .font-specimen-actions { justify-content: flex-start; }
+  .font-specimen-samples { margin-top: 24px; }
+  .font-license-types > header,
+  .font-license-types article { grid-template-columns: 1fr; gap: 10px; }
+  .font-license-types article a { justify-self: start; }
+  .font-library-license { grid-template-columns: 1fr; gap: 10px; }
+  .font-library-license a { justify-self: start; }
+  .ip-system-content-shell { grid-template-columns: 1fr; gap: 36px; }
+  .ip-system-toc {
+    position: static;
+    max-height: none;
+    padding: 0 0 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ip-system-toc nav {
+    display: flex;
+    gap: 8px 16px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .ip-system-toc a { flex: 0 0 auto; }
+  .ip-system-loop { padding-left: 0; }
+  .collab-card { grid-template-columns: 1fr; align-items: start; }
+  .history-panel { grid-template-columns: 1fr; }
+  .version-item { grid-template-columns: 70px minmax(0, 1fr); }
+  .version-item time { display: none; }
+  .section-head { display: grid; align-items: start; }
+  .ip-grid { grid-template-columns: 1fr; }
+  .ip-card { min-height: 320px; }
+  .directory-main { width: min(100% - 28px, 1180px); padding-top: 42px; }
+  .directory-hero { grid-template-columns: 1fr; }
+  .directory-filters { position: static; grid-template-columns: 1fr 1fr; }
+  .directory-filters input { grid-column: 1 / -1; }
+  .directory-row { grid-template-columns: minmax(0, 1fr) 22px; padding: 13px 0; }
+  .directory-row > span:not(.directory-name) { display: none; }
+  .directory-name { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .lineage-grid { grid-template-columns: 1fr; }
+  .application-details { grid-template-columns: 1fr 1fr; }
+  h1 { font-size: 40px; }
+  h2 { font-size: 28px; }
+  .card-body h2 { font-size: 24px; }
+}
+@media (min-width: 761px) {
+  .evolution-copy h2 {
+    max-width: none;
+    white-space: nowrap;
+    font-size: clamp(24px, 2.25vw, 32px);
+  }
+}
+@media (min-width: 761px) and (max-width: 1080px) {
+  .hub-hero { grid-template-columns: 1fr; min-height: auto; }
+  .ip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .font-directory-main { width: min(100% - 48px, 1420px); }
+  .font-directory-toolbar { grid-template-columns: minmax(0, 1fr) auto; gap: 12px 24px; }
+  .font-directory-toolbar .font-directory-search { grid-column: 1; grid-row: 1; }
+  .font-directory-toolbar .font-filter { grid-column: 2; grid-row: 1; }
+  .font-directory-toolbar .font-control-size { grid-column: 1; grid-row: 2; }
+  .font-directory-toolbar > label:last-child { grid-column: 2; grid-row: 2; justify-self: end; }
+  .font-directory-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .font-category-list {
+    position: sticky;
+    top: 181px;
+    z-index: 14;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--paper) 96%, transparent);
+    backdrop-filter: blur(14px);
+  }
+  .font-category-list strong { display: none; }
+  .font-category-list button { flex: 1 0 auto; justify-content: center; min-height: 34px; padding: 6px 14px; border: 0; border-right: 1px solid var(--line); border-bottom: 0; }
+  .font-category-list button:last-child { border-right: 0; }
+  .font-specimen { min-height: 300px; padding: 28px 0 34px; }
+  .font-specimen-head { grid-template-columns: minmax(220px, .85fr) minmax(260px, 1.15fr); gap: 16px 28px; }
+  .font-specimen-actions { grid-column: 1 / -1; justify-content: flex-start; }
+  .font-specimen-samples { margin-top: 26px; }
+}
+.brand-loading,
+.brand-load-error {
+  width: min(100% - 44px, 1320px);
+  min-height: calc(100dvh - 68px);
+  margin: 0 auto;
+  padding: clamp(36px, 7vw, 96px) 0;
+  display: grid;
+  align-content: end;
+  border-bottom: 1px solid #151515;
+}
+.brand-loading p,
+.brand-load-error p {
+  margin: 0 0 12px;
+  color: #6b6b66;
+  font-size: 12px;
+  font-weight: 700;
+}
+.brand-loading strong,
+.brand-load-error h1 {
+  max-width: 16ch;
+  margin: 0;
+  font-size: clamp(32px, 5vw, 72px);
+  line-height: 1;
+}
+.brand-loading > span {
+  position: relative;
+  height: 2px;
+  margin-top: 32px;
+  overflow: hidden;
+  background: #deded8;
+}
+.brand-loading > span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 38%;
+  background: #151515;
+  animation: brand-load-progress 1.1s ease-in-out infinite alternate;
+}
+.brand-load-error button {
+  width: max-content;
+  margin-top: 28px;
+}
+.brand-shell > section:not(.brand-hero),
+.brand-shell > article {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 680px;
+}
+@keyframes brand-load-progress {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(260%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hero-index-row,
+  .ip-card,
+  .evolution-open,
+  .library-entry-open,
+  .toast {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  .hero-index-row { opacity: 1; }
+  .brand-loading > span::after { animation: none; transform: none; width: 100%; }
+}
+@media (max-width: 760px) {
+  .brand-loading,
+  .brand-load-error { width: min(100% - 28px, 1320px); min-height: calc(100dvh - 58px); }
+}`);
+await writeFile(join(assetsDir, "site.css"), `${(await readFile(join(assetsDir, "site.css"), "utf8")).trimEnd()}\n${(await readFile(join(root, "styles", "editorial.css"), "utf8")).trimEnd()}\n
+.directory-more-filters { grid-column: 1 / -1; font-size: 13px; }
+.directory-more-filters > summary { cursor: pointer; padding: 8px 0; min-height: 36px; }
+.directory-advanced-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 0 8px; }
+.directory-entry { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; border-bottom: 1px solid var(--line); padding: 10px 0; }
+.directory-entry .directory-row { grid-column: 1 / -1; border-bottom: 0; min-height: 58px; }
+.directory-entry .directory-design-system { grid-column: 2; grid-row: 2; align-self: start; padding: 8px 0; margin: 0; }
+.directory-entry .ip-health-panel { grid-column: 1; grid-row: 2; padding: 0; border: 0; min-width: 0; }
+.directory-entry .ip-health-panel summary { min-height: 36px; padding: 8px 0; }
+.directory-entry .ip-health-panel:has(details[open]) { grid-column: 1 / -1; }
+.directory-entry .ip-health { font-size: 12px; gap: 4px 10px; }
+.ip-readiness meter { height: 8px; }
+.ip-readiness meter::-webkit-meter-bar { background: #dce3de; border: 0; }
+.ip-readiness meter::-webkit-meter-optimum-value { background: #526c61; }
+.ip-readiness meter::-moz-meter-bar { background: #526c61; }
+@media (max-width: 760px) {
+  .directory-hero { gap: 12px; padding-bottom: 18px; margin-bottom: 12px; }
+  .directory-main { padding-top: 28px; }
+  .directory-advanced-filters { grid-template-columns: 1fr; }
+  .directory-entry { column-gap: 10px; }
+  .directory-entry .ip-health { font-size: 11px; gap: 4px 8px; }
+  .directory-entry .directory-design-system { font-size: 11px; }
+}
+
+.more-ips > summary { cursor: pointer; min-height: 44px; padding: 12px 4px; color: var(--muted); font-size: 13px; }
+.more-ip-items { display: grid; gap: 8px; }
+.directory-more-ips { margin-top: 16px; border-top: 1px solid var(--line); }
+.hero-index-row.is-featured { padding: 12px 10px 12px 18px; border-width: 2px; }
+.hero-index-row.is-featured .hero-index-title { font-size: 22px; line-height: 1.35; white-space: normal; }
+.hero-index-row.is-featured .hero-index-secondary { font-size: 14px; }
+.directory-entry.is-featured { padding-top: 18px; padding-bottom: 18px; }
+.directory-entry.is-featured .directory-name strong { font-size: 26px; line-height: 1.25; }
+.directory-entry.is-featured .directory-name small { font-size: 14px; }
+.ip-card.is-featured h2 { font-size: 32px; }
+`);
+await copyFile(join(assetsDir, "site.css"), join(siteDir, siteCssPath));
+
+await emitBrowser("site", join(assetsDir, "site.js"));
+await copyFile(join(assetsDir, "site.js"), join(siteDir, siteJsPath));
+
+await emitBrowser("admin", join(assetsDir, "admin.js"));
+
+const kaoyuBrand = brandPayloads.find((brand) => brand.slug === "kaoyu-shenhua");
+if (kaoyuBrand) {
+  const kaoyuStoryDir = join(siteDir, "kaoyu-shenhua");
+  await mkdir(kaoyuStoryDir, { recursive: true });
+  const kaoyuGuideHtml = kaoyuBrand.guides?.find((guide) => guide.primary)?.html
+    || kaoyuBrand.guides?.[0]?.html
+    || "<p>烤鱼神话品牌叙事见 KaoyuShenhua/README.md。</p>";
+  await writeFile(join(kaoyuStoryDir, "index.html"), html`<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>烤鱼神话 · 一炉火，烧了三十多年</title>
+  <meta name="description" content="三十多年老灶火，盐城大丰源头活鱼现点现烤，全店无预制菜。把实话坚持三十多年，就成了神话。">
+${commonDiscoveryHead("../")}
+  <link rel="stylesheet" href="../${siteCssPath}">
+  <style>
+    .kaoyu-story-page {
+      --brand-primary: #241714;
+      --brand-accent: #B33A2B;
+      --brand-secondary: #C89B58;
+      --brand-paper: #FFFDFC;
+      --brand-ink: #181312;
+      --brand-muted: #6C625E;
+      --brand-line: rgba(36, 23, 20, 0.18);
+      min-height: 100dvh;
+      background:
+        radial-gradient(ellipse at 12% 0%, color-mix(in srgb, #B33A2B 14%, transparent), transparent 42%),
+        linear-gradient(180deg, #FFFDFC 0%, #F5F2EE 100%);
+      color: var(--brand-ink);
+    }
+    .kaoyu-story-page .story-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 22px 20px 0;
+    }
+    .kaoyu-story-page .story-top a {
+      color: var(--brand-accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .kaoyu-story-page .story-hero {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: clamp(36px, 8vw, 88px) 20px 28px;
+    }
+    .kaoyu-story-page .story-hero .eyebrow {
+      margin: 0 0 12px;
+      color: var(--brand-accent);
+      font: 650 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .06em;
+    }
+    .kaoyu-story-page .story-hero h1 {
+      margin: 0 0 14px;
+      max-width: 10ch;
+      color: var(--brand-primary);
+      font-size: clamp(42px, 8vw, 72px);
+      line-height: 1.05;
+      letter-spacing: -.02em;
+    }
+    .kaoyu-story-page .story-hero .tagline {
+      margin: 0;
+      max-width: 36rem;
+      color: var(--brand-muted);
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.65;
+    }
+    .kaoyu-story-page .story-body {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 0 20px 72px;
+    }
+    .kaoyu-story-page .story-body .rendered-document {
+      border-top: 1px solid var(--brand-line);
+      padding-top: 28px;
+    }
+    .kaoyu-story-page .story-body h1 { display: none; }
+  </style>
+</head>
+<body class="kaoyu-story-page">
+  <header class="story-top">
+    <a href="../brand.html?brand=kaoyu-shenhua">← 烤鱼神话 IP</a>
+    <a href="../brand.html?brand=kaoyu-shenhua#kaoyu-story">IP 页故事区</a>
+    <a href="${escapeBuildHtml(kaoyuBrand.designSystemUrl)}" target="_blank" rel="noreferrer">设计系统 ↗</a>
+  </header>
+  <section class="story-hero">
+    <p class="eyebrow">KAOYUSHENHUA</p>
+    <h1>一炉火，烧了三十多年</h1>
+    <p class="tagline">把实话坚持三十多年，就成了神话。</p>
+  </section>
+  <main class="story-body">
+    <article class="rendered-document brand-guide-document">${kaoyuGuideHtml}</article>
+  </main>
+</body>
+</html>`);
+}
+
+console.log(`Built site with ${brandPayloads.length} brands at ${relative(root, siteDir)}`);
