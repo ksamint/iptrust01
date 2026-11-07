@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const BUILD_VERSION = "7797344-5dbee051";
+const BUILD_VERSION = "2a86997-3eb3e341";
 const MORE_IP_SLUGS = new Set(["qingshuiting","youyuan-jingmeng","subangyuan","xiaotaoyuan","ganglao-baozailu","shuangxi-shaola","mutangwan","tongxianghui","tongli-market"]);
 const FEATURED_IP_SLUGS = new Set(["iptrust","tableai","opcglobal","sidera"]);
 
@@ -511,7 +511,7 @@ function normalizeLocale(value) {
 
 let currentLocale = normalizeLocale(localStorage.getItem("iptrust-locale") || localStorage.getItem("iptrust-lang"));
 const publishedDirectory = document.getElementById("directorySnapshot") ? JSON.parse(document.getElementById("directorySnapshot").textContent) : null;
-let cachedBrands = null;
+let cachedBrands = document.getElementById("brandListSnapshot") ? JSON.parse(document.getElementById("brandListSnapshot").textContent) : null;
 let lastDirectoryData = null;
 let cachedSearch = null;
 let cachedVersions = null;
@@ -2164,10 +2164,12 @@ function ipHealth(brand, details = false) {
   return `<div class="ip-health-panel"><details><summary>${compact}</summary><div class="ip-health-more"><span class="repo-audit">${escapeHtml(repo?.name || "—")} · ${repo?.suffixValid ? (en ? "Suffix OK" : "后缀合规") : (en ? "Needs 01 / 02 suffix" : "缺少 01 / 02 后缀")}${repo?.stale || repo?.error ? (en ? " · Cached; refresh unavailable" : " · 缓存；刷新不可用") : ""}</span><ul>${Object.entries(brand.completeness.checks).map(([key, ok]) => `<li>${ok ? "✓" : "○"} ${escapeHtml(readinessLabels[key]?.[en ? 0 : 1] || key)}</li>`).join("")}</ul><p>${en ? "Last updated" : "最后更新"}: ${escapeHtml(date)}</p><p>${en ? "Checked" : "检查时间"}: ${escapeHtml(repo?.checkedAt || "—")}</p><p>${en ? "10 inventory checks, 10 points each. Content presence only; legal ownership and design quality are not reviewed." : "10 项资料检查，每项 10 分。只评估资料是否齐备；未审查法律权属或设计质量。"}</p></div></details></div>`;
 }
 
-async function renderHeroIndex() {
+async function renderHeroIndex(refresh = false) {
   const index = $("#heroIndex");
   if (!index) return;
-  await loadRankedBrands();
+  if (refresh) await loadRankedBrands();
+  if (!cachedBrands) return;
+  const previousScrollTop = index.scrollTop;
   const moreOpen = Boolean(index.querySelector(".more-ips[open]"));
   const row = (brand, idx) => {
     const localized = mainBrand(brand);
@@ -2184,7 +2186,7 @@ async function renderHeroIndex() {
   };
   index.innerHTML = cachedBrands.filter((brand) => !MORE_IP_SLUGS.has(brand.slug)).map(row).join("")
     + `<details class="more-ips" ${moreOpen ? "open" : ""}><summary>${currentLocale === "en" ? "More IPs" : "更多 IP"} · ${MORE_IP_SLUGS.size}</summary><div class="more-ip-items">${cachedBrands.filter((brand) => MORE_IP_SLUGS.has(brand.slug)).map(row).join("")}</div></details>`;
-  index.scrollTop = 0;
+  index.scrollTop = previousScrollTop;
   setupCopyButtons(cachedBrands);
 }
 
@@ -2699,6 +2701,7 @@ setupApiConnect();
 setupFontLibrary();
 setupEvolutionMap();
 renderHeroIndex().catch(console.error);
+renderHeroIndex(true).catch(console.error);
 renderIndex().catch(console.error);
 renderBrand().catch(renderBrandFailure);
 if (publishedDirectory) renderDirectory(structuredClone(publishedDirectory), true).catch(console.error);
@@ -2706,7 +2709,7 @@ renderDirectory().catch(console.error);
 setInterval(() => {
   if (document.hidden || !$("#directoryPage, #heroIndex, #brandGrid") || document.activeElement?.closest("#directoryFilters") || $(".ip-health-panel details[open], .more-ips[open]")) return;
   repositoryStatusFetchedAt = 0;
-  Promise.all([renderHeroIndex(), renderIndex(), renderDirectory()]).catch(console.error);
+  Promise.all([renderHeroIndex(true), renderIndex(), renderDirectory()]).catch(console.error);
 }, 60000);
 renderIpRecord().catch(console.error);
 renderApplicationPage().catch(console.error);

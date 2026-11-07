@@ -281,10 +281,7 @@ p { line-height: 1.65; }
     linear-gradient(90deg, color-mix(in srgb, var(--brand-primary, var(--blue)) 7%, transparent), rgba(255, 254, 250, .42) 54%, transparent),
     rgba(255, 254, 250, .32);
   box-shadow: 0 10px 34px rgba(22, 20, 18, .045);
-  transform: translate3d(calc((var(--row-index, 0) % 2) * 10px), 10px, 0);
-  opacity: 0;
-  animation: row-flow .64s cubic-bezier(.2,.8,.2,1) forwards;
-  animation-delay: calc(var(--row-index, 0) * 32ms);
+  opacity: 1;
   transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
 }
 .hero-index-link {
@@ -378,9 +375,7 @@ p { line-height: 1.65; }
 @keyframes row-rise {
   to { opacity: 1; transform: translateY(0); }
 }
-@keyframes row-flow {
-  to { opacity: 1; transform: translate3d(calc((var(--row-index, 0) % 2) * 6px), 0, 0); }
-}
+
 .section-head {
   display: flex;
   justify-content: space-between;

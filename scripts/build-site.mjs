@@ -1644,6 +1644,7 @@ const initialHeroRowHtml = (brand, idx) => {
  };
 const initialHeroIndexHtml = indexPayload.filter((brand) => !moreIpSlugs.has(brand.slug)).map(initialHeroRowHtml).join("")
   + `<details class="more-ips"><summary>更多 IP / More IPs · ${moreIpSlugs.size}</summary><div class="more-ip-items">${indexPayload.filter((brand) => moreIpSlugs.has(brand.slug)).map(initialHeroRowHtml).join("")}</div></details>`;
+const homepageListSnapshot = indexPayload.map(({ assetManifest, assetKit, moodboard, ...brand }) => brand);
 const publicOrganizationCount = librarySnapshots.organizations.length;
 const fortuneCount = librarySnapshots.organizations.filter((item) => item.sourceId === "fortune-global-500-2025").length;
 const sasacCount = librarySnapshots.organizations.filter((item) => item.sourceId === "sasac-central-enterprises-2026").length;
@@ -1677,7 +1678,7 @@ ${commonDiscoveryHead()}
 </head>
 <body class="hub-home">
   <header class="topbar">
-    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}"></a>
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
     <div class="topbar-search" role="search">
       <input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP">
       <div class="global-results" id="globalResults" aria-live="polite"></div>
@@ -1739,6 +1740,7 @@ ${commonDiscoveryHead()}
     <span>${hubNameCn} · ${hubNameEn}</span>
     <nav aria-label="Secondary actions"><a href="about" data-i18n="nav.about">关于</a><a href="admin" data-i18n="nav.admin">管理</a><a href="mailto:hi@tableai.ai" data-i18n="portal.collabNav">合作</a></nav>
   </footer>
+  <script id="brandListSnapshot" type="application/json">${JSON.stringify(homepageListSnapshot).replaceAll("<", "\\u003c")}</script>
   <script src="/${siteJsPath}" type="module"></script>
 </body>
 </html>`);
@@ -1759,7 +1761,7 @@ ${commonDiscoveryHead()}
 </head>
 <body class="about-page">
   <header class="topbar">
-    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}"></a>
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
     <div class="topbar-search" role="search"><input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP"><div class="global-results" id="globalResults" aria-live="polite"></div></div>
     <nav class="top-actions" aria-label="Primary actions">
       <a href="directory" data-i18n="nav.directory">目录</a>
@@ -1806,7 +1808,7 @@ ${commonDiscoveryHead()}
 </head>
 <body class="ip-system-page">
   <header class="topbar">
-    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}"></a>
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
     <div class="topbar-search" role="search">
       <input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP">
       <div class="global-results" id="globalResults" aria-live="polite"></div>
@@ -1918,7 +1920,7 @@ ${commonDiscoveryHead()}
 </head>
 <body class="font-directory-page">
   <header class="topbar">
-    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}"></a>
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
     <div class="topbar-search" role="search">
       <input id="brandSearch" type="search" autocomplete="off" aria-label="Global search">
       <div class="global-results" id="globalResults" aria-live="polite"></div>
@@ -2038,7 +2040,7 @@ ${commonDiscoveryHead()}
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}"></a>
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
     <div class="topbar-search" role="search">
       <input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP">
       <div class="global-results" id="globalResults" aria-live="polite"></div>
@@ -2106,7 +2108,7 @@ ${commonDiscoveryHead()}
 </head>
 <body data-page="${kind}">
   <header class="topbar">
-    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}"></a>
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
     <div class="topbar-search" role="search"><input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP"><div class="global-results" id="globalResults" aria-live="polite"></div></div>
     <nav class="top-actions" aria-label="Primary actions">
       <a href="directory" data-i18n="nav.directory" aria-current="${kind === "directory" ? "page" : "false"}">目录</a>
@@ -2144,7 +2146,7 @@ ${commonDiscoveryHead()}
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}"></a>
+    <a class="brand" href="./" aria-label="${hubNameCn}"><img src="${hubLogoUrl}" alt="${hubNameCn}" loading="lazy" decoding="async"></a>
     <div class="topbar-search" role="search">
       <input id="brandSearch" type="search" autocomplete="off" aria-label="Search IP">
       <div class="global-results" id="globalResults" aria-live="polite"></div>
@@ -2516,10 +2518,7 @@ p { line-height: 1.65; }
     linear-gradient(90deg, color-mix(in srgb, var(--brand-primary, var(--blue)) 7%, transparent), rgba(255, 254, 250, .42) 54%, transparent),
     rgba(255, 254, 250, .32);
   box-shadow: 0 10px 34px rgba(22, 20, 18, .045);
-  transform: translate3d(calc((var(--row-index, 0) % 2) * 10px), 10px, 0);
-  opacity: 0;
-  animation: row-flow .64s cubic-bezier(.2,.8,.2,1) forwards;
-  animation-delay: calc(var(--row-index, 0) * 32ms);
+  opacity: 1;
   transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
 }
 .hero-index-link {
@@ -2613,9 +2612,7 @@ p { line-height: 1.65; }
 @keyframes row-rise {
   to { opacity: 1; transform: translateY(0); }
 }
-@keyframes row-flow {
-  to { opacity: 1; transform: translate3d(calc((var(--row-index, 0) % 2) * 6px), 0, 0); }
-}
+
 .section-head {
   display: flex;
   justify-content: space-between;
@@ -5114,7 +5111,7 @@ function normalizeLocale(value) {
 
 let currentLocale = normalizeLocale(localStorage.getItem("iptrust-locale") || localStorage.getItem("iptrust-lang"));
 const publishedDirectory = document.getElementById("directorySnapshot") ? JSON.parse(document.getElementById("directorySnapshot").textContent) : null;
-let cachedBrands = null;
+let cachedBrands = document.getElementById("brandListSnapshot") ? JSON.parse(document.getElementById("brandListSnapshot").textContent) : null;
 let lastDirectoryData = null;
 let cachedSearch = null;
 let cachedVersions = null;
@@ -6767,10 +6764,12 @@ function ipHealth(brand, details = false) {
   return \`<div class="ip-health-panel"><details><summary>\${compact}</summary><div class="ip-health-more"><span class="repo-audit">\${escapeHtml(repo?.name || "—")} · \${repo?.suffixValid ? (en ? "Suffix OK" : "后缀合规") : (en ? "Needs 01 / 02 suffix" : "缺少 01 / 02 后缀")}\${repo?.stale || repo?.error ? (en ? " · Cached; refresh unavailable" : " · 缓存；刷新不可用") : ""}</span><ul>\${Object.entries(brand.completeness.checks).map(([key, ok]) => \`<li>\${ok ? "✓" : "○"} \${escapeHtml(readinessLabels[key]?.[en ? 0 : 1] || key)}</li>\`).join("")}</ul><p>\${en ? "Last updated" : "最后更新"}: \${escapeHtml(date)}</p><p>\${en ? "Checked" : "检查时间"}: \${escapeHtml(repo?.checkedAt || "—")}</p><p>\${en ? "10 inventory checks, 10 points each. Content presence only; legal ownership and design quality are not reviewed." : "10 项资料检查，每项 10 分。只评估资料是否齐备；未审查法律权属或设计质量。"}</p></div></details></div>\`;
 }
 
-async function renderHeroIndex() {
+async function renderHeroIndex(refresh = false) {
   const index = $("#heroIndex");
   if (!index) return;
-  await loadRankedBrands();
+  if (refresh) await loadRankedBrands();
+  if (!cachedBrands) return;
+  const previousScrollTop = index.scrollTop;
   const moreOpen = Boolean(index.querySelector(".more-ips[open]"));
   const row = (brand, idx) => {
     const localized = mainBrand(brand);
@@ -6787,7 +6786,7 @@ async function renderHeroIndex() {
   };
   index.innerHTML = cachedBrands.filter((brand) => !MORE_IP_SLUGS.has(brand.slug)).map(row).join("")
     + \`<details class="more-ips" \${moreOpen ? "open" : ""}><summary>\${currentLocale === "en" ? "More IPs" : "更多 IP"} · \${MORE_IP_SLUGS.size}</summary><div class="more-ip-items">\${cachedBrands.filter((brand) => MORE_IP_SLUGS.has(brand.slug)).map(row).join("")}</div></details>\`;
-  index.scrollTop = 0;
+  index.scrollTop = previousScrollTop;
   setupCopyButtons(cachedBrands);
 }
 
@@ -7302,6 +7301,7 @@ setupApiConnect();
 setupFontLibrary();
 setupEvolutionMap();
 renderHeroIndex().catch(console.error);
+renderHeroIndex(true).catch(console.error);
 renderIndex().catch(console.error);
 renderBrand().catch(renderBrandFailure);
 if (publishedDirectory) renderDirectory(structuredClone(publishedDirectory), true).catch(console.error);
@@ -7309,7 +7309,7 @@ renderDirectory().catch(console.error);
 setInterval(() => {
   if (document.hidden || !$("#directoryPage, #heroIndex, #brandGrid") || document.activeElement?.closest("#directoryFilters") || $(".ip-health-panel details[open], .more-ips[open]")) return;
   repositoryStatusFetchedAt = 0;
-  Promise.all([renderHeroIndex(), renderIndex(), renderDirectory()]).catch(console.error);
+  Promise.all([renderHeroIndex(true), renderIndex(), renderDirectory()]).catch(console.error);
 }, 60000);
 renderIpRecord().catch(console.error);
 renderApplicationPage().catch(console.error);

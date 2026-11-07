@@ -46,7 +46,7 @@ test("live ranking updates canonical repo links and readiness status", async () 
   const { runInNewContext } = await import("node:vm");
   const script = await readFile(process.env.IPTRUST_TEST_SITE_SCRIPT || new URL("../../site/assets/site.js", import.meta.url), "utf8");
   const start = script.indexOf("let repositoryStatusPromise = null;");
-  const end = script.indexOf("async function renderHeroIndex()", start);
+  const end = script.indexOf("async function renderHeroIndex(", start);
   assert.ok(start >= 0 && end > start);
   const checks = Object.fromEntries(["profile", "business", "guide", "tokens", "palette", "logo", "sources", "classification", "repository", "repositoryName"].map((key) => [key, true]));
   const refreshed = await runInNewContext(script.slice(start, end) + "\nloadRankedBrands()", {
@@ -65,7 +65,7 @@ test("bilingual directory names and a collapsed readiness bar", async () => {
   assert.equal(ips.items.find((ip) => ip.slug === "mtongheng").names.en, "Tong Heng International");
   const script = await readFile(new URL("../../site/assets/site.js", import.meta.url), "utf8");
   const start = script.indexOf("let repositoryStatusPromise = null;");
-  const end = script.indexOf("async function renderHeroIndex()", start);
+  const end = script.indexOf("async function renderHeroIndex(", start);
   const brand = { slug: "example", lastUpdatedAt: "2026-11-06T04:00:00Z", repository: { name: "dsys_example01", suffixValid: true }, completeness: { score: 90, missing: ["logo"], checks: { logo: false } } };
   const html = runInNewContext(script.slice(start, end) + "\nipHealth(brand, true)", { brand, cachedBrands: [brand], currentLocale: "en", localeMeta: { en: { dateLocale: "en-US" } }, escapeHtml: (text) => String(text) });
   assert.match(html, /Readiness 90%/);
@@ -141,4 +141,30 @@ test("nine secondary IPs collapse under More IPs and four IPs are enlarged", asy
       assert.equal((hidden.match(/class="directory-entry/g) || []).length, 1);
     }
   }
+});
+
+test("homepage controls render from published data without a network wait", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const { runInNewContext } = await import("node:vm");
+  const html = await readFile(new URL("../../site/index.html", import.meta.url), "utf8");
+  const embedded = html.match(/<script id="brandListSnapshot" type="application\/json">([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(embedded && !embedded.includes("<"));
+  const brands = JSON.parse(embedded);
+  assert.equal(brands.length, 37);
+  assert.ok(brands.every((b) => b.profile && b.theme && b.completeness && !b.assetManifest));
+  const script = await readFile(process.env.IPTRUST_TEST_HOME_SCRIPT || new URL("../../site/assets/site.js", import.meta.url), "utf8");
+  const start = script.indexOf("async function renderHeroIndex(");
+  const end = script.indexOf("async function renderVersions(", start);
+  const index = { innerHTML: "", scrollTop: 180, querySelector: () => null };
+  await runInNewContext(script.slice(start, end) + "\nrenderHeroIndex()", {
+    $: () => index, cachedBrands: brands, currentLocale: "en",
+    loadRankedBrands: () => { throw Error("unexpected metadata wait"); },
+    mainBrand: (b) => ({ name: b.mainName, secondaryName: b.display.en.secondaryName }),
+    MORE_IP_SLUGS: new Set(["qingshuiting", "youyuan-jingmeng", "subangyuan", "xiaotaoyuan", "ganglao-baozailu", "shuangxi-shaola", "mutangwan", "tongxianghui", "tongli-market"]),
+    FEATURED_IP_SLUGS: new Set(["iptrust", "tableai", "opcglobal", "sidera"]),
+    escapeHtml: (v) => String(v), themeStyle: () => "", ipHealth: () => "Readiness", colorDots: () => "", githubIcon: () => "", copyIcon: () => "", t: (v) => v, setupCopyButtons: () => {},
+  });
+  assert.match(index.innerHTML, /data-copy-brand=/);
+  assert.match(index.innerHTML, /Readiness/);
+  assert.equal(index.scrollTop, 180);
 });
