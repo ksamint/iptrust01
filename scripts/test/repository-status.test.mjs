@@ -109,3 +109,36 @@ test("directory snapshot renders without waiting for any API", async () => {
   assert.equal(data.ips.length, 39);
   assert.equal(data.ips.find((ip) => ip.slug === "mtongheng").names.en, "Tong Heng International");
 });
+
+test("nine secondary IPs collapse under More IPs and four IPs are enlarged", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const { runInNewContext } = await import("node:vm");
+  const script = await readFile(new URL("../../site/assets/site.js", import.meta.url), "utf8");
+  const ips = JSON.parse(await readFile(new URL("../../site/api/ips.json", import.meta.url)));
+  const taxonomy = JSON.parse(await readFile(new URL("../../site/api/taxonomy.json", import.meta.url)));
+  const more = JSON.parse(script.match(/const MORE_IP_SLUGS = new Set\((\[[^\n]*\])\);/)[1]);
+  const featured = JSON.parse(script.match(/const FEATURED_IP_SLUGS = new Set\((\[[^\n]*\])\);/)[1]);
+  const start = script.indexOf("async function renderDirectory(");
+  const end = script.indexOf("async function fallbackGraph(", start);
+  for (const query of ["", "?q=清水亭"]) {
+    const page = { innerHTML: "", querySelector: () => null };
+    await runInNewContext(script.slice(start, end) + "\nrenderDirectory(initialData, true)", {
+      initialData: structuredClone({ ips: ips.items, taxonomy, relationships: ips.relationships, applications: ips.applications }),
+      $: () => page, document: { activeElement: null }, cachedBrands: null, lastDirectoryData: null,
+      MORE_IP_SLUGS: new Set(more), FEATURED_IP_SLUGS: new Set(featured), currentLocale: "en", repositoryRefreshMode: "snapshot",
+      location: { search: query }, URLSearchParams, escapeHtml: (value) => String(value), ipHealth: () => "",
+      primaryIpName: (ip) => ip.names?.en || ip.names?.zh || ip.slug, secondaryIpName: () => "", selectOptions: () => "", taxonomyLabel: (term) => term?.id || "", t: () => "No results",
+    });
+    const [visible, hidden] = page.innerHTML.split('<details class="more-ips directory-more-ips"');
+    assert.ok(hidden);
+    if (!query) {
+      assert.equal((visible.match(/class="directory-entry/g) || []).length, 30);
+      assert.equal((hidden.match(/class="directory-entry/g) || []).length, 9);
+      assert.equal((visible.match(/directory-entry is-featured/g) || []).length, 4);
+      assert.doesNotMatch(hidden.slice(0, hidden.indexOf('>')), /open/);
+    } else {
+      assert.match(hidden.slice(0, hidden.indexOf('>')), /open/);
+      assert.equal((hidden.match(/class="directory-entry/g) || []).length, 1);
+    }
+  }
+});

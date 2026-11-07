@@ -26,6 +26,8 @@ const fontLicenseArchiveDir = join(root, "licenses", "fonts");
 
 const repositorySnapshot = JSON.parse(await readFile(join(root, "data/repository-status.json"), "utf8"));
 const brands = JSON.parse(await readFile(join(root, "config/brands.json"), "utf8"));
+const moreIpSlugs = new Set(["qingshuiting", "youyuan-jingmeng", "subangyuan", "xiaotaoyuan", "ganglao-baozailu", "shuangxi-shaola", "mutangwan", "tongxianghui", "tongli-market"]);
+const featuredIpSlugs = new Set(["iptrust", "tableai", "opcglobal", "sidera"]);
 const ipSystem = JSON.parse(await readFile(join(root, "config/ip-system.json"), "utf8"));
 const assetManifest = existsSync(assetManifestPath)
   ? JSON.parse(await readFile(assetManifestPath, "utf8"))
@@ -1626,12 +1628,12 @@ function initialThemeStyle(theme = {}) {
 
 const initialCopyIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="10" height="10" rx="2"></rect><path d="M5 15V7a2 2 0 0 1 2-2h8"></path></svg>`;
 const initialGithubIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.55 9.55 0 0 1 12 6.82c.85 0 1.71.11 2.51.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85V21c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"></path></svg>`;
-const initialHeroIndexHtml = indexPayload.map((brand, idx) => {
+const initialHeroRowHtml = (brand, idx) => {
   const primaryName = brand.mainName || brand.name;
   const localized = brand.mainLanguage === "zh" ? brand.display?.zh : brand.display?.en;
   const secondary = localized?.secondaryName || (hasCjk(primaryName) ? "English name pending" : "中文名待补充");
   const colors = [brand.theme?.primary, brand.theme?.accent, brand.theme?.secondary].filter(Boolean).slice(0, 3);
-  return `<div class="hero-index-row" data-brand="${escapeBuildHtml(brand.slug)}" style="${initialThemeStyle(brand.theme)};--row-index:${idx}">
+  return `<div class="hero-index-row${featuredIpSlugs.has(brand.slug) ? " is-featured" : ""}" data-brand="${escapeBuildHtml(brand.slug)}" style="${initialThemeStyle(brand.theme)};--row-index:${idx}">
     <a class="hero-index-link" href="${escapeBuildHtml(brand.url)}">
       <span class="hero-index-title">${escapeBuildHtml(primaryName)}${secondary ? ` <span class="hero-index-secondary">· ${escapeBuildHtml(secondary)}</span>` : ""}</span>
     </a>
@@ -1639,7 +1641,9 @@ const initialHeroIndexHtml = indexPayload.map((brand, idx) => {
     <a class="icon-copy hero-index-github" href="${escapeBuildHtml(brand.designSystemUrl || brand.source.github)}" target="_blank" rel="noreferrer" title="Design system / 设计系统" aria-label="Design system: ${escapeBuildHtml(primaryName)}">${initialGithubIcon}</a>
     <span class="icon-copy" aria-hidden="true">${initialCopyIcon}</span>
   </div>`;
-}).join("");
+ };
+const initialHeroIndexHtml = indexPayload.filter((brand) => !moreIpSlugs.has(brand.slug)).map(initialHeroRowHtml).join("")
+  + `<details class="more-ips"><summary>更多 IP / More IPs · ${moreIpSlugs.size}</summary><div class="more-ip-items">${indexPayload.filter((brand) => moreIpSlugs.has(brand.slug)).map(initialHeroRowHtml).join("")}</div></details>`;
 const publicOrganizationCount = librarySnapshots.organizations.length;
 const fortuneCount = librarySnapshots.organizations.filter((item) => item.sourceId === "fortune-global-500-2025").length;
 const sasacCount = librarySnapshots.organizations.filter((item) => item.sourceId === "sasac-central-enterprises-2026").length;
@@ -4583,11 +4587,24 @@ await writeFile(join(assetsDir, "site.css"), `${(await readFile(join(assetsDir, 
   .directory-entry .ip-health { font-size: 11px; gap: 4px 8px; }
   .directory-entry .directory-design-system { font-size: 11px; }
 }
+
+.more-ips > summary { cursor: pointer; min-height: 44px; padding: 12px 4px; color: var(--muted); font-size: 13px; }
+.more-ip-items { display: grid; gap: 8px; }
+.directory-more-ips { margin-top: 16px; border-top: 1px solid var(--line); }
+.hero-index-row.is-featured { padding: 12px 10px 12px 18px; border-width: 2px; }
+.hero-index-row.is-featured .hero-index-title { font-size: 22px; line-height: 1.35; white-space: normal; }
+.hero-index-row.is-featured .hero-index-secondary { font-size: 14px; }
+.directory-entry.is-featured { padding-top: 18px; padding-bottom: 18px; }
+.directory-entry.is-featured .directory-name strong { font-size: 26px; line-height: 1.25; }
+.directory-entry.is-featured .directory-name small { font-size: 14px; }
+.ip-card.is-featured h2 { font-size: 32px; }
 `);
 await copyFile(join(assetsDir, "site.css"), join(siteDir, siteCssPath));
 
 await writeFile(join(assetsDir, "site.js"), html`const $ = (selector) => document.querySelector(selector);
 const BUILD_VERSION = "${buildVersion}";
+const MORE_IP_SLUGS = new Set(${JSON.stringify([...moreIpSlugs])});
+const FEATURED_IP_SLUGS = new Set(${JSON.stringify([...featuredIpSlugs])});
 
 const i18n = {
   cn: {
@@ -6754,10 +6771,11 @@ async function renderHeroIndex() {
   const index = $("#heroIndex");
   if (!index) return;
   await loadRankedBrands();
-  index.innerHTML = cachedBrands.map((brand, idx) => {
+  const moreOpen = Boolean(index.querySelector(".more-ips[open]"));
+  const row = (brand, idx) => {
     const localized = mainBrand(brand);
     return \`
-      <div class="hero-index-row" data-brand="\${escapeHtml(brand.slug)}" style="\${themeStyle(brand.theme)};--row-index:\${idx}">
+      <div class="hero-index-row\${FEATURED_IP_SLUGS.has(brand.slug) ? " is-featured" : ""}" data-brand="\${escapeHtml(brand.slug)}" style="\${themeStyle(brand.theme)};--row-index:\${idx}">
         <a class="hero-index-link" href="\${brand.url}">
           <span class="hero-index-title">\${escapeHtml(localized.name)}\${localized.secondaryName ? \` <span class="hero-index-secondary">· \${escapeHtml(localized.secondaryName)}</span>\` : ""}</span>\${ipHealth(brand)}
         </a>
@@ -6766,7 +6784,9 @@ async function renderHeroIndex() {
         <button class="icon-copy" type="button" data-icon-only="true" data-copy-brand="\${escapeHtml(brand.slug)}" aria-label="\${escapeHtml(t("copy.reference"))} \${escapeHtml(localized.name)}">\${copyIcon()}</button>
       </div>
     \`;
-  }).join("");
+  };
+  index.innerHTML = cachedBrands.filter((brand) => !MORE_IP_SLUGS.has(brand.slug)).map(row).join("")
+    + \`<details class="more-ips" \${moreOpen ? "open" : ""}><summary>\${currentLocale === "en" ? "More IPs" : "更多 IP"} · \${MORE_IP_SLUGS.size}</summary><div class="more-ip-items">\${cachedBrands.filter((brand) => MORE_IP_SLUGS.has(brand.slug)).map(row).join("")}</div></details>\`;
   index.scrollTop = 0;
   setupCopyButtons(cachedBrands);
 }
@@ -6832,7 +6852,7 @@ async function renderIndex() {
   grid.innerHTML = filtered.map((brand) => {
     const localized = mainBrand(brand);
     return \`
-    <article class="\${cardClass(brand)}" data-brand="\${escapeHtml(brand.slug)}" style="\${themeStyle(brand.theme)}">
+    <article class="\${cardClass(brand)}\${FEATURED_IP_SLUGS.has(brand.slug) ? " is-featured" : ""}" data-brand="\${escapeHtml(brand.slug)}" style="\${themeStyle(brand.theme)}">
       <a class="ip-card-link" href="\${brand.url}" aria-label="\${escapeHtml(localized.name)}">
         <div class="card-body">
           <div class="card-art">
@@ -7006,7 +7026,15 @@ async function renderDirectory(initialData = null, snapshotMode = false) {
   const parents = new Map((data.relationships || []).filter((item) => item.type === "brand_parent" && item.primary).map((item) => [item.child, item.parent]));
   const filtered = data.ips.filter((ip) => (!industry || ip.primaryIndustry === industry || ip.industries?.includes(industry)) && (!ipType || ip.ipType === ipType) && (!architectureRole || ip.architectureRoles?.includes(architectureRole)) && (!parent || parents.get(ip.slug) === parent) && (!query || [ip.slug, ip.names?.zh, ip.names?.en].join(" ").toLowerCase().includes(query)));
   const parentIps = data.ips.filter((ip) => ip.architectureRoles?.includes("parent") || (data.relationships || []).some((relation) => relation.parent === ip.slug));
-  if (!snapshotMode && page.querySelector(".directory-list") && (document.activeElement?.closest("#directoryFilters") || page.querySelector(".ip-health-panel details[open]"))) return;
+  if (!snapshotMode && page.querySelector(".directory-list") && (document.activeElement?.closest("#directoryFilters") || page.querySelector(".ip-health-panel details[open], .more-ips[open]"))) return;
+  const visibleIps = filtered.filter((ip) => !MORE_IP_SLUGS.has(ip.slug));
+  const moreIps = filtered.filter((ip) => MORE_IP_SLUGS.has(ip.slug));
+  const moreIpsOpen = Boolean(page.querySelector(".more-ips[open]") || query || industry || ipType || parent || architectureRole);
+  const renderIpEntry = (ip) => {
+      const parentIp = data.ips.find((candidate) => candidate.slug === parents.get(ip.slug));
+      const href = ip.recordClass === "owned" ? (ip.url || \`brand.html?brand=\${ip.slug}\`) : \`ip?ip=\${ip.slug}\`;
+      return \`<div class="directory-entry\${FEATURED_IP_SLUGS.has(ip.slug) ? " is-featured" : ""}"><a class="directory-row" href="\${escapeHtml(href)}"><span class="directory-name"><strong>\${escapeHtml(primaryIpName(ip))}</strong>\${secondaryIpName(ip) ? \`<small>\${escapeHtml(secondaryIpName(ip))}</small>\` : ""}</span><span>\${escapeHtml(taxonomyLabel((data.taxonomy.industries || []).find((item) => item.id === ip.primaryIndustry)))}</span><span>\${escapeHtml(taxonomyLabel((data.taxonomy.ipTypes || []).find((item) => item.id === ip.ipType)))}</span><span>\${parentIp ? \`↳ \${escapeHtml(primaryIpName(parentIp))}\` : ""}</span><b>↗</b></a>\${ip.designSystemUrl ? \`<a class="directory-design-system" href="\${escapeHtml(ip.designSystemUrl)}" target="_blank" rel="noreferrer">\${currentLocale === "en" ? "Design system" : "设计系统"} ↗</a>\` : ""}\${ipHealth(ip, true)}</div>\`;
+  };
   page.innerHTML = \`
     <header class="directory-hero"><p class="eyebrow">IPTrust Directory</p><h1>\${currentLocale === "en" ? "IP, clearly structured." : "IP，一目了然。"}</h1><p>\${data.ips.length} IP · \${data.applications.length} \${currentLocale === "en" ? "applications" : "项目应用"}</p></header>
     <p class="muted">\${currentLocale === "en" ? "Newest repository commit first · refresh every 60 seconds" : "按仓库最新提交排序 · 每 60 秒刷新"} · \${repositoryRefreshMode === "live" ? (currentLocale === "en" ? "Live" : "实时") : (currentLocale === "en" ? "Cached snapshot" : "缓存快照")}</p>
@@ -7020,11 +7048,8 @@ async function renderDirectory(initialData = null, snapshotMode = false) {
       <select name="parent" aria-label="Parent IP / 母 IP"><option value="">\${currentLocale === "en" ? "All parent IPs" : "全部母 IP"}</option>\${parentIps.map((ip) => \`<option value="\${ip.slug}" \${parent === ip.slug ? "selected" : ""}>\${escapeHtml(primaryIpName(ip))}</option>\`).join("")}</select>
       </div></details>
     </form>
-    <section class="directory-list">\${filtered.map((ip) => {
-      const parentIp = data.ips.find((candidate) => candidate.slug === parents.get(ip.slug));
-      const href = ip.recordClass === "owned" ? (ip.url || \`brand.html?brand=\${ip.slug}\`) : \`ip?ip=\${ip.slug}\`;
-      return \`<div class="directory-entry"><a class="directory-row" href="\${escapeHtml(href)}"><span class="directory-name"><strong>\${escapeHtml(primaryIpName(ip))}</strong>\${secondaryIpName(ip) ? \`<small>\${escapeHtml(secondaryIpName(ip))}</small>\` : ""}</span><span>\${escapeHtml(taxonomyLabel((data.taxonomy.industries || []).find((item) => item.id === ip.primaryIndustry)))}</span><span>\${escapeHtml(taxonomyLabel((data.taxonomy.ipTypes || []).find((item) => item.id === ip.ipType)))}</span><span>\${parentIp ? \`↳ \${escapeHtml(primaryIpName(parentIp))}\` : ""}</span><b>↗</b></a>\${ip.designSystemUrl ? \`<a class="directory-design-system" href="\${escapeHtml(ip.designSystemUrl)}" target="_blank" rel="noreferrer">\${currentLocale === "en" ? "Design system" : "设计系统"} ↗</a>\` : ""}\${ipHealth(ip, true)}</div>\`;
-    }).join("") || \`<p class="empty-state">\${escapeHtml(t("home.noResults"))}</p>\`}</section>
+    <section class="directory-list">\${visibleIps.map(renderIpEntry).join("") || (!moreIps.length ? \`<p class="empty-state">\${escapeHtml(t("home.noResults"))}</p>\` : "")}</section>
+    \${moreIps.length ? \`<details class="more-ips directory-more-ips" \${moreIpsOpen ? "open" : ""}><summary>\${currentLocale === "en" ? "More IPs" : "更多 IP"} · \${moreIps.length}</summary><div class="directory-list">\${moreIps.map(renderIpEntry).join("")}</div></details>\` : ""}
     <section class="application-directory"><header><p class="eyebrow">Applications</p><h2>\${currentLocale === "en" ? "Project applications" : "项目应用"}</h2></header>\${data.applications.map((app) => \`<a href="application?application=\${escapeHtml(app.slug)}"><strong>\${escapeHtml(app.mainLanguage === "en" ? (app.names?.en || app.names?.zh) : (app.names?.zh || app.names?.en))}</strong><span>\${escapeHtml(app.applicationType)}</span><b>↗</b></a>\`).join("")}</section>
   \`;
 }
@@ -7282,7 +7307,7 @@ renderBrand().catch(renderBrandFailure);
 if (publishedDirectory) renderDirectory(structuredClone(publishedDirectory), true).catch(console.error);
 renderDirectory().catch(console.error);
 setInterval(() => {
-  if (document.hidden || !$("#directoryPage, #heroIndex, #brandGrid") || document.activeElement?.closest("#directoryFilters") || $(".ip-health-panel details[open]")) return;
+  if (document.hidden || !$("#directoryPage, #heroIndex, #brandGrid") || document.activeElement?.closest("#directoryFilters") || $(".ip-health-panel details[open], .more-ips[open]")) return;
   repositoryStatusFetchedAt = 0;
   Promise.all([renderHeroIndex(), renderIndex(), renderDirectory()]).catch(console.error);
 }, 60000);

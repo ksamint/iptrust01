@@ -146,11 +146,11 @@
     "standalone"
   ],
   "version": {
-    "hash": "36b54595030434ff55f42914715d660457a9ae2d",
-    "shortHash": "36b5459",
-    "date": "2026-11-07T10:38:12+08:00",
+    "hash": "779734446b61cf407a51eed57c852ca161bda9ec",
+    "shortHash": "7797344",
+    "date": "2026-11-07T10:38:56+08:00",
     "message": "Fix directory loading, mobile layout and language switching",
-    "url": "https://github.com/ksamint/iptrust01/commit/36b54595030434ff55f42914715d660457a9ae2d"
+    "url": "https://github.com/ksamint/iptrust01/commit/779734446b61cf407a51eed57c852ca161bda9ec"
   },
   "historyUrl": "api/history/yanan-shiyao-hotel.json",
   "history": [

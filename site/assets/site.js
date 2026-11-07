@@ -1,5 +1,7 @@
 const $ = (selector) => document.querySelector(selector);
-const BUILD_VERSION = "36b5459-19072354";
+const BUILD_VERSION = "7797344-5dbee051";
+const MORE_IP_SLUGS = new Set(["qingshuiting","youyuan-jingmeng","subangyuan","xiaotaoyuan","ganglao-baozailu","shuangxi-shaola","mutangwan","tongxianghui","tongli-market"]);
+const FEATURED_IP_SLUGS = new Set(["iptrust","tableai","opcglobal","sidera"]);
 
 const i18n = {
   cn: {
@@ -2166,10 +2168,11 @@ async function renderHeroIndex() {
   const index = $("#heroIndex");
   if (!index) return;
   await loadRankedBrands();
-  index.innerHTML = cachedBrands.map((brand, idx) => {
+  const moreOpen = Boolean(index.querySelector(".more-ips[open]"));
+  const row = (brand, idx) => {
     const localized = mainBrand(brand);
     return `
-      <div class="hero-index-row" data-brand="${escapeHtml(brand.slug)}" style="${themeStyle(brand.theme)};--row-index:${idx}">
+      <div class="hero-index-row${FEATURED_IP_SLUGS.has(brand.slug) ? " is-featured" : ""}" data-brand="${escapeHtml(brand.slug)}" style="${themeStyle(brand.theme)};--row-index:${idx}">
         <a class="hero-index-link" href="${brand.url}">
           <span class="hero-index-title">${escapeHtml(localized.name)}${localized.secondaryName ? ` <span class="hero-index-secondary">· ${escapeHtml(localized.secondaryName)}</span>` : ""}</span>${ipHealth(brand)}
         </a>
@@ -2178,7 +2181,9 @@ async function renderHeroIndex() {
         <button class="icon-copy" type="button" data-icon-only="true" data-copy-brand="${escapeHtml(brand.slug)}" aria-label="${escapeHtml(t("copy.reference"))} ${escapeHtml(localized.name)}">${copyIcon()}</button>
       </div>
     `;
-  }).join("");
+  };
+  index.innerHTML = cachedBrands.filter((brand) => !MORE_IP_SLUGS.has(brand.slug)).map(row).join("")
+    + `<details class="more-ips" ${moreOpen ? "open" : ""}><summary>${currentLocale === "en" ? "More IPs" : "更多 IP"} · ${MORE_IP_SLUGS.size}</summary><div class="more-ip-items">${cachedBrands.filter((brand) => MORE_IP_SLUGS.has(brand.slug)).map(row).join("")}</div></details>`;
   index.scrollTop = 0;
   setupCopyButtons(cachedBrands);
 }
@@ -2244,7 +2249,7 @@ async function renderIndex() {
   grid.innerHTML = filtered.map((brand) => {
     const localized = mainBrand(brand);
     return `
-    <article class="${cardClass(brand)}" data-brand="${escapeHtml(brand.slug)}" style="${themeStyle(brand.theme)}">
+    <article class="${cardClass(brand)}${FEATURED_IP_SLUGS.has(brand.slug) ? " is-featured" : ""}" data-brand="${escapeHtml(brand.slug)}" style="${themeStyle(brand.theme)}">
       <a class="ip-card-link" href="${brand.url}" aria-label="${escapeHtml(localized.name)}">
         <div class="card-body">
           <div class="card-art">
@@ -2418,7 +2423,15 @@ async function renderDirectory(initialData = null, snapshotMode = false) {
   const parents = new Map((data.relationships || []).filter((item) => item.type === "brand_parent" && item.primary).map((item) => [item.child, item.parent]));
   const filtered = data.ips.filter((ip) => (!industry || ip.primaryIndustry === industry || ip.industries?.includes(industry)) && (!ipType || ip.ipType === ipType) && (!architectureRole || ip.architectureRoles?.includes(architectureRole)) && (!parent || parents.get(ip.slug) === parent) && (!query || [ip.slug, ip.names?.zh, ip.names?.en].join(" ").toLowerCase().includes(query)));
   const parentIps = data.ips.filter((ip) => ip.architectureRoles?.includes("parent") || (data.relationships || []).some((relation) => relation.parent === ip.slug));
-  if (!snapshotMode && page.querySelector(".directory-list") && (document.activeElement?.closest("#directoryFilters") || page.querySelector(".ip-health-panel details[open]"))) return;
+  if (!snapshotMode && page.querySelector(".directory-list") && (document.activeElement?.closest("#directoryFilters") || page.querySelector(".ip-health-panel details[open], .more-ips[open]"))) return;
+  const visibleIps = filtered.filter((ip) => !MORE_IP_SLUGS.has(ip.slug));
+  const moreIps = filtered.filter((ip) => MORE_IP_SLUGS.has(ip.slug));
+  const moreIpsOpen = Boolean(page.querySelector(".more-ips[open]") || query || industry || ipType || parent || architectureRole);
+  const renderIpEntry = (ip) => {
+      const parentIp = data.ips.find((candidate) => candidate.slug === parents.get(ip.slug));
+      const href = ip.recordClass === "owned" ? (ip.url || `brand.html?brand=${ip.slug}`) : `ip?ip=${ip.slug}`;
+      return `<div class="directory-entry${FEATURED_IP_SLUGS.has(ip.slug) ? " is-featured" : ""}"><a class="directory-row" href="${escapeHtml(href)}"><span class="directory-name"><strong>${escapeHtml(primaryIpName(ip))}</strong>${secondaryIpName(ip) ? `<small>${escapeHtml(secondaryIpName(ip))}</small>` : ""}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.industries || []).find((item) => item.id === ip.primaryIndustry)))}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.ipTypes || []).find((item) => item.id === ip.ipType)))}</span><span>${parentIp ? `↳ ${escapeHtml(primaryIpName(parentIp))}` : ""}</span><b>↗</b></a>${ip.designSystemUrl ? `<a class="directory-design-system" href="${escapeHtml(ip.designSystemUrl)}" target="_blank" rel="noreferrer">${currentLocale === "en" ? "Design system" : "设计系统"} ↗</a>` : ""}${ipHealth(ip, true)}</div>`;
+  };
   page.innerHTML = `
     <header class="directory-hero"><p class="eyebrow">IPTrust Directory</p><h1>${currentLocale === "en" ? "IP, clearly structured." : "IP，一目了然。"}</h1><p>${data.ips.length} IP · ${data.applications.length} ${currentLocale === "en" ? "applications" : "项目应用"}</p></header>
     <p class="muted">${currentLocale === "en" ? "Newest repository commit first · refresh every 60 seconds" : "按仓库最新提交排序 · 每 60 秒刷新"} · ${repositoryRefreshMode === "live" ? (currentLocale === "en" ? "Live" : "实时") : (currentLocale === "en" ? "Cached snapshot" : "缓存快照")}</p>
@@ -2432,11 +2445,8 @@ async function renderDirectory(initialData = null, snapshotMode = false) {
       <select name="parent" aria-label="Parent IP / 母 IP"><option value="">${currentLocale === "en" ? "All parent IPs" : "全部母 IP"}</option>${parentIps.map((ip) => `<option value="${ip.slug}" ${parent === ip.slug ? "selected" : ""}>${escapeHtml(primaryIpName(ip))}</option>`).join("")}</select>
       </div></details>
     </form>
-    <section class="directory-list">${filtered.map((ip) => {
-      const parentIp = data.ips.find((candidate) => candidate.slug === parents.get(ip.slug));
-      const href = ip.recordClass === "owned" ? (ip.url || `brand.html?brand=${ip.slug}`) : `ip?ip=${ip.slug}`;
-      return `<div class="directory-entry"><a class="directory-row" href="${escapeHtml(href)}"><span class="directory-name"><strong>${escapeHtml(primaryIpName(ip))}</strong>${secondaryIpName(ip) ? `<small>${escapeHtml(secondaryIpName(ip))}</small>` : ""}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.industries || []).find((item) => item.id === ip.primaryIndustry)))}</span><span>${escapeHtml(taxonomyLabel((data.taxonomy.ipTypes || []).find((item) => item.id === ip.ipType)))}</span><span>${parentIp ? `↳ ${escapeHtml(primaryIpName(parentIp))}` : ""}</span><b>↗</b></a>${ip.designSystemUrl ? `<a class="directory-design-system" href="${escapeHtml(ip.designSystemUrl)}" target="_blank" rel="noreferrer">${currentLocale === "en" ? "Design system" : "设计系统"} ↗</a>` : ""}${ipHealth(ip, true)}</div>`;
-    }).join("") || `<p class="empty-state">${escapeHtml(t("home.noResults"))}</p>`}</section>
+    <section class="directory-list">${visibleIps.map(renderIpEntry).join("") || (!moreIps.length ? `<p class="empty-state">${escapeHtml(t("home.noResults"))}</p>` : "")}</section>
+    ${moreIps.length ? `<details class="more-ips directory-more-ips" ${moreIpsOpen ? "open" : ""}><summary>${currentLocale === "en" ? "More IPs" : "更多 IP"} · ${moreIps.length}</summary><div class="directory-list">${moreIps.map(renderIpEntry).join("")}</div></details>` : ""}
     <section class="application-directory"><header><p class="eyebrow">Applications</p><h2>${currentLocale === "en" ? "Project applications" : "项目应用"}</h2></header>${data.applications.map((app) => `<a href="application?application=${escapeHtml(app.slug)}"><strong>${escapeHtml(app.mainLanguage === "en" ? (app.names?.en || app.names?.zh) : (app.names?.zh || app.names?.en))}</strong><span>${escapeHtml(app.applicationType)}</span><b>↗</b></a>`).join("")}</section>
   `;
 }
@@ -2694,7 +2704,7 @@ renderBrand().catch(renderBrandFailure);
 if (publishedDirectory) renderDirectory(structuredClone(publishedDirectory), true).catch(console.error);
 renderDirectory().catch(console.error);
 setInterval(() => {
-  if (document.hidden || !$("#directoryPage, #heroIndex, #brandGrid") || document.activeElement?.closest("#directoryFilters") || $(".ip-health-panel details[open]")) return;
+  if (document.hidden || !$("#directoryPage, #heroIndex, #brandGrid") || document.activeElement?.closest("#directoryFilters") || $(".ip-health-panel details[open], .more-ips[open]")) return;
   repositoryStatusFetchedAt = 0;
   Promise.all([renderHeroIndex(), renderIndex(), renderDirectory()]).catch(console.error);
 }, 60000);

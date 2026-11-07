@@ -3384,3 +3384,14 @@ button:active { transform: translateY(1px); }
   .directory-entry .ip-health { font-size: 11px; gap: 4px 8px; }
   .directory-entry .directory-design-system { font-size: 11px; }
 }
+
+.more-ips > summary { cursor: pointer; min-height: 44px; padding: 12px 4px; color: var(--muted); font-size: 13px; }
+.more-ip-items { display: grid; gap: 8px; }
+.directory-more-ips { margin-top: 16px; border-top: 1px solid var(--line); }
+.hero-index-row.is-featured { padding: 12px 10px 12px 18px; border-width: 2px; }
+.hero-index-row.is-featured .hero-index-title { font-size: 22px; line-height: 1.35; white-space: normal; }
+.hero-index-row.is-featured .hero-index-secondary { font-size: 14px; }
+.directory-entry.is-featured { padding-top: 18px; padding-bottom: 18px; }
+.directory-entry.is-featured .directory-name strong { font-size: 26px; line-height: 1.25; }
+.directory-entry.is-featured .directory-name small { font-size: 14px; }
+.ip-card.is-featured h2 { font-size: 32px; }
