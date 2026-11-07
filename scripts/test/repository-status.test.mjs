@@ -79,14 +79,33 @@ test("directory fixes seeded names while preserving newer admin names", async ()
   const { readFile } = await import("node:fs/promises");
   const { runInNewContext } = await import("node:vm");
   const script = await readFile(new URL("../../site/assets/site.js", import.meta.url), "utf8");
-  const start = script.indexOf("  const data = await loadIpSystem();", script.indexOf("async function renderDirectory()"));
+  const start = script.indexOf("  const data =", script.indexOf("async function renderDirectory("));
   const end = script.indexOf("  const params =", start);
   const canonical = { slug: "example", display: { zh: { name: "示例" }, en: { name: "Example" } } };
   for (const version of [1, 2]) {
     const data = await runInNewContext("(async () => {" + script.slice(start, end) + ";return data;})()", {
-      loadIpSystem: async () => ({ ips: [{ slug: "example", version, names: { zh: "示例", en: "Admin name" } }] }),
+      initialData: null, snapshotMode: false, cachedBrands: null, lastDirectoryData: null, loadIpSystem: async () => ({ ips: [{ slug: "example", version, names: { zh: "示例", en: "Admin name" } }] }),
       loadRankedBrands: async () => [canonical],
     });
     assert.equal(data.ips[0].names.en, version === 1 ? "Example" : "Admin name");
   }
+});
+
+test("directory snapshot renders without waiting for any API", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const { runInNewContext } = await import("node:vm");
+  const script = await readFile(process.env.IPTRUST_TEST_DIRECTORY_SCRIPT || new URL("../../site/assets/site.js", import.meta.url), "utf8");
+  const html = await readFile(new URL("../../site/directory/index.html", import.meta.url), "utf8");
+  const embedded = html.match(/<script id="directorySnapshot" type="application\/json">([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(embedded && !embedded.includes("<"));
+  const snapshot = JSON.parse(embedded);
+  const start = script.indexOf("  const data =", script.indexOf("async function renderDirectory("));
+  const end = script.indexOf("  const params =", start);
+  const data = await runInNewContext("(async () => {" + script.slice(start, end) + ";return data;})()", {
+    initialData: snapshot, snapshotMode: true, cachedBrands: null, lastDirectoryData: null,
+    loadIpSystem: () => { throw Error("unexpected network dependency"); },
+    loadRankedBrands: () => { throw Error("unexpected network dependency"); },
+  });
+  assert.equal(data.ips.length, 39);
+  assert.equal(data.ips.find((ip) => ip.slug === "mtongheng").names.en, "Tong Heng International");
 });

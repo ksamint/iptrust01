@@ -1,5 +1,19 @@
 [
   {
+    "hash": "36b54595030434ff55f42914715d660457a9ae2d",
+    "shortHash": "36b5459",
+    "date": "2026-11-07T10:38:12+08:00",
+    "message": "Fix directory loading, mobile layout and language switching",
+    "url": "https://github.com/ksamint/iptrust01/commit/36b54595030434ff55f42914715d660457a9ae2d"
+  },
+  {
+    "hash": "6832c5e49f47e81ac5ada0be7ac4091d8de2bb27",
+    "shortHash": "6832c5e",
+    "date": "2026-11-06T19:26:17+08:00",
+    "message": "Keep newer admin-managed bilingual names authoritative",
+    "url": "https://github.com/ksamint/iptrust01/commit/6832c5e49f47e81ac5ada0be7ac4091d8de2bb27"
+  },
+  {
     "hash": "e88907a9c8e4da71290a5ed524a90cdda0f358eb",
     "shortHash": "e88907a",
     "date": "2026-11-06T19:21:49+08:00",
@@ -124,19 +138,5 @@
     "date": "2026-09-01T09:03:36+08:00",
     "message": "feat: unify IP asset pages and downloads",
     "url": "https://github.com/ksamint/tableai_designaha/commit/59c4eb6b0ae3294734806a7fbe6664d873740622"
-  },
-  {
-    "hash": "cad36c5ded24066497b8169cad9783db90ebfb9f",
-    "shortHash": "cad36c5",
-    "date": "2026-08-31T18:44:14+08:00",
-    "message": "fix: unify navigation and brand hero",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/cad36c5ded24066497b8169cad9783db90ebfb9f"
-  },
-  {
-    "hash": "347cfbb2eb50ed335e9242a14c40a827fa8e1af4",
-    "shortHash": "347cfbb",
-    "date": "2026-08-20T12:49:38+08:00",
-    "message": "feat: add minimal IP copy",
-    "url": "https://github.com/ksamint/tableai_designaha/commit/347cfbb2eb50ed335e9242a14c40a827fa8e1af4"
   }
 ]

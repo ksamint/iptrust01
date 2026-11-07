@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const BUILD_VERSION = "e88907a-f3c97d56";
+const BUILD_VERSION = "36b5459-19072354";
 
 const i18n = {
   cn: {
@@ -508,7 +508,9 @@ function normalizeLocale(value) {
 }
 
 let currentLocale = normalizeLocale(localStorage.getItem("iptrust-locale") || localStorage.getItem("iptrust-lang"));
+const publishedDirectory = document.getElementById("directorySnapshot") ? JSON.parse(document.getElementById("directorySnapshot").textContent) : null;
 let cachedBrands = null;
+let lastDirectoryData = null;
 let cachedSearch = null;
 let cachedVersions = null;
 let currentQuery = "";
@@ -567,6 +569,7 @@ function setupLanguageToggle() {
     localStorage.setItem("iptrust-locale", currentLocale);
     localStorage.setItem("iptrust-lang", contentLang(currentLocale));
     applyI18n();
+    if (publishedDirectory) await renderDirectory(structuredClone(lastDirectoryData || publishedDirectory), true);
     await renderHeroIndex();
     await renderIndex();
     await renderBrand();
@@ -2379,6 +2382,7 @@ async function loadIpSystem() {
     const [ips, taxonomy, applications, relationships] = await Promise.all([loadJson("api/v2/ips"), loadJson("api/v2/taxonomy"), loadJson("api/v2/applications"), loadJson("api/v2/ip-relations")]);
     return { ips: ips.items || [], taxonomy, applications: applications.items || [], relationships: relationships.items || [] };
   } catch {
+    if (publishedDirectory) return structuredClone(publishedDirectory);
     const [snapshot, taxonomy] = await Promise.all([loadJson("api/ips.json"), loadJson("api/taxonomy.json")]);
     return { ips: snapshot.items || [], taxonomy, applications: snapshot.applications || [], relationships: snapshot.relationships || [] };
   }
@@ -2392,17 +2396,19 @@ function selectOptions(items, active, empty) {
   return `<option value="">${escapeHtml(empty)}</option>${items.map((item) => `<option value="${escapeHtml(item.id)}" ${active === item.id ? "selected" : ""}>${escapeHtml(taxonomyLabel(item))}</option>`).join("")}`;
 }
 
-async function renderDirectory() {
+async function renderDirectory(initialData = null, snapshotMode = false) {
   const page = $("#directoryPage");
   if (!page) return;
-  const data = await loadIpSystem();
-  const rankedBrands = await loadRankedBrands();
+  const data = initialData || await loadIpSystem();
+  const rankedBrands = snapshotMode ? (cachedBrands || data.ips.filter((ip) => ip.recordClass === "owned").map((ip) => ({ ...ip, display: { zh: { name: ip.names.zh }, en: { name: ip.names.en } } }))) : await loadRankedBrands();
+  cachedBrands ??= rankedBrands;
   const brandBySlug = new Map(rankedBrands.map((brand) => [brand.slug, brand]));
   const listedSlugs = new Set(data.ips.map((ip) => ip.slug));
   for (const brand of rankedBrands) {
     if (!listedSlugs.has(brand.slug)) data.ips.push({ ...brand, names: { zh: brand.display?.zh?.name, en: brand.display?.en?.name } });
   }
   data.ips = data.ips.map((ip) => ({ ...ip, names: brandBySlug.has(ip.slug) && !(ip.version > 1) ? { zh: brandBySlug.get(ip.slug).display.zh.name, en: brandBySlug.get(ip.slug).display.en.name } : ip.names, designSystemUrl: brandBySlug.get(ip.slug)?.designSystemUrl || ip.designSystemUrl, repository: brandBySlug.get(ip.slug)?.repository, completeness: brandBySlug.get(ip.slug)?.completeness, lastUpdatedAt: brandBySlug.get(ip.slug)?.lastUpdatedAt })).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
+  lastDirectoryData = data;
   const params = new URLSearchParams(location.search);
   const industry = params.get("industry") || "";
   const ipType = params.get("type") || "";
@@ -2412,16 +2418,19 @@ async function renderDirectory() {
   const parents = new Map((data.relationships || []).filter((item) => item.type === "brand_parent" && item.primary).map((item) => [item.child, item.parent]));
   const filtered = data.ips.filter((ip) => (!industry || ip.primaryIndustry === industry || ip.industries?.includes(industry)) && (!ipType || ip.ipType === ipType) && (!architectureRole || ip.architectureRoles?.includes(architectureRole)) && (!parent || parents.get(ip.slug) === parent) && (!query || [ip.slug, ip.names?.zh, ip.names?.en].join(" ").toLowerCase().includes(query)));
   const parentIps = data.ips.filter((ip) => ip.architectureRoles?.includes("parent") || (data.relationships || []).some((relation) => relation.parent === ip.slug));
+  if (!snapshotMode && page.querySelector(".directory-list") && (document.activeElement?.closest("#directoryFilters") || page.querySelector(".ip-health-panel details[open]"))) return;
   page.innerHTML = `
     <header class="directory-hero"><p class="eyebrow">IPTrust Directory</p><h1>${currentLocale === "en" ? "IP, clearly structured." : "IP，一目了然。"}</h1><p>${data.ips.length} IP · ${data.applications.length} ${currentLocale === "en" ? "applications" : "项目应用"}</p></header>
     <p class="muted">${currentLocale === "en" ? "Newest repository commit first · refresh every 60 seconds" : "按仓库最新提交排序 · 每 60 秒刷新"} · ${repositoryRefreshMode === "live" ? (currentLocale === "en" ? "Live" : "实时") : (currentLocale === "en" ? "Cached snapshot" : "缓存快照")}</p>
     <form class="directory-filters" id="directoryFilters">
-      <input name="q" value="${escapeHtml(params.get("q") || "")}" placeholder="${currentLocale === "en" ? "Search IP" : "搜索 IP"}">
-      <select name="industry">${selectOptions(data.taxonomy.industries || [], industry, currentLocale === "en" ? "All industries" : "全部行业")}</select>
-      <select name="type">${selectOptions(data.taxonomy.ipTypes || [], ipType, currentLocale === "en" ? "All IP types" : "全部类型")}</select>
-      <select name="architectureRole"><option value="">${currentLocale === "en" ? "All architecture roles" : "全部架构"}</option><option value="parent" ${architectureRole === "parent" ? "selected" : ""}>${currentLocale === "en" ? "Parent IP" : "母 IP"}</option><option value="child" ${architectureRole === "child" ? "selected" : ""}>${currentLocale === "en" ? "Child IP" : "子 IP"}</option><option value="standalone" ${architectureRole === "standalone" ? "selected" : ""}>${currentLocale === "en" ? "Standalone" : "独立 IP"}</option></select>
-      <select name="parent"><option value="">${currentLocale === "en" ? "All parent IPs" : "全部母 IP"}</option>${parentIps.map((ip) => `<option value="${ip.slug}" ${parent === ip.slug ? "selected" : ""}>${escapeHtml(primaryIpName(ip))}</option>`).join("")}</select>
+      <input type="search" aria-label="Search IP / 搜索 IP" name="q" value="${escapeHtml(params.get("q") || "")}" placeholder="${currentLocale === "en" ? "Search IP" : "搜索 IP"}">
+      <select name="industry" aria-label="Industry / 行业">${selectOptions(data.taxonomy.industries || [], industry, currentLocale === "en" ? "All industries" : "全部行业")}</select>
       <button type="submit">${currentLocale === "en" ? "Apply" : "筛选"}</button>
+      <details class="directory-more-filters" ${ipType || parent || architectureRole ? "open" : ""}><summary>${currentLocale === "en" ? "More filters" : "更多筛选"}${[ipType, parent, architectureRole].filter(Boolean).length ? " · " + [ipType, parent, architectureRole].filter(Boolean).length : ""}</summary><div class="directory-advanced-filters">
+      <select name="type" aria-label="IP type / IP 类型">${selectOptions(data.taxonomy.ipTypes || [], ipType, currentLocale === "en" ? "All IP types" : "全部类型")}</select>
+      <select name="architectureRole" aria-label="Architecture / 架构"><option value="">${currentLocale === "en" ? "All architecture roles" : "全部架构"}</option><option value="parent" ${architectureRole === "parent" ? "selected" : ""}>${currentLocale === "en" ? "Parent IP" : "母 IP"}</option><option value="child" ${architectureRole === "child" ? "selected" : ""}>${currentLocale === "en" ? "Child IP" : "子 IP"}</option><option value="standalone" ${architectureRole === "standalone" ? "selected" : ""}>${currentLocale === "en" ? "Standalone" : "独立 IP"}</option></select>
+      <select name="parent" aria-label="Parent IP / 母 IP"><option value="">${currentLocale === "en" ? "All parent IPs" : "全部母 IP"}</option>${parentIps.map((ip) => `<option value="${ip.slug}" ${parent === ip.slug ? "selected" : ""}>${escapeHtml(primaryIpName(ip))}</option>`).join("")}</select>
+      </div></details>
     </form>
     <section class="directory-list">${filtered.map((ip) => {
       const parentIp = data.ips.find((candidate) => candidate.slug === parents.get(ip.slug));
@@ -2682,6 +2691,7 @@ setupEvolutionMap();
 renderHeroIndex().catch(console.error);
 renderIndex().catch(console.error);
 renderBrand().catch(renderBrandFailure);
+if (publishedDirectory) renderDirectory(structuredClone(publishedDirectory), true).catch(console.error);
 renderDirectory().catch(console.error);
 setInterval(() => {
   if (document.hidden || !$("#directoryPage, #heroIndex, #brandGrid") || document.activeElement?.closest("#directoryFilters") || $(".ip-health-panel details[open]")) return;

@@ -2112,7 +2112,8 @@ ${commonDiscoveryHead()}
       <button class="lang-toggle" type="button" id="langToggle" aria-label="Switch language"><span class="is-active">CN</span><span class="lang-divider">/</span><span>EN</span></button>
     </nav>
   </header>
-  <main id="${mountId}" class="directory-main" aria-live="polite"></main>
+  <main id="${mountId}" class="directory-main" aria-live="polite">${kind === "directory" ? '<p role="status">正在载入 IP 目录… / Loading IP directory…</p>' : ""}</main>
+${kind === "directory" ? `<script id="directorySnapshot" type="application/json">${JSON.stringify({ ips: staticIps, taxonomy: ipSystem.taxonomy, applications: ipSystem.applications, relationships: ipSystem.relationships }).replaceAll("<", "\\u003c")}</script>` : ""}
   <script src="${siteJsPath}" type="module"></script>
 </body>
 </html>`;
@@ -4289,12 +4290,12 @@ textarea { min-height: 520px; font-family: ui-monospace, SFMono-Regular, Menlo, 
 .notice { color: var(--green); font-weight: 700; }
 .section-actions { display: flex; align-items: center; gap: 10px; }
 .directory-shortcut { color: var(--muted); font-size: 12px; font-weight: 750; text-decoration: none; border-bottom: 1px solid var(--line); padding: 6px 0; }
-.directory-main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: clamp(48px, 8vw, 108px) 0 100px; }
+.directory-main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: clamp(28px, 4vw, 56px) 0 70px; }
 .directory-hero { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; border-bottom: 1px solid var(--ink); padding-bottom: 28px; margin-bottom: 20px; }
 .directory-hero .eyebrow { grid-column: 1 / -1; }
-.directory-hero h1 { max-width: 760px; margin: 0; font-size: clamp(44px, 7vw, 92px); line-height: .92; }
+.directory-hero h1 { max-width: 760px; margin: 0; font-size: clamp(36px, 4vw, 60px); line-height: 1.12; }
 .directory-hero > p:last-child { color: var(--muted); font: 700 12px/1 ui-monospace, monospace; }
-.directory-filters { display: grid; grid-template-columns: minmax(180px, 1.6fr) repeat(4, minmax(132px, 1fr)) auto; gap: 8px; position: sticky; top: 74px; z-index: 4; padding: 12px 0; background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(14px); }
+.directory-filters { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(140px, 220px) auto; gap: 8px; position: sticky; top: 74px; z-index: 4; padding: 12px 0; background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(14px); }
 .directory-filters input, .directory-filters select, .directory-filters button { min-height: 42px; margin: 0; border-radius: 2px; }
 .directory-list { border-top: 1px solid var(--line); }
 
@@ -4559,7 +4560,30 @@ textarea { min-height: 520px; font-family: ui-monospace, SFMono-Regular, Menlo, 
   .brand-loading,
   .brand-load-error { width: min(100% - 28px, 1320px); min-height: calc(100dvh - 58px); }
 }`);
-await writeFile(join(assetsDir, "site.css"), `${(await readFile(join(assetsDir, "site.css"), "utf8")).trimEnd()}\n${(await readFile(join(root, "styles", "editorial.css"), "utf8")).trimEnd()}\n`);
+await writeFile(join(assetsDir, "site.css"), `${(await readFile(join(assetsDir, "site.css"), "utf8")).trimEnd()}\n${(await readFile(join(root, "styles", "editorial.css"), "utf8")).trimEnd()}\n
+.directory-more-filters { grid-column: 1 / -1; font-size: 13px; }
+.directory-more-filters > summary { cursor: pointer; padding: 8px 0; min-height: 36px; }
+.directory-advanced-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 0 8px; }
+.directory-entry { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; border-bottom: 1px solid var(--line); padding: 10px 0; }
+.directory-entry .directory-row { grid-column: 1 / -1; border-bottom: 0; min-height: 58px; }
+.directory-entry .directory-design-system { grid-column: 2; grid-row: 2; align-self: start; padding: 8px 0; margin: 0; }
+.directory-entry .ip-health-panel { grid-column: 1; grid-row: 2; padding: 0; border: 0; min-width: 0; }
+.directory-entry .ip-health-panel summary { min-height: 36px; padding: 8px 0; }
+.directory-entry .ip-health-panel:has(details[open]) { grid-column: 1 / -1; }
+.directory-entry .ip-health { font-size: 12px; gap: 4px 10px; }
+.ip-readiness meter { height: 8px; }
+.ip-readiness meter::-webkit-meter-bar { background: #dce3de; border: 0; }
+.ip-readiness meter::-webkit-meter-optimum-value { background: #526c61; }
+.ip-readiness meter::-moz-meter-bar { background: #526c61; }
+@media (max-width: 760px) {
+  .directory-hero { gap: 12px; padding-bottom: 18px; margin-bottom: 12px; }
+  .directory-main { padding-top: 28px; }
+  .directory-advanced-filters { grid-template-columns: 1fr; }
+  .directory-entry { column-gap: 10px; }
+  .directory-entry .ip-health { font-size: 11px; gap: 4px 8px; }
+  .directory-entry .directory-design-system { font-size: 11px; }
+}
+`);
 await copyFile(join(assetsDir, "site.css"), join(siteDir, siteCssPath));
 
 await writeFile(join(assetsDir, "site.js"), html`const $ = (selector) => document.querySelector(selector);
@@ -5072,7 +5096,9 @@ function normalizeLocale(value) {
 }
 
 let currentLocale = normalizeLocale(localStorage.getItem("iptrust-locale") || localStorage.getItem("iptrust-lang"));
+const publishedDirectory = document.getElementById("directorySnapshot") ? JSON.parse(document.getElementById("directorySnapshot").textContent) : null;
 let cachedBrands = null;
+let lastDirectoryData = null;
 let cachedSearch = null;
 let cachedVersions = null;
 let currentQuery = "";
@@ -5131,6 +5157,7 @@ function setupLanguageToggle() {
     localStorage.setItem("iptrust-locale", currentLocale);
     localStorage.setItem("iptrust-lang", contentLang(currentLocale));
     applyI18n();
+    if (publishedDirectory) await renderDirectory(structuredClone(lastDirectoryData || publishedDirectory), true);
     await renderHeroIndex();
     await renderIndex();
     await renderBrand();
@@ -6943,6 +6970,7 @@ async function loadIpSystem() {
     const [ips, taxonomy, applications, relationships] = await Promise.all([loadJson("api/v2/ips"), loadJson("api/v2/taxonomy"), loadJson("api/v2/applications"), loadJson("api/v2/ip-relations")]);
     return { ips: ips.items || [], taxonomy, applications: applications.items || [], relationships: relationships.items || [] };
   } catch {
+    if (publishedDirectory) return structuredClone(publishedDirectory);
     const [snapshot, taxonomy] = await Promise.all([loadJson("api/ips.json"), loadJson("api/taxonomy.json")]);
     return { ips: snapshot.items || [], taxonomy, applications: snapshot.applications || [], relationships: snapshot.relationships || [] };
   }
@@ -6956,17 +6984,19 @@ function selectOptions(items, active, empty) {
   return \`<option value="">\${escapeHtml(empty)}</option>\${items.map((item) => \`<option value="\${escapeHtml(item.id)}" \${active === item.id ? "selected" : ""}>\${escapeHtml(taxonomyLabel(item))}</option>\`).join("")}\`;
 }
 
-async function renderDirectory() {
+async function renderDirectory(initialData = null, snapshotMode = false) {
   const page = $("#directoryPage");
   if (!page) return;
-  const data = await loadIpSystem();
-  const rankedBrands = await loadRankedBrands();
+  const data = initialData || await loadIpSystem();
+  const rankedBrands = snapshotMode ? (cachedBrands || data.ips.filter((ip) => ip.recordClass === "owned").map((ip) => ({ ...ip, display: { zh: { name: ip.names.zh }, en: { name: ip.names.en } } }))) : await loadRankedBrands();
+  cachedBrands ??= rankedBrands;
   const brandBySlug = new Map(rankedBrands.map((brand) => [brand.slug, brand]));
   const listedSlugs = new Set(data.ips.map((ip) => ip.slug));
   for (const brand of rankedBrands) {
     if (!listedSlugs.has(brand.slug)) data.ips.push({ ...brand, names: { zh: brand.display?.zh?.name, en: brand.display?.en?.name } });
   }
   data.ips = data.ips.map((ip) => ({ ...ip, names: brandBySlug.has(ip.slug) && !(ip.version > 1) ? { zh: brandBySlug.get(ip.slug).display.zh.name, en: brandBySlug.get(ip.slug).display.en.name } : ip.names, designSystemUrl: brandBySlug.get(ip.slug)?.designSystemUrl || ip.designSystemUrl, repository: brandBySlug.get(ip.slug)?.repository, completeness: brandBySlug.get(ip.slug)?.completeness, lastUpdatedAt: brandBySlug.get(ip.slug)?.lastUpdatedAt })).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
+  lastDirectoryData = data;
   const params = new URLSearchParams(location.search);
   const industry = params.get("industry") || "";
   const ipType = params.get("type") || "";
@@ -6976,16 +7006,19 @@ async function renderDirectory() {
   const parents = new Map((data.relationships || []).filter((item) => item.type === "brand_parent" && item.primary).map((item) => [item.child, item.parent]));
   const filtered = data.ips.filter((ip) => (!industry || ip.primaryIndustry === industry || ip.industries?.includes(industry)) && (!ipType || ip.ipType === ipType) && (!architectureRole || ip.architectureRoles?.includes(architectureRole)) && (!parent || parents.get(ip.slug) === parent) && (!query || [ip.slug, ip.names?.zh, ip.names?.en].join(" ").toLowerCase().includes(query)));
   const parentIps = data.ips.filter((ip) => ip.architectureRoles?.includes("parent") || (data.relationships || []).some((relation) => relation.parent === ip.slug));
+  if (!snapshotMode && page.querySelector(".directory-list") && (document.activeElement?.closest("#directoryFilters") || page.querySelector(".ip-health-panel details[open]"))) return;
   page.innerHTML = \`
     <header class="directory-hero"><p class="eyebrow">IPTrust Directory</p><h1>\${currentLocale === "en" ? "IP, clearly structured." : "IP，一目了然。"}</h1><p>\${data.ips.length} IP · \${data.applications.length} \${currentLocale === "en" ? "applications" : "项目应用"}</p></header>
     <p class="muted">\${currentLocale === "en" ? "Newest repository commit first · refresh every 60 seconds" : "按仓库最新提交排序 · 每 60 秒刷新"} · \${repositoryRefreshMode === "live" ? (currentLocale === "en" ? "Live" : "实时") : (currentLocale === "en" ? "Cached snapshot" : "缓存快照")}</p>
     <form class="directory-filters" id="directoryFilters">
-      <input name="q" value="\${escapeHtml(params.get("q") || "")}" placeholder="\${currentLocale === "en" ? "Search IP" : "搜索 IP"}">
-      <select name="industry">\${selectOptions(data.taxonomy.industries || [], industry, currentLocale === "en" ? "All industries" : "全部行业")}</select>
-      <select name="type">\${selectOptions(data.taxonomy.ipTypes || [], ipType, currentLocale === "en" ? "All IP types" : "全部类型")}</select>
-      <select name="architectureRole"><option value="">\${currentLocale === "en" ? "All architecture roles" : "全部架构"}</option><option value="parent" \${architectureRole === "parent" ? "selected" : ""}>\${currentLocale === "en" ? "Parent IP" : "母 IP"}</option><option value="child" \${architectureRole === "child" ? "selected" : ""}>\${currentLocale === "en" ? "Child IP" : "子 IP"}</option><option value="standalone" \${architectureRole === "standalone" ? "selected" : ""}>\${currentLocale === "en" ? "Standalone" : "独立 IP"}</option></select>
-      <select name="parent"><option value="">\${currentLocale === "en" ? "All parent IPs" : "全部母 IP"}</option>\${parentIps.map((ip) => \`<option value="\${ip.slug}" \${parent === ip.slug ? "selected" : ""}>\${escapeHtml(primaryIpName(ip))}</option>\`).join("")}</select>
+      <input type="search" aria-label="Search IP / 搜索 IP" name="q" value="\${escapeHtml(params.get("q") || "")}" placeholder="\${currentLocale === "en" ? "Search IP" : "搜索 IP"}">
+      <select name="industry" aria-label="Industry / 行业">\${selectOptions(data.taxonomy.industries || [], industry, currentLocale === "en" ? "All industries" : "全部行业")}</select>
       <button type="submit">\${currentLocale === "en" ? "Apply" : "筛选"}</button>
+      <details class="directory-more-filters" \${ipType || parent || architectureRole ? "open" : ""}><summary>\${currentLocale === "en" ? "More filters" : "更多筛选"}\${[ipType, parent, architectureRole].filter(Boolean).length ? " · " + [ipType, parent, architectureRole].filter(Boolean).length : ""}</summary><div class="directory-advanced-filters">
+      <select name="type" aria-label="IP type / IP 类型">\${selectOptions(data.taxonomy.ipTypes || [], ipType, currentLocale === "en" ? "All IP types" : "全部类型")}</select>
+      <select name="architectureRole" aria-label="Architecture / 架构"><option value="">\${currentLocale === "en" ? "All architecture roles" : "全部架构"}</option><option value="parent" \${architectureRole === "parent" ? "selected" : ""}>\${currentLocale === "en" ? "Parent IP" : "母 IP"}</option><option value="child" \${architectureRole === "child" ? "selected" : ""}>\${currentLocale === "en" ? "Child IP" : "子 IP"}</option><option value="standalone" \${architectureRole === "standalone" ? "selected" : ""}>\${currentLocale === "en" ? "Standalone" : "独立 IP"}</option></select>
+      <select name="parent" aria-label="Parent IP / 母 IP"><option value="">\${currentLocale === "en" ? "All parent IPs" : "全部母 IP"}</option>\${parentIps.map((ip) => \`<option value="\${ip.slug}" \${parent === ip.slug ? "selected" : ""}>\${escapeHtml(primaryIpName(ip))}</option>\`).join("")}</select>
+      </div></details>
     </form>
     <section class="directory-list">\${filtered.map((ip) => {
       const parentIp = data.ips.find((candidate) => candidate.slug === parents.get(ip.slug));
@@ -7246,6 +7279,7 @@ setupEvolutionMap();
 renderHeroIndex().catch(console.error);
 renderIndex().catch(console.error);
 renderBrand().catch(renderBrandFailure);
+if (publishedDirectory) renderDirectory(structuredClone(publishedDirectory), true).catch(console.error);
 renderDirectory().catch(console.error);
 setInterval(() => {
   if (document.hidden || !$("#directoryPage, #heroIndex, #brandGrid") || document.activeElement?.closest("#directoryFilters") || $(".ip-health-panel details[open]")) return;

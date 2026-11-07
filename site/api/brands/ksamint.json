@@ -166,11 +166,11 @@
     "standalone"
   ],
   "version": {
-    "hash": "e88907a9c8e4da71290a5ed524a90cdda0f358eb",
-    "shortHash": "e88907a",
-    "date": "2026-11-06T19:21:49+08:00",
-    "message": "Preserve canonical English names in platform seed records",
-    "url": "https://github.com/ksamint/iptrust01/commit/e88907a9c8e4da71290a5ed524a90cdda0f358eb"
+    "hash": "36b54595030434ff55f42914715d660457a9ae2d",
+    "shortHash": "36b5459",
+    "date": "2026-11-07T10:38:12+08:00",
+    "message": "Fix directory loading, mobile layout and language switching",
+    "url": "https://github.com/ksamint/iptrust01/commit/36b54595030434ff55f42914715d660457a9ae2d"
   },
   "historyUrl": "api/history/ksamint.json",
   "history": [
