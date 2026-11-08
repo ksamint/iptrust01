@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const BUILD_VERSION = "499ce86-a4e03d75";
+const BUILD_VERSION = "758b78c-3eac6ba8";
 const MORE_IP_SLUGS = /* @__PURE__ */ new Set(["qingshuiting", "youyuan-jingmeng", "subangyuan", "xiaotaoyuan", "ganglao-baozailu", "shuangxi-shaola", "mutangwan", "tongxianghui", "tongli-market"]);
 const FEATURED_IP_SLUGS = /* @__PURE__ */ new Set(["iptrust", "tableai", "opcglobal", "sidera"]);
 const i18n = {
@@ -825,7 +825,7 @@ function mainBrand(brand = {}) {
   const classification = localizedClassification(brand, lang);
   return {
     name,
-    secondaryName: alternate.name || (/[㐀-鿿]/.test(name) ? "English name pending" : "中文名待补充"),
+    secondaryName: alternate.name,
     secondaryLanguage: alternate.language,
     intro: brand.intro?.[lang] || fallback.intro || brand.description || "",
     business: brand.profile?.business?.[lang] || brand.business?.[lang] || "",
@@ -2262,7 +2262,7 @@ function primaryIpName(ip = {}) {
 }
 function secondaryIpName(ip = {}) {
   const primary = primaryIpName(ip);
-  return [ip.names?.zh, ip.names?.en].find((name) => name && name !== primary) || (/[㐀-鿿]/.test(primary) ? "English name pending" : "中文名待补充");
+  return [ip.names?.zh, ip.names?.en].find((name) => name && name !== primary) || "";
 }
 async function loadIpSystem() {
   try {

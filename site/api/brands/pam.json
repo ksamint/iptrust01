@@ -168,11 +168,11 @@
     "standalone"
   ],
   "version": {
-    "hash": "499ce861eb9818ca1d769874759728bd06ba788b",
-    "shortHash": "499ce86",
-    "date": "2026-11-07T14:11:52+08:00",
-    "message": "Render homepage controls immediately and refresh repository data in background",
-    "url": "https://github.com/ksamint/iptrust01/commit/499ce861eb9818ca1d769874759728bd06ba788b"
+    "hash": "758b78c97a4474476f2a0687e8a9871c6c5f10dc",
+    "shortHash": "758b78c",
+    "date": "2026-11-08T19:31:09+08:00",
+    "message": "Keep missing translation placeholders out of public brand names",
+    "url": "https://github.com/ksamint/iptrust01/commit/758b78c97a4474476f2a0687e8a9871c6c5f10dc"
   },
   "historyUrl": "api/history/pam.json",
   "history": [

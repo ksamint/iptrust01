@@ -65,3 +65,7 @@ versions; an older Git snapshot must never overwrite a newer D1 record.
 
 Secrets belong in 1Password and the operator's shell environment. Never save API keys,
 TOTP seeds, Cloudflare tokens or signing keys in Git or generated site files.
+
+## First-load regression gate
+
+`npm run build:site` checks that the homepage and directory include their styles and interaction bundle in the HTML, with no separate render-blocking CSS/JS dependency and a compressed entry-page budget below 100 KiB. It also checks public name fallbacks: missing translations must not appear as brand names. These checks run in local and Cloudflare Git builds. The embedded public snapshots keep lists usable while live APIs fail or refresh in the background. Transport/TLS latency is measured separately from application readiness; a successful provider build alone does not establish fast public delivery.

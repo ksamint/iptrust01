@@ -4670,4 +4670,16 @@ ${commonDiscoveryHead("../")}
 </html>`);
 }
 
+// Keep first paint and directory controls independent of stalled asset connections.
+const inlineStyle = (await transform(await readFile(join(assetsDir, "site.css"), "utf8"), { loader: "css", minify: true })).code.replaceAll("</style", "<\\/style");
+const inlineScript = (await transform(await readFile(join(assetsDir, "site.js"), "utf8"), { loader: "js", format: "esm", minify: true })).code.replaceAll("</script", "<\\/script");
+for (const page of ["index.html", "directory/index.html"]) {
+  const path = join(siteDir, page);
+  const document = (await readFile(path, "utf8"))
+    .replace(/<link rel="stylesheet" href="[^"<>]*assets\/site-[a-z0-9-]+\.css">/, () => `<style data-site-style>${inlineStyle}</style>`)
+    .replace(/^[ \t]*<link rel="modulepreload" href="[^"<>]*assets\/site-[a-z0-9-]+\.js">\r?\n/m, "")
+    .replace(/<script src="[^"<>]*assets\/site-[a-z0-9-]+\.js" type="module"><\/script>/, () => `<script type="module" data-site-script>${inlineScript}</script>`);
+  await writeFile(path, document);
+}
+
 console.log(`Built site with ${brandPayloads.length} brands at ${relative(root, siteDir)}`);

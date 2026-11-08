@@ -1,5 +1,19 @@
 [
   {
+    "hash": "758b78c97a4474476f2a0687e8a9871c6c5f10dc",
+    "shortHash": "758b78c",
+    "date": "2026-11-08T19:31:09+08:00",
+    "message": "Keep missing translation placeholders out of public brand names",
+    "url": "https://github.com/ksamint/iptrust01/commit/758b78c97a4474476f2a0687e8a9871c6c5f10dc"
+  },
+  {
+    "hash": "f7dc34276df1785f7d6f0197c4b0436a670134df",
+    "shortHash": "f7dc342",
+    "date": "2026-11-07T14:35:58+08:00",
+    "message": "Migrate application sources to TypeScript and fix image dimensions",
+    "url": "https://github.com/ksamint/iptrust01/commit/f7dc34276df1785f7d6f0197c4b0436a670134df"
+  },
+  {
     "hash": "499ce861eb9818ca1d769874759728bd06ba788b",
     "shortHash": "499ce86",
     "date": "2026-11-07T14:11:52+08:00",
@@ -124,19 +138,5 @@
     "date": "2026-09-13T23:29:41-07:00",
     "message": "Merge pull request #5 from fengurt/codex/home-brand-github-icons",
     "url": "https://github.com/ksamint/iptrust01/commit/1ba46da8676a685e42529d564f3d9c6349488bb9"
-  },
-  {
-    "hash": "2e69252b1a7a5ffea591c1fc53261e1d08af1aa8",
-    "shortHash": "2e69252",
-    "date": "2026-09-14T14:28:48+08:00",
-    "message": "feat: add GitHub links to homepage brands",
-    "url": "https://github.com/ksamint/iptrust01/commit/2e69252b1a7a5ffea591c1fc53261e1d08af1aa8"
-  },
-  {
-    "hash": "f6b8982bb90efdd941e80e154f421c0ffd0133f3",
-    "shortHash": "f6b8982",
-    "date": "2026-09-13T22:40:14-07:00",
-    "message": "Merge pull request #4 from fengurt/codex/brand-github-links",
-    "url": "https://github.com/ksamint/iptrust01/commit/f6b8982bb90efdd941e80e154f421c0ffd0133f3"
   }
 ]
