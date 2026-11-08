@@ -1596,7 +1596,7 @@ const initialGithubIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="
 const initialHeroRowHtml = (brand, idx) => {
   const primaryName = brand.mainName || brand.name;
   const localized = brand.mainLanguage === "zh" ? brand.display?.zh : brand.display?.en;
-  const secondary = localized?.secondaryName || (hasCjk(primaryName) ? "English name pending" : "中文名待补充");
+  const secondary = localized?.secondaryName || "";
   const colors = [brand.theme?.primary, brand.theme?.accent, brand.theme?.secondary].filter(Boolean).slice(0, 3);
   return `<div class="hero-index-row${featuredIpSlugs.has(brand.slug) ? " is-featured" : ""}" data-brand="${escapeBuildHtml(brand.slug)}" style="${initialThemeStyle(brand.theme)};--row-index:${idx}">
     <a class="hero-index-link" href="${escapeBuildHtml(brand.url)}">

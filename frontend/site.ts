@@ -869,7 +869,7 @@ function mainBrand(brand: Brand = {}) {
   const classification = localizedClassification(brand, lang);
   return {
     name,
-    secondaryName: alternate.name || (/[㐀-鿿]/.test(name) ? "English name pending" : "中文名待补充"),
+    secondaryName: alternate.name,
     secondaryLanguage: alternate.language,
     intro: brand.intro?.[lang] || fallback.intro || brand.description || "",
     business: brand.profile?.business?.[lang] || brand.business?.[lang] || "",
@@ -2384,7 +2384,7 @@ function primaryIpName(ip: Pick<Brand, "mainLanguage" | "names" | "slug"> = {}) 
 
 function secondaryIpName(ip: Brand = {}) {
   const primary = primaryIpName(ip);
-  return [ip.names?.zh, ip.names?.en].find((name) => name && name !== primary) || (/[㐀-鿿]/.test(primary) ? "English name pending" : "中文名待补充");
+  return [ip.names?.zh, ip.names?.en].find((name) => name && name !== primary) || "";
 }
 
 async function loadIpSystem(): Promise<DirectoryData> {
