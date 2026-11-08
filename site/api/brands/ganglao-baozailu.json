@@ -140,11 +140,11 @@
     "child"
   ],
   "version": {
-    "hash": "758b78c97a4474476f2a0687e8a9871c6c5f10dc",
-    "shortHash": "758b78c",
-    "date": "2026-11-08T19:31:09+08:00",
-    "message": "Keep missing translation placeholders out of public brand names",
-    "url": "https://github.com/ksamint/iptrust01/commit/758b78c97a4474476f2a0687e8a9871c6c5f10dc"
+    "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
+    "shortHash": "e9ed900",
+    "date": "2026-11-08T19:36:44+08:00",
+    "message": "Remove unreferenced intermediate preview bundles",
+    "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
   },
   "historyUrl": "api/history/ganglao-baozailu.json",
   "history": [

@@ -1,5 +1,19 @@
 [
   {
+    "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
+    "shortHash": "e9ed900",
+    "date": "2026-11-08T19:36:44+08:00",
+    "message": "Remove unreferenced intermediate preview bundles",
+    "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+  },
+  {
+    "hash": "a9111ce90acbf23a4af972714d3790c4b5b63581",
+    "shortHash": "a9111ce",
+    "date": "2026-11-08T19:36:11+08:00",
+    "message": "Remove render-blocking entry assets and gate public name regressions",
+    "url": "https://github.com/ksamint/iptrust01/commit/a9111ce90acbf23a4af972714d3790c4b5b63581"
+  },
+  {
     "hash": "758b78c97a4474476f2a0687e8a9871c6c5f10dc",
     "shortHash": "758b78c",
     "date": "2026-11-08T19:31:09+08:00",
@@ -124,19 +138,5 @@
     "date": "2026-11-07T10:38:12+08:00",
     "message": "Fix directory loading, mobile layout and language switching",
     "url": "https://github.com/ksamint/iptrust01/commit/36b54595030434ff55f42914715d660457a9ae2d"
-  },
-  {
-    "hash": "17e8486df5cc2896049164fdef9c876e5790897b",
-    "shortHash": "17e8486",
-    "date": "2026-09-19T20:28:40+08:00",
-    "message": "Update ksamint repository references and rename Sidera sources to Tiansight",
-    "url": "https://github.com/ksamint/iptrust01/commit/17e8486df5cc2896049164fdef9c876e5790897b"
-  },
-  {
-    "hash": "1ba46da8676a685e42529d564f3d9c6349488bb9",
-    "shortHash": "1ba46da",
-    "date": "2026-09-13T23:29:41-07:00",
-    "message": "Merge pull request #5 from fengurt/codex/home-brand-github-icons",
-    "url": "https://github.com/ksamint/iptrust01/commit/1ba46da8676a685e42529d564f3d9c6349488bb9"
   }
 ]

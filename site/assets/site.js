@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const BUILD_VERSION = "758b78c-3eac6ba8";
+const BUILD_VERSION = "e9ed900-9466d7fc";
 const MORE_IP_SLUGS = /* @__PURE__ */ new Set(["qingshuiting", "youyuan-jingmeng", "subangyuan", "xiaotaoyuan", "ganglao-baozailu", "shuangxi-shaola", "mutangwan", "tongxianghui", "tongli-market"]);
 const FEATURED_IP_SLUGS = /* @__PURE__ */ new Set(["iptrust", "tableai", "opcglobal", "sidera"]);
 const i18n = {

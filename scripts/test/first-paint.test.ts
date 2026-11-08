@@ -13,6 +13,7 @@ for (const path of ["index.html", "directory/index.html"]) {
     assert.doesNotMatch(html, /<script[^>]+src=[^>]*site-[^>]+>/);
     assert.ok(html.indexOf("<style data-site-style>") < html.indexOf("</head>"));
     const markup = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, "");
+    if (path === "directory/index.html") assert.equal((markup.match(/class="directory-entry/g) || []).length, 39, "all names and links must exist before JavaScript runs");
     assert.doesNotMatch(markup, /中文名待补充|English name pending/);
   });
 }

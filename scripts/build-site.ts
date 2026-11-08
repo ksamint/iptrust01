@@ -2058,6 +2058,18 @@ ${commonDiscoveryHead()}
 </body>
 </html>`);
 
+function initialDirectoryHtml() {
+  const row = (ip: typeof staticIps[number]) => {
+    const primary = ip.mainLanguage === "en" ? (ip.names.en || ip.names.zh) : (ip.names.zh || ip.names.en);
+    const secondary = [ip.names.zh, ip.names.en].find((name) => name && name !== primary);
+    const href = ip.recordClass === "owned" ? (ip.url || `brand.html?brand=${ip.slug}`) : `ip?ip=${ip.slug}`;
+    return `<div class="directory-entry${featuredIpSlugs.has(ip.slug) ? " is-featured" : ""}"><a class="directory-row" href="${escapeBuildHtml(href)}"><span class="directory-name"><strong>${escapeBuildHtml(primary || ip.slug)}</strong>${secondary ? `<small>${escapeBuildHtml(secondary)}</small>` : ""}</span><span></span><span></span><span></span><b>↗</b></a></div>`;
+  };
+  const visible = staticIps.filter((ip) => !moreIpSlugs.has(ip.slug)).map(row).join("");
+  const more = staticIps.filter((ip) => moreIpSlugs.has(ip.slug)).map(row).join("");
+  return `<header class="directory-hero"><p class="eyebrow">IPTrust Directory</p><h1>IP，一目了然。</h1><p>${staticIps.length} IP</p></header><div class="directory-list">${visible}<details class="more-ips"><summary>更多 IP · ${moreIpSlugs.size}</summary><div class="more-ip-items">${more}</div></details></div>`;
+}
+
 function directoryPage({ kind, title, mountId }) {
   return html`<!doctype html>
 <html lang="zh-CN">
@@ -2083,7 +2095,7 @@ ${commonDiscoveryHead()}
       <button class="lang-toggle" type="button" id="langToggle" aria-label="Switch language"><span class="is-active">CN</span><span class="lang-divider">/</span><span>EN</span></button>
     </nav>
   </header>
-  <main id="${mountId}" class="directory-main" aria-live="polite">${kind === "directory" ? '<p role="status">正在载入 IP 目录… / Loading IP directory…</p>' : ""}</main>
+  <main id="${mountId}" class="directory-main" aria-live="polite">${kind === "directory" ? initialDirectoryHtml() : ""}</main>
 ${kind === "directory" ? `<script id="directorySnapshot" type="application/json">${JSON.stringify({ ips: staticIps, taxonomy: ipSystem.taxonomy, applications: ipSystem.applications, relationships: ipSystem.relationships }).replaceAll("<", "\\u003c")}</script>` : ""}
   <script src="${siteJsPath}" type="module"></script>
 </body>
