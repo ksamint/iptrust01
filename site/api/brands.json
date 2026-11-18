@@ -1,5 +1,261 @@
 [
   {
+    "slug": "xiding",
+    "folder": "XIDING",
+    "name": "XIDING",
+    "nativeName": "西頂文化",
+    "description": "Cultural brand spanning arts and education.",
+    "officialWebsite": "",
+    "mainLanguage": "zh",
+    "intro": {
+      "zh": "西頂文化以西頂廣仁宮的視覺識別為基礎，旗下有西頂藝術與西頂學院。",
+      "en": "XIDING draws on the visual identity of Xiding Guangren Temple and encompasses Xiding Arts and Xiding Academy."
+    },
+    "business": {
+      "zh": "藝術、教育與會員服務。",
+      "en": "Arts, education and membership."
+    },
+    "primaryGuide": "XIDING/BRAND.md",
+    "theme": {
+      "mode": "light",
+      "primary": "#628F8A",
+      "accent": "#3D6560",
+      "secondary": "#2F5B56",
+      "surface": "#EEF2F1",
+      "paper": "#FFFFFF",
+      "ink": "#000000",
+      "muted": "#4E5A58",
+      "line": "#CDD6D4",
+      "keywords": [
+        "teal",
+        "culture",
+        "arts"
+      ]
+    },
+    "designSystemUrl": "https://github.com/ksamint/dsys_xiding02",
+    "assetKey": "xiding",
+    "mainName": "西頂文化",
+    "mainLocale": "CN",
+    "profile": {
+      "officialWebsite": "",
+      "mainLanguage": "zh",
+      "mainLocale": "CN",
+      "intro": {
+        "zh": "西頂文化以西頂廣仁宮的視覺識別為基礎，旗下有西頂藝術與西頂學院。",
+        "en": "XIDING draws on the visual identity of Xiding Guangren Temple and encompasses Xiding Arts and Xiding Academy."
+      },
+      "business": {
+        "zh": "藝術、教育與會員服務。",
+        "en": "Arts, education and membership."
+      },
+      "notes": {
+        "zh": "",
+        "en": ""
+      },
+      "classification": {
+        "tracks": {
+          "zh": [],
+          "en": []
+        },
+        "audiences": {
+          "zh": [],
+          "en": []
+        },
+        "tags": {
+          "zh": [],
+          "en": []
+        }
+      }
+    },
+    "display": {
+      "default": {
+        "language": "zh",
+        "name": "西頂文化"
+      },
+      "zh": {
+        "name": "西頂文化",
+        "secondaryName": "XIDING"
+      },
+      "en": {
+        "name": "XIDING",
+        "secondaryName": "西頂文化"
+      }
+    },
+    "notes": {
+      "zh": "",
+      "en": ""
+    },
+    "recordClass": "owned",
+    "primaryIndustry": "culture-creative-media",
+    "industries": [
+      "culture-creative-media",
+      "education-research"
+    ],
+    "ipType": "corporate-brand",
+    "lifecycleStatus": "active",
+    "guidelineMode": "independent",
+    "parentCapable": false,
+    "architectureRoles": [
+      "standalone"
+    ],
+    "version": {
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
+    },
+    "historyUrl": "api/history/xiding.json",
+    "publicSlug": "xiding",
+    "url": "brand.html?brand=xiding",
+    "apiUrl": "api/brands/xiding.json",
+    "status": "documented",
+    "assetManifest": [],
+    "logoUrl": "",
+    "assetKit": {
+      "assetKey": "xiding",
+      "endpoints": {
+        "brand": "api/brands/xiding.json",
+        "logo": "",
+        "images": "api/brands/xiding.json#images",
+        "adobe": "",
+        "tokens": "api/brands/xiding.json#tokens",
+        "history": "api/history/xiding.json"
+      },
+      "moodboard": {
+        "colors": [
+          {
+            "key": "primary",
+            "value": "#628F8A"
+          },
+          {
+            "key": "accent",
+            "value": "#3D6560"
+          },
+          {
+            "key": "secondary",
+            "value": "#2F5B56"
+          },
+          {
+            "key": "surface",
+            "value": "#EEF2F1"
+          },
+          {
+            "key": "paper",
+            "value": "#FFFFFF"
+          },
+          {
+            "key": "ink",
+            "value": "#000000"
+          },
+          {
+            "key": "muted",
+            "value": "#4E5A58"
+          }
+        ],
+        "keywords": [
+          "teal",
+          "culture",
+          "arts"
+        ],
+        "images": []
+      }
+    },
+    "agent": {
+      "entry": "https://apuch.art/agent.json",
+      "mcp": "https://apuch.art/mcp",
+      "recommendedTool": "get_guideline",
+      "arguments": {
+        "assetKey": "xiding"
+      },
+      "conventions": {
+        "primaryNameField": "mainName",
+        "primaryLanguageField": "mainLanguage",
+        "exactColorField": "theme",
+        "canonicalLogoField": "logoUrl",
+        "publicAssetField": "images",
+        "provenanceField": "sources"
+      }
+    },
+    "moodboard": {
+      "colors": [
+        {
+          "key": "primary",
+          "value": "#628F8A"
+        },
+        {
+          "key": "accent",
+          "value": "#3D6560"
+        },
+        {
+          "key": "secondary",
+          "value": "#2F5B56"
+        },
+        {
+          "key": "surface",
+          "value": "#EEF2F1"
+        },
+        {
+          "key": "paper",
+          "value": "#FFFFFF"
+        },
+        {
+          "key": "ink",
+          "value": "#000000"
+        },
+        {
+          "key": "muted",
+          "value": "#4E5A58"
+        }
+      ],
+      "keywords": [
+        "teal",
+        "culture",
+        "arts"
+      ],
+      "images": []
+    },
+    "editablePaths": [
+      "XIDING/BRAND.md"
+    ],
+    "source": {
+      "github": "https://github.com/ksamint/iptrust01/tree/main/XIDING",
+      "folder": "XIDING"
+    },
+    "repository": null,
+    "lastUpdatedAt": null,
+    "completeness": {
+      "score": 50,
+      "total": 100,
+      "status": "foundation",
+      "checks": {
+        "profile": true,
+        "business": true,
+        "guide": true,
+        "tokens": false,
+        "palette": true,
+        "logo": false,
+        "sources": false,
+        "classification": true,
+        "repository": false,
+        "repositoryName": false
+      },
+      "missing": [
+        "tokens",
+        "logo",
+        "sources",
+        "repository",
+        "repositoryName"
+      ]
+    },
+    "guideCount": 1,
+    "tokenCount": 0,
+    "imageCount": 0,
+    "adobeAssetCount": 0,
+    "heroImage": "",
+    "primaryExcerpt": "西頂文化 · XIDING 西頂文化以西頂廣仁宮的視覺識別為基礎，旗下有西頂藝術與西頂學院。西頂時光是會員品牌名稱。 XIDING draws on the visual identity of Xiding Guangren Temple. Xiding Arts and Xiding Academy are its two brands. Xiding Lifestyle is the membership name. The symbol in this directory comes from the published Xiding identity. The complete guide, logos, tokens and component library are in the [XIDING design system](https://github.com/ksamint/dsys xiding02)."
+  },
+  {
     "slug": "mtongheng",
     "folder": "MTONGHENG",
     "name": "Tong Heng International",
@@ -100,11 +356,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/mtongheng.json",
     "publicSlug": "mtongheng",
@@ -445,11 +701,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/sidera.json",
     "url": "brand.html?brand=tiansight",
@@ -1040,11 +1296,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/vanahom.json",
     "publicSlug": "vanahom",
@@ -2559,11 +2815,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/tableai.json",
     "publicSlug": "tableai",
@@ -3157,11 +3413,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/iptrust.json",
     "publicSlug": "iptrust",
@@ -4707,11 +4963,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/opcglobal.json",
     "publicSlug": "opcglobal",
@@ -5747,11 +6003,11 @@
       "parent"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/qingshuiting.json",
     "publicSlug": "qingshuiting",
@@ -6068,11 +6324,11 @@
       "parent"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/youyuan-jingmeng.json",
     "publicSlug": "youyuan-jingmeng",
@@ -6391,11 +6647,11 @@
       "parent"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/subangyuan.json",
     "publicSlug": "subangyuan",
@@ -6712,11 +6968,11 @@
       "child"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/xiaotaoyuan.json",
     "publicSlug": "xiaotaoyuan",
@@ -7025,11 +7281,11 @@
       "child"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/ganglao-baozailu.json",
     "publicSlug": "ganglao-baozailu",
@@ -7347,11 +7603,11 @@
       "child"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/shuangxi-shaola.json",
     "publicSlug": "shuangxi-shaola",
@@ -7668,11 +7924,11 @@
       "child"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/mutangwan.json",
     "publicSlug": "mutangwan",
@@ -7989,11 +8245,11 @@
       "child"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/tongxianghui.json",
     "publicSlug": "tongxianghui",
@@ -8322,11 +8578,11 @@
       "parent"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/tongli-market.json",
     "publicSlug": "tongli-market",
@@ -8641,11 +8897,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/yanan-shiyao-hotel.json",
     "publicSlug": "yanan-shiyao-hotel",
@@ -8997,11 +9253,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/kaoyu-shenhua.json",
     "publicSlug": "kaoyu-shenhua",
@@ -9730,11 +9986,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/shanrenjing.json",
     "publicSlug": "shanrenjing",
@@ -10076,11 +10332,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/shenzhen-microsoft-global-center.json",
     "publicSlug": "shenzhen-microsoft-global-center",
@@ -10417,11 +10673,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/nibiru.json",
     "publicSlug": "nibiru",
@@ -10763,11 +11019,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/zhongzhiyou.json",
     "publicSlug": "zhongzhiyou",
@@ -11109,11 +11365,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/xinzhi-travel.json",
     "publicSlug": "xinzhi-travel",
@@ -11426,11 +11682,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/inucleus.json",
     "publicSlug": "inucleus",
@@ -11768,11 +12024,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/ksamint.json",
     "publicSlug": "ksamint",
@@ -12112,11 +12368,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/pam.json",
     "publicSlug": "pam",
@@ -12458,11 +12714,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/apuch.json",
     "publicSlug": "apuch",
@@ -12800,11 +13056,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/boya.json",
     "publicSlug": "boya",
@@ -13141,11 +13397,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/changoods.json",
     "publicSlug": "changoods",
@@ -13482,11 +13738,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/rgd.json",
     "publicSlug": "rgd",
@@ -13825,11 +14081,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/agem.json",
     "publicSlug": "agem",
@@ -14166,11 +14422,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/1stepmore.json",
     "publicSlug": "1stepmore",
@@ -14508,11 +14764,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/axisee.json",
     "publicSlug": "axisee",
@@ -14980,11 +15236,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/fengzhi.json",
     "publicSlug": "fengzhi",
@@ -15592,11 +15848,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/manaendless.json",
     "publicSlug": "manaendless",
@@ -16001,11 +16257,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/apha.json",
     "publicSlug": "apha",
@@ -16409,11 +16665,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/kind.json",
     "publicSlug": "kind",
@@ -16818,11 +17074,11 @@
       "standalone"
     ],
     "version": {
-      "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
-      "shortHash": "e9ed900",
-      "date": "2026-11-08T19:36:44+08:00",
-      "message": "Remove unreferenced intermediate preview bundles",
-      "url": "https://github.com/ksamint/iptrust01/commit/e9ed900b54724845a233df12c364b370b207e0d2"
+      "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+      "shortHash": "9568c3b",
+      "date": "2026-11-08T19:41:53+08:00",
+      "message": "Render directory names and links before JavaScript arrives",
+      "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
     },
     "historyUrl": "api/history/sanctem.json",
     "publicSlug": "sanctem",

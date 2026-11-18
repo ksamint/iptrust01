@@ -29,7 +29,7 @@ const fontLicenseArchiveDir = join(root, "licenses", "fonts");
 const repositorySnapshot = JSON.parse(await readFile(join(root, "data/repository-status.json"), "utf8"));
 const brands = JSON.parse(await readFile(join(root, "config/brands.json"), "utf8"));
 const moreIpSlugs = new Set(["qingshuiting", "youyuan-jingmeng", "subangyuan", "xiaotaoyuan", "ganglao-baozailu", "shuangxi-shaola", "mutangwan", "tongxianghui", "tongli-market"]);
-const featuredIpSlugs = new Set(["iptrust", "tableai", "opcglobal", "sidera"]);
+const featuredIpSlugs = new Set(["xiding", "iptrust", "tableai", "opcglobal", "sidera"]);
 const ipSystem = JSON.parse(await readFile(join(root, "config/ip-system.json"), "utf8"));
 const assetManifest = existsSync(assetManifestPath)
   ? JSON.parse(await readFile(assetManifestPath, "utf8"))
@@ -975,7 +975,7 @@ for (const brand of brands) {
   }
 }
 
-brandPayloads.sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
+brandPayloads.sort((a, b) => Number(b.slug === "xiding") - Number(a.slug === "xiding") || (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
 await writeFile(join(apiDir, "repository-status.json"), JSON.stringify({ ...repositorySnapshot, mode: "snapshot" }, null, 2));
 const indexPayload = brandPayloads.map(({ guides, tokens, images, adobeAssets, history, ...brand }) => ({
   ...brand,

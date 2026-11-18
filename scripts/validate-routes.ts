@@ -49,7 +49,7 @@ const brands = JSON.parse(await readFile(join(root, "config/brands.json"), "utf8
 const ips = JSON.parse(await readFile(join(root, "site/api/ips.json"), "utf8"));
 const repositories = new Set();
 for (const brand of brands) {
-  const repositoryName = { sidera: "dsys_tiansight02", tableai: "dsys_tableai01", mtongheng: "dsys_mtongheng01" }[brand.slug] || `dsys_${brand.slug}`;
+  const repositoryName = { xiding: "dsys_xiding02", sidera: "dsys_tiansight02", tableai: "dsys_tableai01", mtongheng: "dsys_mtongheng01" }[brand.slug] || `dsys_${brand.slug}`;
   const expected = `https://github.com/ksamint/${repositoryName}`;
   if (brand.designSystemUrl !== expected || repositories.has(expected)) throw new Error(`design_system_repository:${brand.slug}`);
   repositories.add(expected);

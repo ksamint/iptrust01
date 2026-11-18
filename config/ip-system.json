@@ -35,6 +35,7 @@
     ]
   },
   "owned": {
+    "xiding": { "primaryIndustry": "culture-creative-media", "industries": ["culture-creative-media", "education-research"], "ipType": "corporate-brand" },
     "mtongheng": { "primaryIndustry": "business-professional-services", "industries": ["business-professional-services", "technology-ai"], "ipType": "corporate-brand" },
     "tableai": { "primaryIndustry": "technology-ai", "industries": ["technology-ai", "business-professional-services"], "ipType": "platform-system-ip" },
     "vanahom": { "primaryIndustry": "hospitality-hotels", "industries": ["hospitality-hotels", "wellness-healing", "business-professional-services"], "ipType": "corporate-brand" },

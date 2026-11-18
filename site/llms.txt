@@ -94,6 +94,7 @@ Open-source type library:
 - Public Sans: OFL-1.1 · https://fonts.google.com/specimen/Public+Sans
 
 Brands:
+- 西頂文化 (xiding; assetKey xiding): /api/brands/xiding.json · design system https://github.com/ksamint/dsys_xiding02 · mainLocale CN · palette #628F8A / #3D6560
 - 澳门同興国际 (mtongheng; assetKey mtongheng): /api/brands/mtongheng.json · design system https://github.com/ksamint/dsys_mtongheng01 · mainLocale CN · palette #0F1E38 / #C8A45C
 - 侍天 - 智慧餐饮 (tiansight; assetKey sidera): /api/brands/tiansight.json · design system https://github.com/ksamint/dsys_tiansight02 · mainLocale CN · palette #EFE6D2 / #76551F
 - 凡纳弘途 (vanahom; assetKey vanahom): /api/brands/vanahom.json · design system https://github.com/ksamint/dsys_vanahom · mainLocale CN · palette #B12137 / #A8ADAD

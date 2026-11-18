@@ -1,5 +1,40 @@
 [
   {
+    "slug": "xiding",
+    "folder": "XIDING",
+    "name": "XIDING",
+    "nativeName": "西頂文化",
+    "description": "Cultural brand spanning arts and education.",
+    "officialWebsite": "",
+    "mainLanguage": "zh",
+    "intro": {
+      "zh": "西頂文化以西頂廣仁宮的視覺識別為基礎，旗下有西頂藝術與西頂學院。",
+      "en": "XIDING draws on the visual identity of Xiding Guangren Temple and encompasses Xiding Arts and Xiding Academy."
+    },
+    "business": {
+      "zh": "藝術、教育與會員服務。",
+      "en": "Arts, education and membership."
+    },
+    "primaryGuide": "XIDING/BRAND.md",
+    "theme": {
+      "mode": "light",
+      "primary": "#628F8A",
+      "accent": "#3D6560",
+      "secondary": "#2F5B56",
+      "surface": "#EEF2F1",
+      "paper": "#FFFFFF",
+      "ink": "#000000",
+      "muted": "#4E5A58",
+      "line": "#CDD6D4",
+      "keywords": [
+        "teal",
+        "culture",
+        "arts"
+      ]
+    },
+    "designSystemUrl": "https://github.com/ksamint/dsys_xiding02"
+  },
+  {
     "slug": "tableai",
     "folder": "TABLEAI",
     "name": "Table AI",

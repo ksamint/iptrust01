@@ -1,6 +1,22 @@
 [
   {
     "type": "ip",
+    "slug": "xiding",
+    "title": "西頂文化",
+    "subtitle": "西頂文化 · XIDING",
+    "text": "西頂文化以西頂廣仁宮的視覺識別為基礎，旗下有西頂藝術與西頂學院。 XIDING draws on the visual identity of Xiding Guangren Temple and encompasses Xiding Arts and Xiding Academy. 藝術、教育與會員服務。 Arts, education and membership. Cultural brand spanning arts and education. teal culture arts",
+    "url": "brand.html?brand=xiding"
+  },
+  {
+    "type": "guide",
+    "slug": "xiding",
+    "title": "BRAND",
+    "subtitle": "西頂文化 · XIDING/BRAND.md",
+    "text": "西頂文化 · XIDING 西頂文化以西頂廣仁宮的視覺識別為基礎，旗下有西頂藝術與西頂學院。西頂時光是會員品牌名稱。 XIDING draws on the visual identity of Xiding Guangren Temple. Xiding Arts and Xiding Academy are its two brands. Xiding Lifestyle is the membership name. The symbol in this directory comes from the published Xiding identity. The complete guide, logos, tokens and component library are in the [XIDING design system](https://github.com/ksamint/dsys xiding02).",
+    "url": "brand.html?brand=xiding"
+  },
+  {
+    "type": "ip",
     "slug": "mtongheng",
     "title": "澳门同興国际",
     "subtitle": "澳门同興国际 · Tong Heng International",
