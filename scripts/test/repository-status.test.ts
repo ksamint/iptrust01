@@ -110,11 +110,13 @@ test("directory snapshot renders without waiting for any API", async () => {
     loadIpSystem: () => { throw Error("unexpected network dependency"); },
     loadRankedBrands: () => { throw Error("unexpected network dependency"); },
   });
-  assert.equal(data.ips.length, 39);
+  assert.equal(data.ips.length, 40);
+  assert.equal(data.ips[0].slug, "xiding");
+  assert.equal(data.ips[0].designSystemUrl, "https://github.com/ksamint/dsys_xiding02");
   assert.equal(data.ips.find((ip) => ip.slug === "mtongheng").names.en, "Tong Heng International");
 });
 
-test("nine secondary IPs collapse under More IPs and four IPs are enlarged", async () => {
+test("nine secondary IPs collapse under More IPs and five IPs are enlarged", async () => {
   const { readFile } = await import("node:fs/promises");
   const { runInNewContext } = await import("node:vm");
   const script = await readFile(new URL("../../site/assets/site.js", import.meta.url), "utf8");
@@ -136,9 +138,9 @@ test("nine secondary IPs collapse under More IPs and four IPs are enlarged", asy
     const [visible, hidden] = page.innerHTML.split('<details class="more-ips directory-more-ips"');
     assert.ok(hidden);
     if (!query) {
-      assert.equal((visible.match(/class="directory-entry/g) || []).length, 30);
+      assert.equal((visible.match(/class="directory-entry/g) || []).length, 31);
       assert.equal((hidden.match(/class="directory-entry/g) || []).length, 9);
-      assert.equal((visible.match(/directory-entry is-featured/g) || []).length, 4);
+      assert.equal((visible.match(/directory-entry is-featured/g) || []).length, 5);
       assert.doesNotMatch(hidden.slice(0, hidden.indexOf('>')), /open/);
     } else {
       assert.match(hidden.slice(0, hidden.indexOf('>')), /open/);
@@ -154,7 +156,7 @@ test("homepage controls render from published data without a network wait", asyn
   const embedded = html.match(/<script id="brandListSnapshot" type="application\/json">([\s\S]*?)<\/script>/)?.[1];
   assert.ok(embedded && !embedded.includes("<"));
   const brands = JSON.parse(embedded);
-  assert.equal(brands.length, 37);
+  assert.equal(brands.length, 38);
   assert.ok(brands.every((b) => b.profile && b.theme && b.completeness && !b.assetManifest));
   const script = await readFile(process.env.IPTRUST_TEST_HOME_SCRIPT || new URL("../../site/assets/site.js", import.meta.url), "utf8");
   const start = script.indexOf("async function renderHeroIndex(");
@@ -165,7 +167,7 @@ test("homepage controls render from published data without a network wait", asyn
     loadRankedBrands: () => { throw Error("unexpected metadata wait"); },
     mainBrand: (b) => ({ name: b.mainName, secondaryName: b.display.en.secondaryName }),
     MORE_IP_SLUGS: new Set(["qingshuiting", "youyuan-jingmeng", "subangyuan", "xiaotaoyuan", "ganglao-baozailu", "shuangxi-shaola", "mutangwan", "tongxianghui", "tongli-market"]),
-    FEATURED_IP_SLUGS: new Set(["iptrust", "tableai", "opcglobal", "sidera"]),
+    FEATURED_IP_SLUGS: new Set(["xiding", "iptrust", "tableai", "opcglobal", "sidera"]),
     escapeHtml: (v) => String(v), themeStyle: () => "", ipHealth: () => "Readiness", colorDots: () => "", githubIcon: () => "", copyIcon: () => "", t: (v) => v, setupCopyButtons: () => {},
   });
   assert.match(index.innerHTML, /data-copy-brand=/);

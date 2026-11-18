@@ -2149,7 +2149,7 @@ async function loadRankedBrands(): Promise<Brand[]> {
     const checks = { ...brand.completeness?.checks, repository: Boolean(repository?.accessible && !repository.archived && repository.commit), repositoryName: Boolean(repository?.suffixValid) };
     const score = Object.values(checks).filter(Boolean).length * 10;
     return { ...brand, designSystemUrl: repository?.url || brand.designSystemUrl, repository, lastUpdatedAt: repository?.lastUpdatedAt || null, completeness: { ...brand.completeness, status: score === 100 ? "inventory-complete" : score >= 70 ? "developing" : "foundation", checks, score, missing: Object.keys(checks).filter((key) => !checks[key]) } };
-  }).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
+  }).sort((a, b) => Number(b.slug === "xiding") - Number(a.slug === "xiding") || (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
   return cachedBrands;
 }
 
@@ -2417,7 +2417,7 @@ async function renderDirectory(initialData: DirectoryData | null = null, snapsho
   for (const brand of rankedBrands) {
     if (!listedSlugs.has(brand.slug)) data.ips.push({ ...brand, names: { zh: brand.display?.zh?.name, en: brand.display?.en?.name } });
   }
-  data.ips = data.ips.map((ip) => ({ ...ip, names: brandBySlug.has(ip.slug) && !(ip.version > 1) ? { zh: brandBySlug.get(ip.slug).display.zh.name, en: brandBySlug.get(ip.slug).display.en.name } : ip.names, designSystemUrl: brandBySlug.get(ip.slug)?.designSystemUrl || ip.designSystemUrl, repository: brandBySlug.get(ip.slug)?.repository, completeness: brandBySlug.get(ip.slug)?.completeness, lastUpdatedAt: brandBySlug.get(ip.slug)?.lastUpdatedAt })).sort((a, b) => (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
+  data.ips = data.ips.map((ip) => ({ ...ip, names: brandBySlug.has(ip.slug) && !(ip.version > 1) ? { zh: brandBySlug.get(ip.slug).display.zh.name, en: brandBySlug.get(ip.slug).display.en.name } : ip.names, designSystemUrl: brandBySlug.get(ip.slug)?.designSystemUrl || ip.designSystemUrl, repository: brandBySlug.get(ip.slug)?.repository, completeness: brandBySlug.get(ip.slug)?.completeness, lastUpdatedAt: brandBySlug.get(ip.slug)?.lastUpdatedAt })).sort((a, b) => Number(b.slug === "xiding") - Number(a.slug === "xiding") || (Date.parse(b.lastUpdatedAt) || 0) - (Date.parse(a.lastUpdatedAt) || 0) || a.slug.localeCompare(b.slug));
   lastDirectoryData = data;
   const params = new URLSearchParams(location.search);
   const industry = params.get("industry") || "";

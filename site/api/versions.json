@@ -1,5 +1,12 @@
 [
   {
+    "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+    "shortHash": "9568c3b",
+    "date": "2026-11-08T19:41:53+08:00",
+    "message": "Render directory names and links before JavaScript arrives",
+    "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
+  },
+  {
     "hash": "e9ed900b54724845a233df12c364b370b207e0d2",
     "shortHash": "e9ed900",
     "date": "2026-11-08T19:36:44+08:00",
@@ -131,12 +138,5 @@
     "date": "2026-09-19T22:53:07+08:00",
     "message": "Link every owned IP to its dedicated ksamint design-system repository",
     "url": "https://github.com/ksamint/iptrust01/commit/498680a80ec9173520489eca77f1247601798168"
-  },
-  {
-    "hash": "36b54595030434ff55f42914715d660457a9ae2d",
-    "shortHash": "36b5459",
-    "date": "2026-11-07T10:38:12+08:00",
-    "message": "Fix directory loading, mobile layout and language switching",
-    "url": "https://github.com/ksamint/iptrust01/commit/36b54595030434ff55f42914715d660457a9ae2d"
   }
 ]

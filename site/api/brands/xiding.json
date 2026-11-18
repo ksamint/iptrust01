@@ -1,0 +1,338 @@
+{
+  "slug": "xiding",
+  "folder": "XIDING",
+  "name": "XIDING",
+  "nativeName": "西頂文化",
+  "description": "Cultural brand spanning arts and education.",
+  "officialWebsite": "",
+  "mainLanguage": "zh",
+  "intro": {
+    "zh": "西頂文化以西頂廣仁宮的視覺識別為基礎，旗下有西頂藝術與西頂學院。",
+    "en": "XIDING draws on the visual identity of Xiding Guangren Temple and encompasses Xiding Arts and Xiding Academy."
+  },
+  "business": {
+    "zh": "藝術、教育與會員服務。",
+    "en": "Arts, education and membership."
+  },
+  "primaryGuide": "XIDING/BRAND.md",
+  "theme": {
+    "mode": "light",
+    "primary": "#628F8A",
+    "accent": "#3D6560",
+    "secondary": "#2F5B56",
+    "surface": "#EEF2F1",
+    "paper": "#FFFFFF",
+    "ink": "#000000",
+    "muted": "#4E5A58",
+    "line": "#CDD6D4",
+    "keywords": [
+      "teal",
+      "culture",
+      "arts"
+    ]
+  },
+  "designSystemUrl": "https://github.com/ksamint/dsys_xiding02",
+  "assetKey": "xiding",
+  "mainName": "西頂文化",
+  "mainLocale": "CN",
+  "profile": {
+    "officialWebsite": "",
+    "mainLanguage": "zh",
+    "mainLocale": "CN",
+    "intro": {
+      "zh": "西頂文化以西頂廣仁宮的視覺識別為基礎，旗下有西頂藝術與西頂學院。",
+      "en": "XIDING draws on the visual identity of Xiding Guangren Temple and encompasses Xiding Arts and Xiding Academy."
+    },
+    "business": {
+      "zh": "藝術、教育與會員服務。",
+      "en": "Arts, education and membership."
+    },
+    "notes": {
+      "zh": "",
+      "en": ""
+    },
+    "classification": {
+      "tracks": {
+        "zh": [],
+        "en": []
+      },
+      "audiences": {
+        "zh": [],
+        "en": []
+      },
+      "tags": {
+        "zh": [],
+        "en": []
+      }
+    }
+  },
+  "display": {
+    "default": {
+      "language": "zh",
+      "name": "西頂文化"
+    },
+    "zh": {
+      "name": "西頂文化",
+      "secondaryName": "XIDING"
+    },
+    "en": {
+      "name": "XIDING",
+      "secondaryName": "西頂文化"
+    }
+  },
+  "notes": {
+    "zh": "",
+    "en": ""
+  },
+  "recordClass": "owned",
+  "primaryIndustry": "culture-creative-media",
+  "industries": [
+    "culture-creative-media",
+    "education-research"
+  ],
+  "ipType": "corporate-brand",
+  "lifecycleStatus": "active",
+  "guidelineMode": "independent",
+  "parentCapable": false,
+  "architectureRoles": [
+    "standalone"
+  ],
+  "version": {
+    "hash": "9568c3b8b2add9b51c28f07f3fbccb613fbede44",
+    "shortHash": "9568c3b",
+    "date": "2026-11-08T19:41:53+08:00",
+    "message": "Render directory names and links before JavaScript arrives",
+    "url": "https://github.com/ksamint/iptrust01/commit/9568c3b8b2add9b51c28f07f3fbccb613fbede44"
+  },
+  "historyUrl": "api/history/xiding.json",
+  "history": [
+    {
+      "hash": "4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
+      "shortHash": "4c0351c",
+      "date": "2026-11-06T12:34:08+08:00",
+      "message": "Add IP repository audit, live update ranking and readiness scores",
+      "url": "https://github.com/ksamint/iptrust01/commit/4c0351c0b3fe9ba72140a9ff157f3c69d1012759",
+      "sourcePaths": [
+        "config/brands.json",
+        "XIDING",
+        "XIDING/BRAND.md"
+      ]
+    },
+    {
+      "hash": "53340b5287a42790703a21b20a84beb62e54cdf5",
+      "shortHash": "53340b5",
+      "date": "2026-10-18T08:59:45+08:00",
+      "message": "Point Tiansight design-system links to dsys_tiansight02 (#7)",
+      "url": "https://github.com/ksamint/iptrust01/commit/53340b5287a42790703a21b20a84beb62e54cdf5",
+      "sourcePaths": [
+        "config/brands.json",
+        "XIDING",
+        "XIDING/BRAND.md"
+      ]
+    },
+    {
+      "hash": "498680a80ec9173520489eca77f1247601798168",
+      "shortHash": "498680a",
+      "date": "2026-09-19T22:53:07+08:00",
+      "message": "Link every owned IP to its dedicated ksamint design-system repository",
+      "url": "https://github.com/ksamint/iptrust01/commit/498680a80ec9173520489eca77f1247601798168",
+      "sourcePaths": [
+        "config/brands.json",
+        "XIDING",
+        "XIDING/BRAND.md"
+      ]
+    },
+    {
+      "hash": "17e8486df5cc2896049164fdef9c876e5790897b",
+      "shortHash": "17e8486",
+      "date": "2026-09-19T20:28:40+08:00",
+      "message": "Update ksamint repository references and rename Sidera sources to Tiansight",
+      "url": "https://github.com/ksamint/iptrust01/commit/17e8486df5cc2896049164fdef9c876e5790897b",
+      "sourcePaths": [
+        "config/brands.json",
+        "XIDING",
+        "XIDING/BRAND.md"
+      ]
+    },
+    {
+      "hash": "6c28043d87c25fa124e6997cafb2c5e6492ffc0e",
+      "shortHash": "6c28043",
+      "date": "2026-08-14T08:33:39+08:00",
+      "message": "feat: streamline brand pages and publish tiansight slug",
+      "url": "https://github.com/ksamint/iptrust01/commit/6c28043d87c25fa124e6997cafb2c5e6492ffc0e",
+      "sourcePaths": [
+        "config/brands.json",
+        "XIDING",
+        "XIDING/BRAND.md"
+      ]
+    },
+    {
+      "hash": "bcd28bc5dcefd3d090488e9f90ce43ec673b2ec6",
+      "shortHash": "bcd28bc",
+      "date": "2026-08-04T06:00:43+08:00",
+      "message": "Rename 侍天 English brand name to tiansight",
+      "url": "https://github.com/ksamint/iptrust01/commit/bcd28bc5dcefd3d090488e9f90ce43ec673b2ec6",
+      "sourcePaths": [
+        "config/brands.json",
+        "XIDING",
+        "XIDING/BRAND.md"
+      ]
+    }
+  ],
+  "publicSlug": "xiding",
+  "url": "brand.html?brand=xiding",
+  "apiUrl": "api/brands/xiding.json",
+  "status": "documented",
+  "guides": [
+    {
+      "path": "XIDING/BRAND.md",
+      "title": "BRAND",
+      "format": "md",
+      "primary": true,
+      "excerpt": "西頂文化 · XIDING 西頂文化以西頂廣仁宮的視覺識別為基礎，旗下有西頂藝術與西頂學院。西頂時光是會員品牌名稱。 XIDING draws on the visual identity of Xiding Guangren Temple. Xiding Arts and Xiding Academy are its two brands. Xiding Lifestyle is the membership name. The symbol in this directory comes from the published Xiding identity. The complete guide, logos, tokens and component library are in the [XIDING design system](https://github.com/ksamint/dsys xiding02).",
+      "text": "# 西頂文化 · XIDING\n\n西頂文化以西頂廣仁宮的視覺識別為基礎，旗下有西頂藝術與西頂學院。西頂時光是會員品牌名稱。\n\nXIDING draws on the visual identity of Xiding Guangren Temple. Xiding Arts and Xiding Academy are its two brands. Xiding Lifestyle is the membership name.\n\nThe symbol in this directory comes from the published Xiding identity. The complete guide, logos, tokens and component library are in the [XIDING design system](https://github.com/ksamint/dsys_xiding02).\n",
+      "html": "<h1 id=\"xiding-guide-1-西頂文化-xiding\">西頂文化 · XIDING</h1>\n<p>西頂文化以西頂廣仁宮的視覺識別為基礎，旗下有西頂藝術與西頂學院。西頂時光是會員品牌名稱。</p>\n<p>XIDING draws on the visual identity of Xiding Guangren Temple. Xiding Arts and Xiding Academy are its two brands. Xiding Lifestyle is the membership name.</p>\n<p>The symbol in this directory comes from the published Xiding identity. The complete guide, logos, tokens and component library are in the <a href=\"https://github.com/ksamint/dsys_xiding02\">XIDING design system</a>.</p>\n"
+    }
+  ],
+  "tokens": [],
+  "images": [],
+  "assetManifest": [],
+  "adobeAssets": [],
+  "logoUrl": "",
+  "assetKit": {
+    "assetKey": "xiding",
+    "endpoints": {
+      "brand": "api/brands/xiding.json",
+      "logo": "",
+      "images": "api/brands/xiding.json#images",
+      "adobe": "",
+      "tokens": "api/brands/xiding.json#tokens",
+      "history": "api/history/xiding.json"
+    },
+    "moodboard": {
+      "colors": [
+        {
+          "key": "primary",
+          "value": "#628F8A"
+        },
+        {
+          "key": "accent",
+          "value": "#3D6560"
+        },
+        {
+          "key": "secondary",
+          "value": "#2F5B56"
+        },
+        {
+          "key": "surface",
+          "value": "#EEF2F1"
+        },
+        {
+          "key": "paper",
+          "value": "#FFFFFF"
+        },
+        {
+          "key": "ink",
+          "value": "#000000"
+        },
+        {
+          "key": "muted",
+          "value": "#4E5A58"
+        }
+      ],
+      "keywords": [
+        "teal",
+        "culture",
+        "arts"
+      ],
+      "images": []
+    }
+  },
+  "agent": {
+    "entry": "https://apuch.art/agent.json",
+    "mcp": "https://apuch.art/mcp",
+    "recommendedTool": "get_guideline",
+    "arguments": {
+      "assetKey": "xiding"
+    },
+    "conventions": {
+      "primaryNameField": "mainName",
+      "primaryLanguageField": "mainLanguage",
+      "exactColorField": "theme",
+      "canonicalLogoField": "logoUrl",
+      "publicAssetField": "images",
+      "provenanceField": "sources"
+    }
+  },
+  "moodboard": {
+    "colors": [
+      {
+        "key": "primary",
+        "value": "#628F8A"
+      },
+      {
+        "key": "accent",
+        "value": "#3D6560"
+      },
+      {
+        "key": "secondary",
+        "value": "#2F5B56"
+      },
+      {
+        "key": "surface",
+        "value": "#EEF2F1"
+      },
+      {
+        "key": "paper",
+        "value": "#FFFFFF"
+      },
+      {
+        "key": "ink",
+        "value": "#000000"
+      },
+      {
+        "key": "muted",
+        "value": "#4E5A58"
+      }
+    ],
+    "keywords": [
+      "teal",
+      "culture",
+      "arts"
+    ],
+    "images": []
+  },
+  "editablePaths": [
+    "XIDING/BRAND.md"
+  ],
+  "source": {
+    "github": "https://github.com/ksamint/iptrust01/tree/main/XIDING",
+    "folder": "XIDING"
+  },
+  "repository": null,
+  "lastUpdatedAt": null,
+  "completeness": {
+    "score": 50,
+    "total": 100,
+    "status": "foundation",
+    "checks": {
+      "profile": true,
+      "business": true,
+      "guide": true,
+      "tokens": false,
+      "palette": true,
+      "logo": false,
+      "sources": false,
+      "classification": true,
+      "repository": false,
+      "repositoryName": false
+    },
+    "missing": [
+      "tokens",
+      "logo",
+      "sources",
+      "repository",
+      "repositoryName"
+    ]
+  }
+}
